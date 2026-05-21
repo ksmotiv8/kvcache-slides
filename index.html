@@ -182,7 +182,7 @@ body.notes-on .slide.current .presenter-notes {
 <!-- SLIDE 1: Title -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s1">
-  <span class="slide-num">1 / 20</span>
+  <span class="slide-num">1 / 21</span>
   <h1>The Best Prefill Service<br/>Is a Distributed Systems Service</h1>
   <p class="subtitle">A systems engineer's journey into LLM inference.<br/>Routing, scheduling, placement, memory movement, tail latency.</p>
   <div class="presenter-notes">Open by framing the talk: this is a story about discovery. I came from distributed systems, was intimidated by the ML side of inference, and realized the hard problems at scale are the ones I already knew how to think about. The audience should leave with a concrete mental model for why inference at scale is really a distributed systems problem, and KV cache is the object at the center of it.</div>
@@ -192,7 +192,7 @@ body.notes-on .slide.current .presenter-notes {
 <!-- SLIDE 2: I was intimidated -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s2" data-build-phases="3">
-  <span class="slide-num">2 / 20</span>
+  <span class="slide-num">2 / 21</span>
   <span class="section-tag">The starting point</span>
   <h2>I was intimidated by inference</h2>
 
@@ -208,7 +208,7 @@ body.notes-on .slide.current .presenter-notes {
 <!-- SLIDE 3: Wait, I know these problems -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s3" data-build-phases="2">
-  <span class="slide-num">3 / 20</span>
+  <span class="slide-num">3 / 21</span>
   <span class="section-tag">The realization</span>
   <h2>Wait. I know these problems.</h2>
 
@@ -234,16 +234,17 @@ body.notes-on .slide.current .presenter-notes {
     </div>
   </div>
 
-  <div class="presenter-notes">The aha moment. Scope this clearly: for long-context interactive serving at scale. The right column is distributed systems 101. Routing decisions, cache eviction strategies, tail latency analysis, capacity planning under memory constraints. Both sides are real. The ML innovations — attention, GQA, quantization — made these models servable. Once servable, the scaling challenges are systems problems. The model is important, AND the system around the model is where things break at scale. Let the audience feel the recognition. Then say: "Let me show you what I mean. First, let me explain what actually happens inside the model that creates these problems."</div>
+  <div class="presenter-notes">The aha moment. Scope this clearly: for long-context interactive serving at scale. The right column is distributed systems 101. Routing decisions, cache eviction strategies, tail latency analysis, capacity planning under memory constraints. Both sides are real. The ML innovations  -  attention, GQA, quantization  -  made these models servable. Once servable, the scaling challenges are systems problems. The model is important, AND the system around the model is where things break at scale. Let the audience feel the recognition. Then say: "Let me show you what I mean. First, let me explain what actually happens inside the model that creates these problems."</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 4: NEW - What is KV Cache -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s4" data-build-phases="3">
-  <span class="slide-num">4 / 20</span>
+  <span class="slide-num">4 / 21</span>
   <span class="section-tag">The fundamentals</span>
   <h2>What is KV cache?</h2>
+  <p style="font-size:17px;color:var(--text-muted);margin-bottom:8px">Using <strong style="color:var(--cyan)">Qwen3-4B (FP8)</strong> as our running example: 36 layers, 8 KV heads, 128 head_dim</p>
 
   <svg viewBox="0 0 860 310" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagram showing how input tokens produce Query, Key, and Value vectors through attention layers, with K and V saved into the KV cache across 36 layers" style="width:100%;max-width:860px;height:auto;display:block;margin:4px 0">
     <!-- Input tokens -->
@@ -351,10 +352,38 @@ body.notes-on .slide.current .presenter-notes {
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
-<!-- SLIDE 5: NEW - Stages of Inference -->
+<!-- SLIDE 5: Running Example -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s5" data-build-phases="2">
-  <span class="slide-num">5 / 20</span>
+  <span class="slide-num">5 / 21</span>
+  <span class="section-tag">The running example</span>
+  <h2>An agentic coding session</h2>
+
+  <div data-phase="1">
+    <p>For the rest of this talk, we will trace a single workload through the system:</p>
+    <table style="font-size:20px;margin-top:16px">
+      <tbody>
+        <tr><td>Model</td><td><strong style="color:var(--cyan)">Qwen3-4B (FP8)</strong></td></tr>
+        <tr><td>System prompt</td><td><strong>10,000 tokens</strong> (shared across all sessions)</td></tr>
+        <tr><td>Conversation</td><td><strong>12 turns</strong>, ~1,067 tokens each</td></tr>
+        <tr><td>Output</td><td><strong>~75 tokens</strong> per turn</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div data-phase="2">
+    <div class="callout">
+      <strong>Peak context at turn 12:</strong> 10,000 + (12 × 1,067) = <strong style="color:var(--cyan)">~22,800 tokens</strong>. At fp8, that is <strong style="color:var(--cyan)">~1.6 GB</strong> of KV cache for one session on a 24 GB GPU. Every number that follows traces back to this workload.
+    </div>
+  </div>
+  <div class="presenter-notes">Introduce the running example before we use its numbers. The audience needs to internalize where 22,800 tokens comes from  -  it grounds every diagram and chart for the rest of the talk. The system prompt is shared and cacheable across sessions. The per-turn conversation context is unique per session. The peak context at turn 12 is the worst-case memory demand. Mention this is a realistic agentic coding workload  -  Claude Code, Cursor, Copilot sessions all look like this.</div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- SLIDE 6: Stages of Inference -->
+<!-- ════════════════════════════════════════════════════════ -->
+<section class="slide" id="s6" data-build-phases="2">
+  <span class="slide-num">6 / 21</span>
   <span class="section-tag">The fundamentals</span>
   <h2>Two stages of inference</h2>
 
@@ -442,11 +471,11 @@ body.notes-on .slide.current .presenter-notes {
 <!-- SLIDE 6: NEW - Journey of a Prompt -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s6" data-build-phases="4">
-  <span class="slide-num">6 / 20</span>
+  <span class="slide-num">7 / 21</span>
   <span class="section-tag">The fundamentals</span>
   <h2>Journey of a prompt</h2>
 
-  <svg viewBox="0 -28 885 362" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Flow diagram of a prompt's journey: user prompt, tokenize, check cache with hit or miss branch, prefill, KV cache storage, TTFT, decode loop, response complete" style="width:100%;max-width:885px;height:auto;display:block;margin:4px 0">
+  <svg viewBox="0 -28 900 362" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Flow diagram of a prompt's journey: user prompt, tokenize, check cache with hit or miss branch, prefill, KV cache storage, TTFT, decode loop, response complete" style="width:100%;max-width:885px;height:auto;display:block;margin:4px 0">
     <!-- Step 1: User sends prompt -->
     <rect x="10" y="10" width="170" height="56" rx="8" fill="rgba(130,140,248,0.12)" stroke="var(--accent)" stroke-width="1.5"/>
     <text x="95" y="32" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" font-weight="700">1. USER PROMPT</text>
@@ -506,17 +535,17 @@ body.notes-on .slide.current .presenter-notes {
     <!-- Step 6: Decode loop -->
     <rect x="580" y="190" width="270" height="56" rx="10" fill="rgba(74,222,128,0.10)" stroke="var(--green)" stroke-width="1.5"/>
     <text x="715" y="212" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle" font-weight="700">5. DECODE LOOP</text>
-    <text x="715" y="234" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle">read KV cache -> generate token -> append to cache -> repeat</text>
+    <text x="715" y="230" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle">read KV → gen token → append → repeat</text>
 
     <!-- Loop arrow -->
-    <path d="M 850 220 C 870 220, 870 155, 850 155" fill="none" stroke="var(--green)" stroke-width="1.5" marker-end="url(#ag2)"/>
-    <text x="860" y="192" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="start" transform="rotate(90,860,192)">loop</text>
+    <path d="M 850 220 C 874 220, 874 155, 850 155" fill="none" stroke="var(--green)" stroke-width="1.5" marker-end="url(#ag2)"/>
+    <text x="882" y="192" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" transform="rotate(90,882,192)">loop</text>
 
     <!-- Step 7: Response -->
     <line x1="715" y1="250" x2="715" y2="272" stroke="var(--text-muted)" stroke-width="1.5" marker-end="url(#aj)"/>
     <rect x="580" y="278" width="270" height="42" rx="8" fill="rgba(74,222,128,0.06)" stroke="var(--green)" stroke-width="1.5"/>
     <text x="715" y="300" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle" font-weight="700">6. RESPONSE COMPLETE</text>
-    <text x="715" y="316" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">KV cache retained for next turn</text>
+    <text x="715" y="316" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">KV cache kept if memory allows</text>
 
     <!-- Left side: where cost lives -->
     <rect x="10" y="100" width="260" height="220" rx="10" fill="rgba(255,255,255,0.02)" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3"/>
@@ -543,18 +572,18 @@ body.notes-on .slide.current .presenter-notes {
     </defs>
   </svg>
 
-  <div data-phase="1"><p style="font-size:20px"><strong>Step 1-2:</strong> Your prompt arrives and is split into tokens. A 22,800-token agentic session is typical.</p></div>
+  <div data-phase="1"><p style="font-size:20px"><strong>Step 1-2:</strong> Your prompt arrives and is split into tokens. Consider a 22,800-token agentic session.</p></div>
   <div data-phase="2"><p style="font-size:20px"><strong>Step 3:</strong> The engine checks if these tokens match a cached prefix. <strong style="color:var(--green)">Hit</strong> = skip to the new tokens. <strong style="color:var(--red)">Miss</strong> = process everything from scratch.</p></div>
   <div data-phase="3"><p style="font-size:20px"><strong>Step 4-5:</strong> Prefill runs. The KV cache fills. The first output token appears. This is <strong style="color:var(--yellow)">TTFT</strong>: the metric users feel.</p></div>
-  <div data-phase="4"><p style="font-size:20px"><strong>Step 5-6:</strong> Decode generates tokens one at a time, each reading the full KV cache. The cache is retained for the next turn in the conversation.</p></div>
-  <div class="presenter-notes">Walk through the diagram step by step. This is the slide where the audience builds their mental model of the full request lifecycle. Emphasize the branch at step 3: cache hit vs miss. This single decision point is where all the systems engineering matters. A cache hit means you skip potentially hundreds of milliseconds of prefill. A cache miss means the user waits for the full computation. What determines hit vs miss? Whether the KV cache has room for this session's data, whether the eviction policy kept it warm, and whether the router sent this request to the node that has the cache. Those are all systems problems. Decode is also systems-relevant — memory bandwidth optimization, batching strategies, speculative decoding — but prefill is where the variance lives and where systems engineering has the most dramatic impact on user-visible latency.</div>
+  <div data-phase="4"><p style="font-size:20px"><strong>Step 5-6:</strong> Decode generates tokens one at a time, each reading the full KV cache. The engine tries to retain the cache for the next turn, but eviction pressure can force a re-prefill.</p></div>
+  <div class="presenter-notes">Walk through the diagram step by step. This is the slide where the audience builds their mental model of the full request lifecycle. Emphasize the branch at step 3: cache hit vs miss. This single decision point is where all the systems engineering matters. A cache hit means you skip potentially hundreds of milliseconds of prefill. A cache miss means the user waits for the full computation. What determines hit vs miss? Whether the KV cache has room for this session's data, whether the eviction policy kept it warm, and whether the router sent this request to the node that has the cache. Those are all systems problems. Decode is also systems-relevant  -  memory bandwidth optimization, batching strategies, speculative decoding  -  but prefill is where the variance lives and where systems engineering has the most dramatic impact on user-visible latency.</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 7: Disaggregation -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s7" data-build-phases="3">
-  <span class="slide-num">7 / 20</span>
+  <span class="slide-num">8 / 21</span>
   <span class="section-tag">The architecture</span>
   <h2>Disaggregation: separating prefill from decode</h2>
 
@@ -591,21 +620,21 @@ body.notes-on .slide.current .presenter-notes {
 
   <div data-phase="2">
     <div class="callout">
-      <strong>Why prefill is where systems engineers belong.</strong> Prefill is compute-bound and determines TTFT — the latency users feel. Our benchmarks show the concurrency cliff is entirely prefill-driven: p99 TTFT jumps <strong>15x</strong> (2.6s to 38.9s) while decode throughput barely changes. A cache hit eliminates prefill entirely. Every systems optimization — routing, placement, eviction, admission control — directly reduces prefill cost. These are classic distributed systems levers applied to a new domain.
+      <strong>Why prefill is where systems engineers belong.</strong> Prefill is compute-bound and determines TTFT, the latency users feel. Our benchmarks show the concurrency cliff is driven by KV cache memory pressure: p99 TTFT jumps <strong>15x</strong> (2.6s to 38.9s) while decode throughput barely changes. A cache hit eliminates prefill entirely. Every systems optimization (routing, placement, eviction, admission control) directly reduces prefill cost. These are classic distributed systems levers applied to a new domain.
     </div>
   </div>
 
   <div data-phase="3">
     <p style="font-size:17px;color:var(--text-muted)">This is happening in production: NVIDIA Dynamo, AWS Trainium prefill offload, Cerebras wafer-scale decode. The pattern is the same one distributed systems solved for databases: separate the write-heavy path (prefill computes KV) from the read-heavy path (decode reads KV) and optimize each independently.</p>
   </div>
-  <div class="presenter-notes">This is the central connection of the talk, so take time here. Disaggregation and KV caching are not separate topics — they are deeply linked. The KV cache IS the interface between prefill and decode. In a monolithic engine, the KV cache is an in-memory data structure on one GPU. In a disaggregated architecture, it becomes a distributed object: prefill nodes produce it, decode nodes consume it, and the system must decide where to store it, when to evict it, how to transfer it, and which node should handle the next request for a given session. Why does prefill matter more to systems engineers? Three reasons backed by our data: (1) Prefill determines TTFT, the metric users actually experience. In our L4 benchmarks, the concurrency cliff was entirely about prefill — p99 TTFT jumped 15x when the KV cache filled, while per-token decode latency was essentially constant. The cliff is a prefill problem. (2) Cache hits skip prefill entirely — going from 388ms to 57ms. No systems optimization can make decode 6x faster, but a cache hit gives you that for free on the prefill side. (3) Every distributed systems primitive applies to prefill: cache-aware routing is session affinity. Eviction policies are LRU/LFU. Tiered storage (LMCache) is write-through caching. Admission control is backpressure. These are problems systems engineers have solved before. The hardware is GPUs instead of servers, but the abstractions are identical. The fun part: these optimizations compound. Better routing means fewer cache misses. Fewer misses mean less prefill compute. Less compute means more capacity for concurrent sessions. More sessions mean the system pays for itself faster. This is why the best prefill service is a distributed systems service — and why systems engineers should be excited, not intimidated.</div>
+  <div class="presenter-notes">This is the central connection of the talk, so take time here. Disaggregation and KV caching are not separate topics  -  they are deeply linked. The KV cache IS the interface between prefill and decode. In a monolithic engine, the KV cache is an in-memory data structure on one GPU. In a disaggregated architecture, it becomes a distributed object: prefill nodes produce it, decode nodes consume it, and the system must decide where to store it, when to evict it, how to transfer it, and which node should handle the next request for a given session. Why does prefill matter more to systems engineers? Three reasons backed by our data: (1) Prefill determines TTFT, the metric users actually experience. In our L4 benchmarks, the concurrency cliff was entirely about prefill  -  p99 TTFT jumped 15x when the KV cache filled, while per-token decode latency was essentially constant. The cliff is a prefill problem. (2) Cache hits skip prefill entirely  -  going from 388ms to 57ms. No systems optimization can make decode 6x faster, but a cache hit gives you that for free on the prefill side. (3) Every distributed systems primitive applies to prefill: cache-aware routing is session affinity. Eviction policies are LRU/LFU. Tiered storage (LMCache) is write-through caching. Admission control is backpressure. These are problems systems engineers have solved before. The hardware is GPUs instead of servers, but the abstractions are identical. The fun part: these optimizations compound. Better routing means fewer cache misses. Fewer misses mean less prefill compute. Less compute means more capacity for concurrent sessions. More sessions mean the system pays for itself faster. This is why the best prefill service is a distributed systems service  -  and why systems engineers should be excited, not intimidated.</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 8: KV Cache Makes or Breaks Everything -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s8" data-build-phases="3">
-  <span class="slide-num">8 / 20</span>
+  <span class="slide-num">9 / 21</span>
   <span class="section-tag">The shared state</span>
   <h2>KV cache makes or breaks everything</h2>
 
@@ -615,7 +644,7 @@ body.notes-on .slide.current .presenter-notes {
   </div>
   <div data-phase="2">
     <h3 style="color:var(--green)">Cost</h3>
-    <p>Prefill is the compute-expensive phase — more FLOPs per token than decode, and it blocks the user from seeing any output. Every token you skip via cache hit is GPU time you do not pay for. Under concurrency, the savings compound.</p>
+    <p>Prefill is the compute-expensive phase: more FLOPs per token than decode, and it blocks the user from seeing any output. Every token you skip via cache hit is GPU time you do not pay for. Under concurrency, the savings compound.</p>
   </div>
   <div data-phase="3">
     <h3 style="color:var(--yellow)">Time to First Token</h3>
@@ -628,7 +657,7 @@ body.notes-on .slide.current .presenter-notes {
 <!-- SLIDE 9: Prefix Caching -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s9" data-build-phases="2">
-  <span class="slide-num">9 / 20</span>
+  <span class="slide-num">10 / 21</span>
   <span class="section-tag">The shared state</span>
   <h2>Prefix caching: how it actually works</h2>
 
@@ -670,7 +699,7 @@ body.notes-on .slide.current .presenter-notes {
 <!-- SLIDE 10: The Experiment -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s10">
-  <span class="slide-num">10 / 20</span>
+  <span class="slide-num">11 / 21</span>
   <span class="section-tag">The experiment</span>
   <h2>Let me show you what this looks like</h2>
 
@@ -709,7 +738,7 @@ body.notes-on .slide.current .presenter-notes {
 <!-- SLIDE 11: The Cliff -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s11">
-  <span class="slide-num">11 / 20</span>
+  <span class="slide-num">12 / 21</span>
   <span class="section-tag">The experiment</span>
   <h2>The concurrency cliff</h2>
 
@@ -765,7 +794,7 @@ body.notes-on .slide.current .presenter-notes {
     <text x="666" y="24" fill="var(--red)" font-family="'JetBrains Mono',monospace" font-size="11">p99</text>
   </svg>
 
-  <p>p99 TTFT jumps from <strong>2.6 seconds to 38.9 seconds</strong> between C=12 and C=14. Not a single re-prefill — <strong>cascading evictions</strong> under contention, with queuing delays compounding.</p>
+  <p>p99 TTFT jumps from <strong>2.6 seconds to 38.9 seconds</strong> between C=12 and C=14. Not a single re-prefill. <strong>Cascading evictions</strong> under contention, with queuing delays compounding.</p>
   <div class="presenter-notes">Let this chart land. Below 12 sessions, everything fits in the KV cache. At 14, the cache fills. LRU eviction kicks in, and it is not just one re-prefill: multiple sessions thrash for the same cache space, evicting each other in a cascade. Each evicted session queues behind others waiting for prefill compute. A single 12.8K re-prefill costs ~220ms, but when many sessions are evicted simultaneously, queuing and scheduling delays compound to tens of seconds. The p50 barely moves because lucky requests still hit warm cache. This is a capacity-driven cliff, not a compute cliff. The GPU is not saturated; the memory is full.</div>
 </section>
 
@@ -773,7 +802,7 @@ body.notes-on .slide.current .presenter-notes {
 <!-- SLIDE 12: p50 Lies -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s12">
-  <span class="slide-num">12 / 20</span>
+  <span class="slide-num">13 / 21</span>
   <span class="section-tag">The experiment</span>
   <h2>After the cliff, p50 lies to you</h2>
 
@@ -800,7 +829,7 @@ body.notes-on .slide.current .presenter-notes {
 <!-- SLIDE 13: Why the Knee Is Where It Is -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s13" data-build-phases="3">
-  <span class="slide-num">13 / 20</span>
+  <span class="slide-num">14 / 21</span>
   <span class="section-tag">The systems lesson</span>
   <h2>The knee is predictable from first principles</h2>
 
@@ -833,14 +862,14 @@ L4: <span class="num">24 GB</span> VRAM, ~<span class="num">13 GB</span> availab
       <li><strong>KV precision</strong> → <code>kv_cache_dtype</code>: fp16 = 2B, fp8 = 1B, 4-bit = 0.5B. Halving bytes doubles capacity.</li>
     </ol>
   </div>
-  <div class="presenter-notes">This is where systems engineers feel at home. Walk through each step. Step 1: the per-token KV size comes directly from config.json — layers, KV heads, head_dim. GQA (grouped-query attention) is why Qwen3-4B has 8 KV heads instead of 32 — it's a 4x memory savings built into the architecture. Step 2: not all VRAM is available for KV. The model weights, CUDA graphs, and activation memory eat roughly half. vLLM logs the actual available KV memory at startup — look for "gpu_memory_utilization." Step 3: the formula is simple division. It gets you within 20% of the observed knee, which is good enough for capacity planning. The key insight: every number in this formula is either in the model's config.json or in the engine's startup logs. You can estimate your concurrency ceiling before running a single benchmark.</div>
+  <div class="presenter-notes">This is where systems engineers feel at home. Walk through each step. Step 1: the per-token KV size comes directly from config.json  -  layers, KV heads, head_dim. GQA (grouped-query attention) is why Qwen3-4B has 8 KV heads instead of 32  -  it's a 4x memory savings built into the architecture. Step 2: not all VRAM is available for KV. The model weights, CUDA graphs, and activation memory eat roughly half. vLLM logs the actual available KV memory at startup  -  look for "gpu_memory_utilization." Step 3: the formula is simple division. It gets you within 20% of the observed knee, which is good enough for capacity planning. The key insight: every number in this formula is either in the model's config.json or in the engine's startup logs. You can estimate your concurrency ceiling before running a single benchmark.</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 14: Quantization Moves the Knee -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s14">
-  <span class="slide-num">14 / 20</span>
+  <span class="slide-num">15 / 21</span>
   <span class="section-tag">The systems lesson</span>
   <h2>Small systems choices, big performance changes</h2>
 
@@ -896,7 +925,7 @@ L4: <span class="num">24 GB</span> VRAM, ~<span class="num">13 GB</span> availab
 <!-- SLIDE 15: Best/Worst/Realistic -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s15" data-build-phases="2">
-  <span class="slide-num">15 / 20</span>
+  <span class="slide-num">16 / 21</span>
   <span class="section-tag">The systems lesson</span>
   <h2>How much is fundamental vs avoidable?</h2>
 
@@ -911,7 +940,7 @@ L4: <span class="num">24 GB</span> VRAM, ~<span class="num">13 GB</span> availab
 
   <div data-phase="1">
     <div class="callout">
-      <strong>The 57ms best case is striking.</strong> With perfect caching, prefill cost nearly vanishes. The realistic 388ms per turn is not a compute limitation. It is the cost of per-session context uniqueness — the tokens that can never be shared.
+      <strong>The 57ms best case is striking.</strong> With perfect caching, prefill cost nearly vanishes. The realistic 388ms per turn is not a compute limitation. It is the cost of per-session context uniqueness: the tokens that can never be shared.
     </div>
   </div>
   <div data-phase="2">
@@ -926,7 +955,7 @@ L4: <span class="num">24 GB</span> VRAM, ~<span class="num">13 GB</span> availab
 <!-- SLIDE 16: Same GPU Different Workloads -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s16">
-  <span class="slide-num">16 / 20</span>
+  <span class="slide-num">17 / 21</span>
   <span class="section-tag">The systems lesson</span>
   <h2>The knee is workload-specific</h2>
 
@@ -950,7 +979,7 @@ L4: <span class="num">24 GB</span> VRAM, ~<span class="num">13 GB</span> availab
 <!-- SLIDE 17: Cache-Aware Routing -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s17" data-build-phases="4">
-  <span class="slide-num">17 / 20</span>
+  <span class="slide-num">18 / 21</span>
   <span class="section-tag">The systems stack</span>
   <h2>Cache-aware routing and tiered KV storage</h2>
 
@@ -961,7 +990,7 @@ L4: <span class="num">24 GB</span> VRAM, ~<span class="num">13 GB</span> availab
 
   <div data-phase="2">
     <h3 style="color:var(--green)">Local offload: host DRAM and NVMe</h3>
-    <p>GPU memory is scarce and expensive. LMCache moves evicted KV entries to host DRAM or NVMe. Reloading from host memory is faster than recomputing from scratch — a classic tiered cache.</p>
+    <p>GPU memory is scarce and expensive. LMCache moves evicted KV entries to host DRAM or NVMe. Reloading from host memory is faster than recomputing from scratch. A classic tiered cache.</p>
   </div>
 
   <div data-phase="3">
@@ -973,14 +1002,14 @@ L4: <span class="num">24 GB</span> VRAM, ~<span class="num">13 GB</span> availab
     <h3 style="color:var(--accent)">The full hierarchy</h3>
     <p><strong style="color:var(--cyan)">GPU VRAM</strong> → <strong style="color:var(--green)">Host DRAM</strong> → <strong style="color:var(--yellow)">Remote cache</strong> → <strong style="color:var(--red)">Recompute</strong>. Each tier trades latency for capacity. Each boundary is a systems engineering decision: eviction policy, transfer protocol, consistency model.</p>
   </div>
-  <div class="presenter-notes">Walk through the tiers like a memory hierarchy the audience already knows — L1/L2/L3/main memory, but for KV cache. GPU VRAM is L1: fastest, smallest, gone when the process restarts. Host DRAM is L2: 10-100x larger, microseconds to reload, LMCache manages this today. Remote cache is L3: a networked store like Redis or Valkey. Latency is milliseconds, but capacity scales independently from any single node. A 12,800-token session's KV cache at fp8 is ~900 KB — well within what a networked cache handles at sub-millisecond latency. The key insight: remote caching decouples KV lifetime from GPU lifetime. If a GPU restarts, if the session migrates to a different node, or if you're scaling down and back up, the KV cache persists. This eliminates the re-prefill cost that drives the concurrency cliff. It's the same pattern as session state in web applications — moving from in-process memory to memcached. Finally, recompute is the last resort: full re-prefill. The entire systems stack exists to avoid hitting this tier as much as possible.</div>
+  <div class="presenter-notes">Walk through the tiers like a memory hierarchy the audience already knows  -  L1/L2/L3/main memory, but for KV cache. GPU VRAM is L1: fastest, smallest, gone when the process restarts. Host DRAM is L2: 10-100x larger, microseconds to reload, LMCache manages this today. Remote cache is L3: a networked store like Redis or Valkey. Latency is milliseconds, but capacity scales independently from any single node. A 12,800-token session's KV cache at fp8 is ~900 KB  -  well within what a networked cache handles at sub-millisecond latency. The key insight: remote caching decouples KV lifetime from GPU lifetime. If a GPU restarts, if the session migrates to a different node, or if you're scaling down and back up, the KV cache persists. This eliminates the re-prefill cost that drives the concurrency cliff. It's the same pattern as session state in web applications  -  moving from in-process memory to memcached. Finally, recompute is the last resort: full re-prefill. The entire systems stack exists to avoid hitting this tier as much as possible.</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 18: Operate in Production -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s18" data-build-phases="2">
-  <span class="slide-num">18 / 20</span>
+  <span class="slide-num">19 / 21</span>
   <span class="section-tag">The systems stack</span>
   <h2>How to operate this in production</h2>
 
@@ -1006,7 +1035,7 @@ L4: <span class="num">24 GB</span> VRAM, ~<span class="num">13 GB</span> availab
 <!-- SLIDE 19: Separate Background from Interactive -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s19">
-  <span class="slide-num">19 / 20</span>
+  <span class="slide-num">20 / 21</span>
   <span class="section-tag">The systems stack</span>
   <h2>Separate background from interactive</h2>
 
@@ -1043,7 +1072,7 @@ L4: <span class="num">24 GB</span> VRAM, ~<span class="num">13 GB</span> availab
 <!-- SLIDE 20: Closing -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s20">
-  <span class="slide-num">20 / 20</span>
+  <span class="slide-num">21 / 21</span>
   <span class="section-tag">The conclusion</span>
   <h2>The world's best prefill service<br/>is a distributed systems service</h2>
 
@@ -1066,7 +1095,7 @@ L4: <span class="num">24 GB</span> VRAM, ~<span class="num">13 GB</span> availab
 <!-- ════════════════════════════════════════════════════════ -->
 <div id="nav">
   <button id="prevBtn" aria-label="Previous slide">Prev</button>
-  <span id="counter">1 / 20</span>
+  <span id="counter">1 / 21</span>
   <button id="nextBtn" aria-label="Next slide">Next</button>
 </div>
 <div id="notes-indicator">P: notes off</div>
