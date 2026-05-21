@@ -799,29 +799,41 @@ body.notes-on .slide.current .presenter-notes {
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 13: Why the Knee Is Where It Is -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s13" data-build-phases="2">
+<section class="slide" id="s13" data-build-phases="3">
   <span class="slide-num">13 / 20</span>
   <span class="section-tag">The systems lesson</span>
   <h2>The knee is predictable from first principles</h2>
 
   <div data-phase="1">
-    <div class="code-block" style="font-size:17px;max-width:800px">
-max_sessions = (<span class="fn">kv_memory</span> - <span class="fn">shared_prefix</span>) / <span class="fn">per_session_unique</span><br/><br/>
-<span class="cm">// L4 with fp8 KV, Qwen3-4B:</span><br/>
-(<span class="num">178K tokens</span> - <span class="num">10K shared</span>) / <span class="num">12.8K per session</span> = <span class="fn">~13 sessions</span><br/>
-<span class="cm">// observed: ~14   &#10003;</span>
+    <div class="code-block" style="font-size:16px;max-width:860px">
+<span class="cm">// Step 1: KV memory per token (from model config)</span><br/>
+<span class="fn">per_token_kv</span> = <span class="fn">layers</span> × <span class="fn">kv_heads</span> × <span class="fn">head_dim</span> × <span class="num">2</span>(K,V) × <span class="fn">dtype_bytes</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <span class="num">36</span> × <span class="num">8</span> × <span class="num">128</span> × <span class="num">2</span> × <span class="num">1</span> (fp8)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <span class="fn">73,728 bytes ≈ 72 KB per token</span>
     </div>
   </div>
 
   <div data-phase="2">
-    <p>Three variables:</p>
+    <div class="code-block" style="font-size:16px;max-width:860px">
+<span class="cm">// Step 2: total KV capacity (GPU-specific)</span><br/>
+L4: <span class="num">24 GB</span> VRAM, ~<span class="num">13 GB</span> available for KV after model + overhead<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="num">13 GB</span> / <span class="num">72 KB</span> per token ≈ <span class="fn">178K tokens</span><br/><br/>
+<span class="cm">// Step 3: concurrency estimate</span><br/>
+<span class="fn">max_sessions</span> = (<span class="fn">kv_capacity</span> - <span class="fn">shared_prefix</span>) / <span class="fn">per_session_unique</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= (<span class="num">178K</span> - <span class="num">10K</span>) / <span class="num">12.8K</span> = <span class="fn">~13 sessions</span><br/>
+<span class="cm">// observed knee: ~14 &#10003;</span>
+    </div>
+  </div>
+
+  <div data-phase="3">
+    <p>Every number traces to something you can look up:</p>
     <ol style="font-size:19px">
-      <li><strong>Available KV memory</strong> = VRAM - model - CUDA graphs - activations (~50% of raw VRAM)</li>
-      <li><strong>Per-session unique context</strong> = your workload's per-session token count minus shared prefix</li>
-      <li><strong>KV precision</strong> = bytes per element (halving precision roughly doubles capacity)</li>
+      <li><strong>Model architecture</strong> → <code>config.json</code>: <code>num_hidden_layers</code>, <code>num_key_value_heads</code>, <code>head_dim</code></li>
+      <li><strong>Available KV memory</strong> → vLLM logs at startup: <code>gpu_memory_utilization</code> minus model/overhead (~50-55% of raw VRAM)</li>
+      <li><strong>KV precision</strong> → <code>kv_cache_dtype</code>: fp16 = 2B, fp8 = 1B, 4-bit = 0.5B. Halving bytes doubles capacity.</li>
     </ol>
   </div>
-  <div class="presenter-notes">This is where systems engineers feel at home. The concurrency cliff is a capacity problem with a closed-form estimate. The formula gets you within 20%. It tells you whether you're looking at 5 sessions or 50, which is the critical capacity planning question.</div>
+  <div class="presenter-notes">This is where systems engineers feel at home. Walk through each step. Step 1: the per-token KV size comes directly from config.json — layers, KV heads, head_dim. GQA (grouped-query attention) is why Qwen3-4B has 8 KV heads instead of 32 — it's a 4x memory savings built into the architecture. Step 2: not all VRAM is available for KV. The model weights, CUDA graphs, and activation memory eat roughly half. vLLM logs the actual available KV memory at startup — look for "gpu_memory_utilization." Step 3: the formula is simple division. It gets you within 20% of the observed knee, which is good enough for capacity planning. The key insight: every number in this formula is either in the model's config.json or in the engine's startup logs. You can estimate your concurrency ceiling before running a single benchmark.</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
