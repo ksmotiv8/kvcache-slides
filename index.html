@@ -17,7 +17,7 @@
   --border: rgba(255,255,255,0.10);
   --text: #f0f0f4;
   --text-dim: rgba(240,240,244,0.70);
-  --text-muted: rgba(240,240,244,0.45);
+  --text-muted: rgba(240,240,244,0.60);
   --cyan: #22d3ee;
   --accent: #818cf8;
   --green: #4ade80;
@@ -107,8 +107,8 @@ td.y { color: var(--yellow); }
 
 .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
 
-[data-phase] { opacity: 0; transition: opacity 0.4s ease; }
-[data-phase].visible { opacity: 1; }
+[data-phase] { opacity: 0; visibility: hidden; transition: opacity 0.4s ease, visibility 0.4s ease; }
+[data-phase].visible { opacity: 1; visibility: visible; }
 
 .presenter-notes { display: none; }
 body.notes-on .slide.current .presenter-notes {
@@ -245,17 +245,17 @@ body.notes-on .slide.current .presenter-notes {
   <span class="section-tag">The fundamentals</span>
   <h2>What is KV cache?</h2>
 
-  <svg viewBox="0 0 860 310" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:860px;height:auto;display:block;margin:4px 0">
+  <svg viewBox="0 0 860 310" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagram showing how input tokens produce Query, Key, and Value vectors through attention layers, with K and V saved into the KV cache across 36 layers" style="width:100%;max-width:860px;height:auto;display:block;margin:4px 0">
     <!-- Input tokens -->
     <text x="80" y="24" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" font-weight="600" text-decoration="underline">INPUT TOKENS</text>
     <rect x="10" y="34" width="32" height="28" rx="4" fill="rgba(130,140,248,0.18)" stroke="var(--accent)" stroke-width="1"/>
-    <text x="26" y="53" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle">The</text>
+    <text x="26" y="53" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">The</text>
     <rect x="48" y="34" width="32" height="28" rx="4" fill="rgba(130,140,248,0.18)" stroke="var(--accent)" stroke-width="1"/>
-    <text x="64" y="53" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle">cat</text>
+    <text x="64" y="53" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">cat</text>
     <rect x="86" y="34" width="32" height="28" rx="4" fill="rgba(130,140,248,0.18)" stroke="var(--accent)" stroke-width="1"/>
-    <text x="102" y="53" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle">sat</text>
+    <text x="102" y="53" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">sat</text>
     <rect x="124" y="34" width="32" height="28" rx="4" fill="rgba(130,140,248,0.18)" stroke="var(--accent)" stroke-width="1"/>
-    <text x="140" y="53" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle">on</text>
+    <text x="140" y="53" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">on</text>
 
     <!-- Arrow down to attention -->
     <line x1="80" y1="66" x2="80" y2="88" stroke="var(--text-muted)" stroke-width="1.5" marker-end="url(#ad)"/>
@@ -273,15 +273,15 @@ body.notes-on .slide.current .presenter-notes {
     <text x="270" y="149" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="13" text-anchor="middle" font-weight="600">V</text>
 
     <!-- Labels -->
-    <text x="70" y="178" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="10" text-anchor="middle">Query</text>
-    <text x="70" y="190" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="10" text-anchor="middle">"what am I</text>
-    <text x="70" y="202" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="10" text-anchor="middle">looking for?"</text>
-    <text x="170" y="178" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="10" text-anchor="middle">Key</text>
-    <text x="170" y="190" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="10" text-anchor="middle">"what do I</text>
-    <text x="170" y="202" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="10" text-anchor="middle">contain?"</text>
-    <text x="270" y="178" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="10" text-anchor="middle">Value</text>
-    <text x="270" y="190" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="10" text-anchor="middle">"here is my</text>
-    <text x="270" y="202" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="10" text-anchor="middle">actual content"</text>
+    <text x="70" y="178" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">Query</text>
+    <text x="70" y="190" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">"what am I</text>
+    <text x="70" y="202" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">looking for?"</text>
+    <text x="170" y="178" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">Key</text>
+    <text x="170" y="190" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">"what do I</text>
+    <text x="170" y="202" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">contain?"</text>
+    <text x="270" y="178" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">Value</text>
+    <text x="270" y="190" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">"here is my</text>
+    <text x="270" y="202" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">actual content"</text>
 
     <!-- Attention computation -->
     <text x="180" y="230" fill="var(--text-dim)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle">Q asks: "which K's are relevant?"</text>
@@ -290,7 +290,7 @@ body.notes-on .slide.current .presenter-notes {
 
     <!-- Arrow from K,V to KV Cache -->
     <line x1="310" y1="144" x2="420" y2="144" stroke="var(--cyan)" stroke-width="2" marker-end="url(#ac)"/>
-    <text x="365" y="134" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle" font-weight="600">SAVE</text>
+    <text x="365" y="134" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle" font-weight="600">SAVE</text>
 
     <!-- KV Cache box -->
     <rect x="430" y="50" width="400" height="240" rx="12" fill="rgba(34,211,238,0.06)" stroke="var(--cyan)" stroke-width="2"/>
@@ -298,39 +298,39 @@ body.notes-on .slide.current .presenter-notes {
     <text x="630" y="94" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle">saved K and V for every token, every layer</text>
 
     <!-- Cache rows - Layer labels -->
-    <text x="470" y="124" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="start">Layer 0</text>
-    <text x="470" y="158" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="start">Layer 1</text>
-    <text x="470" y="192" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="start">Layer 2</text>
-    <text x="470" y="226" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="start">...</text>
-    <text x="470" y="260" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="start">Layer 35</text>
+    <text x="470" y="124" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="start">Layer 0</text>
+    <text x="470" y="158" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="start">Layer 1</text>
+    <text x="470" y="192" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="start">Layer 2</text>
+    <text x="470" y="226" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="start">...</text>
+    <text x="470" y="260" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="start">Layer 35</text>
 
     <!-- Cache grid - K entries -->
     <rect x="540" y="110" width="28" height="20" rx="3" fill="rgba(34,211,238,0.20)" stroke="var(--cyan)" stroke-width="0.8"/>
-    <text x="554" y="124" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="8" text-anchor="middle">K</text>
+    <text x="554" y="124" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">K</text>
     <rect x="572" y="110" width="28" height="20" rx="3" fill="rgba(34,211,238,0.20)" stroke="var(--cyan)" stroke-width="0.8"/>
-    <text x="586" y="124" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="8" text-anchor="middle">K</text>
+    <text x="586" y="124" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">K</text>
     <rect x="604" y="110" width="28" height="20" rx="3" fill="rgba(34,211,238,0.20)" stroke="var(--cyan)" stroke-width="0.8"/>
-    <text x="618" y="124" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="8" text-anchor="middle">K</text>
+    <text x="618" y="124" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">K</text>
     <rect x="636" y="110" width="28" height="20" rx="3" fill="rgba(34,211,238,0.20)" stroke="var(--cyan)" stroke-width="0.8"/>
-    <text x="650" y="124" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="8" text-anchor="middle">K</text>
+    <text x="650" y="124" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">K</text>
     <!-- V entries -->
     <rect x="680" y="110" width="28" height="20" rx="3" fill="rgba(74,222,128,0.20)" stroke="var(--green)" stroke-width="0.8"/>
-    <text x="694" y="124" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="8" text-anchor="middle">V</text>
+    <text x="694" y="124" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">V</text>
     <rect x="712" y="110" width="28" height="20" rx="3" fill="rgba(74,222,128,0.20)" stroke="var(--green)" stroke-width="0.8"/>
-    <text x="726" y="124" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="8" text-anchor="middle">V</text>
+    <text x="726" y="124" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">V</text>
     <rect x="744" y="110" width="28" height="20" rx="3" fill="rgba(74,222,128,0.20)" stroke="var(--green)" stroke-width="0.8"/>
-    <text x="758" y="124" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="8" text-anchor="middle">V</text>
+    <text x="758" y="124" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">V</text>
     <rect x="776" y="110" width="28" height="20" rx="3" fill="rgba(74,222,128,0.20)" stroke="var(--green)" stroke-width="0.8"/>
-    <text x="790" y="124" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="8" text-anchor="middle">V</text>
+    <text x="790" y="124" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">V</text>
 
     <!-- Repeat indicators for other layers -->
     <rect x="540" y="144" width="264" height="20" rx="3" fill="rgba(255,255,255,0.03)" stroke="var(--border)" stroke-width="0.5"/>
-    <text x="672" y="158" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="8" text-anchor="middle">K K K K | V V V V</text>
+    <text x="672" y="158" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">K K K K | V V V V</text>
     <rect x="540" y="178" width="264" height="20" rx="3" fill="rgba(255,255,255,0.03)" stroke="var(--border)" stroke-width="0.5"/>
-    <text x="672" y="192" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="8" text-anchor="middle">K K K K | V V V V</text>
-    <text x="672" y="226" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle">...</text>
+    <text x="672" y="192" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">K K K K | V V V V</text>
+    <text x="672" y="226" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">...</text>
     <rect x="540" y="246" width="264" height="20" rx="3" fill="rgba(255,255,255,0.03)" stroke="var(--border)" stroke-width="0.5"/>
-    <text x="672" y="260" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="8" text-anchor="middle">K K K K | V V V V</text>
+    <text x="672" y="260" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">K K K K | V V V V</text>
 
     <defs>
       <marker id="ad" markerWidth="6" markerHeight="5" refX="6" refY="2.5" orient="auto"><path d="M0,0 L6,2.5 L0,5" fill="var(--text-muted)"/></marker>
@@ -358,7 +358,7 @@ body.notes-on .slide.current .presenter-notes {
   <span class="section-tag">The fundamentals</span>
   <h2>Two stages of inference</h2>
 
-  <svg viewBox="0 0 860 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:860px;height:auto;display:block;margin:8px 0">
+  <svg viewBox="0 0 860 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Timeline showing prefill phase processing all input tokens in parallel, followed by TTFT marker, then decode phase generating output tokens one at a time" style="width:100%;max-width:860px;height:auto;display:block;margin:8px 0">
     <!-- Timeline axis -->
     <line x1="40" y1="130" x2="840" y2="130" stroke="var(--border)" stroke-width="1"/>
 
@@ -388,7 +388,7 @@ body.notes-on .slide.current .presenter-notes {
     <line x1="410" y1="20" x2="410" y2="245" stroke="var(--yellow)" stroke-width="2" stroke-dasharray="6 3"/>
     <rect x="380" y="117" width="60" height="26" rx="4" fill="var(--bg)" stroke="var(--yellow)" stroke-width="1.5"/>
     <text x="410" y="135" fill="var(--yellow)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" font-weight="700">TTFT</text>
-    <text x="410" y="258" fill="var(--yellow)" font-family="'Inter',sans-serif" font-size="10" text-anchor="middle">Time to First Token</text>
+    <text x="410" y="258" fill="var(--yellow)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">Time to First Token</text>
 
     <!-- DECODE phase -->
     <rect x="440" y="30" width="390" height="80" rx="10" fill="rgba(74,222,128,0.10)" stroke="var(--green)" stroke-width="2"/>
@@ -421,8 +421,8 @@ body.notes-on .slide.current .presenter-notes {
     <rect x="40" y="215" width="790" height="24" rx="4" fill="rgba(34,211,238,0.06)" stroke="var(--cyan)" stroke-width="1"/>
     <rect x="42" y="217" width="356" height="20" rx="3" fill="rgba(34,211,238,0.15)"/>
     <rect x="398" y="217" width="430" height="20" rx="3" fill="rgba(34,211,238,0.25)"/>
-    <text x="220" y="232" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="9" text-anchor="middle">KV cache filling...</text>
-    <text x="613" y="232" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="9" text-anchor="middle">KV cache growing with each output token</text>
+    <text x="220" y="232" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">KV cache filling...</text>
+    <text x="613" y="232" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">KV cache growing with each output token</text>
   </svg>
 
   <div data-phase="1">
@@ -446,11 +446,11 @@ body.notes-on .slide.current .presenter-notes {
   <span class="section-tag">The fundamentals</span>
   <h2>Journey of a prompt</h2>
 
-  <svg viewBox="0 0 860 330" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:860px;height:auto;display:block;margin:4px 0">
+  <svg viewBox="0 -28 885 362" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Flow diagram of a prompt's journey: user prompt, tokenize, check cache with hit or miss branch, prefill, KV cache storage, TTFT, decode loop, response complete" style="width:100%;max-width:885px;height:auto;display:block;margin:4px 0">
     <!-- Step 1: User sends prompt -->
     <rect x="10" y="10" width="170" height="56" rx="8" fill="rgba(130,140,248,0.12)" stroke="var(--accent)" stroke-width="1.5"/>
     <text x="95" y="32" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" font-weight="700">1. USER PROMPT</text>
-    <text x="95" y="50" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="10" text-anchor="middle">"Refactor this function..."</text>
+    <text x="95" y="50" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">"Refactor this function..."</text>
 
     <!-- Arrow 1->2 -->
     <line x1="185" y1="38" x2="220" y2="38" stroke="var(--text-muted)" stroke-width="1.5" marker-end="url(#aj)"/>
@@ -458,7 +458,7 @@ body.notes-on .slide.current .presenter-notes {
     <!-- Step 2: Tokenize -->
     <rect x="225" y="10" width="130" height="56" rx="8" fill="rgba(255,255,255,0.04)" stroke="var(--border)" stroke-width="1.5"/>
     <text x="290" y="32" fill="var(--text)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" font-weight="700">2. TOKENIZE</text>
-    <text x="290" y="50" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="10" text-anchor="middle">text -> 22,800 tokens</text>
+    <text x="290" y="50" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">text -> 22,800 tokens</text>
 
     <!-- Arrow 2->3 -->
     <line x1="360" y1="38" x2="395" y2="38" stroke="var(--text-muted)" stroke-width="1.5" marker-end="url(#aj)"/>
@@ -466,25 +466,25 @@ body.notes-on .slide.current .presenter-notes {
     <!-- Step 3: Check cache -->
     <rect x="400" y="10" width="160" height="56" rx="8" fill="rgba(34,211,238,0.10)" stroke="var(--cyan)" stroke-width="1.5"/>
     <text x="480" y="32" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" font-weight="700">3. CHECK CACHE</text>
-    <text x="480" y="50" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="10" text-anchor="middle">prefix match? reuse KV</text>
+    <text x="480" y="50" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">prefix match? reuse KV</text>
 
     <!-- Branch: cache hit vs miss -->
     <!-- Cache HIT path (top) -->
     <line x1="480" y1="10" x2="480" y2="-6" stroke="var(--green)" stroke-width="1.5"/>
     <line x1="480" y1="-6" x2="680" y2="-6" stroke="var(--green)" stroke-width="1.5" marker-end="url(#ag)"/>
     <rect x="577" y="-20" width="60" height="18" rx="3" fill="var(--bg)"/>
-    <text x="607" y="-7" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="9" text-anchor="middle" font-weight="600">HIT!</text>
+    <text x="607" y="-7" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" font-weight="600">HIT!</text>
 
     <!-- Cache MISS path (bottom) -->
     <line x1="565" y1="38" x2="680" y2="38" stroke="var(--red)" stroke-width="1.5" marker-end="url(#ar)"/>
     <rect x="590" y="27" width="60" height="18" rx="3" fill="var(--bg)"/>
-    <text x="620" y="40" fill="var(--red)" font-family="'JetBrains Mono',monospace" font-size="9" text-anchor="middle" font-weight="600">MISS</text>
+    <text x="620" y="40" fill="var(--red)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" font-weight="600">MISS</text>
 
     <!-- Step 4: Prefill -->
     <rect x="685" y="10" width="160" height="56" rx="8" fill="rgba(130,140,248,0.12)" stroke="var(--accent)" stroke-width="1.5"/>
     <text x="765" y="28" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" font-weight="700">4. PREFILL</text>
-    <text x="765" y="44" fill="var(--green)" font-family="'Inter',sans-serif" font-size="10" text-anchor="middle">hit: only new tokens</text>
-    <text x="765" y="58" fill="var(--red)" font-family="'Inter',sans-serif" font-size="10" text-anchor="middle">miss: all 22,800 tokens</text>
+    <text x="765" y="44" fill="var(--green)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">hit: only new tokens</text>
+    <text x="765" y="58" fill="var(--red)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">miss: all 22,800 tokens</text>
 
     <!-- Arrow down to KV cache -->
     <line x1="765" y1="70" x2="765" y2="95" stroke="var(--cyan)" stroke-width="1.5" marker-end="url(#aj)"/>
@@ -500,7 +500,7 @@ body.notes-on .slide.current .presenter-notes {
     <!-- Step 5: TTFT -->
     <rect x="375" y="175" width="120" height="40" rx="6" fill="rgba(250,204,21,0.12)" stroke="var(--yellow)" stroke-width="2"/>
     <text x="435" y="193" fill="var(--yellow)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle" font-weight="700">TTFT</text>
-    <text x="435" y="207" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="9" text-anchor="middle">first token out</text>
+    <text x="435" y="207" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">first token out</text>
     <line x1="498" y1="195" x2="580" y2="195" stroke="var(--yellow)" stroke-width="1.5" stroke-dasharray="4 3"/>
 
     <!-- Step 6: Decode loop -->
@@ -510,13 +510,13 @@ body.notes-on .slide.current .presenter-notes {
 
     <!-- Loop arrow -->
     <path d="M 850 220 C 870 220, 870 155, 850 155" fill="none" stroke="var(--green)" stroke-width="1.5" marker-end="url(#ag2)"/>
-    <text x="860" y="192" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="9" text-anchor="start" transform="rotate(90,860,192)">loop</text>
+    <text x="860" y="192" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="start" transform="rotate(90,860,192)">loop</text>
 
     <!-- Step 7: Response -->
     <line x1="715" y1="250" x2="715" y2="272" stroke="var(--text-muted)" stroke-width="1.5" marker-end="url(#aj)"/>
     <rect x="580" y="278" width="270" height="42" rx="8" fill="rgba(74,222,128,0.06)" stroke="var(--green)" stroke-width="1.5"/>
     <text x="715" y="300" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle" font-weight="700">6. RESPONSE COMPLETE</text>
-    <text x="715" y="316" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="10" text-anchor="middle">KV cache retained for next turn</text>
+    <text x="715" y="316" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">KV cache retained for next turn</text>
 
     <!-- Left side: where cost lives -->
     <rect x="10" y="100" width="260" height="220" rx="10" fill="rgba(255,255,255,0.02)" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3"/>
@@ -558,7 +558,7 @@ body.notes-on .slide.current .presenter-notes {
   <span class="section-tag">The architecture</span>
   <h2>Disaggregation: separating prefill from decode</h2>
 
-  <svg viewBox="0 0 820 160" style="width:100%;max-width:820px;height:auto;margin:24px 0">
+  <svg viewBox="0 0 820 160" role="img" aria-label="Architecture diagram showing prefill engine producing KV cache, which is read by the decode engine, with placement and eviction as shared concerns" style="width:100%;max-width:820px;height:auto;margin:24px 0">
     <rect x="10" y="40" width="200" height="80" rx="10" fill="rgba(130,140,248,0.15)" stroke="var(--accent)" stroke-width="2"/>
     <text x="110" y="72" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="14" font-weight="600" text-anchor="middle">PREFILL ENGINE</text>
     <text x="110" y="96" fill="var(--text-dim)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">High-FLOPS hardware</text>
@@ -621,7 +621,7 @@ body.notes-on .slide.current .presenter-notes {
   <span class="section-tag">The shared state</span>
   <h2>Prefix caching: how it actually works</h2>
 
-  <svg viewBox="0 0 780 140" style="width:100%;max-width:780px;height:auto;margin:16px 0">
+  <svg viewBox="0 0 780 140" role="img" aria-label="Diagram showing prefix caching: system prompt cached and shared, turns 1-11 cached per session, only turn 12 needs prefill" style="width:100%;max-width:780px;height:auto;margin:16px 0">
     <rect x="10" y="20" width="220" height="44" rx="6" fill="rgba(74,222,128,0.12)" stroke="var(--green)" stroke-width="1.5"/>
     <text x="120" y="47" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" text-anchor="middle">SYSTEM PROMPT (10K)</text>
 
@@ -638,7 +638,7 @@ body.notes-on .slide.current .presenter-notes {
     <line x1="530" y1="42" x2="590" y2="42" stroke="var(--text-muted)" stroke-width="1.5" marker-end="url(#arrowW2)"/>
     <rect x="600" y="20" width="160" height="44" rx="6" fill="rgba(255,255,255,0.04)" stroke="var(--text-muted)" stroke-width="1"/>
     <text x="680" y="40" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">output: 75 tokens</text>
-    <text x="680" y="56" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle">(decode phase)</text>
+    <text x="680" y="56" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">(decode phase)</text>
 
     <text x="400" y="124" fill="var(--text-dim)" font-family="'Inter',sans-serif" font-size="14" text-anchor="middle">Only the new tokens need prefill. Everything before them is a cache hit.</text>
     <defs><marker id="arrowW2" markerWidth="6" markerHeight="5" refX="6" refY="2.5" orient="auto"><path d="M0,0 L6,2.5 L0,5" fill="var(--text-muted)"/></marker></defs>
@@ -702,7 +702,7 @@ body.notes-on .slide.current .presenter-notes {
   <span class="section-tag">The experiment</span>
   <h2>The concurrency cliff</h2>
 
-  <svg viewBox="0 0 760 310" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:760px;height:auto;display:block;margin:8px 0">
+  <svg viewBox="0 0 760 310" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Chart showing p50 and p99 TTFT vs concurrent sessions. p99 jumps from 2.6s to 38.9s between 12 and 14 sessions when KV cache fills" style="width:100%;max-width:760px;height:auto;display:block;margin:8px 0">
     <defs>
       <linearGradient id="cliffZone" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="var(--red)" stop-opacity="0.08"/><stop offset="1" stop-color="var(--red)" stop-opacity="0.02"/></linearGradient>
     </defs>
@@ -712,25 +712,25 @@ body.notes-on .slide.current .presenter-notes {
     <line x1="60" y1="120" x2="750" y2="120" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
     <line x1="60" y1="60" x2="750" y2="60" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
 
-    <text x="54" y="244" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="end">300ms</text>
-    <text x="54" y="184" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="end">2s</text>
-    <text x="54" y="124" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="end">10s</text>
-    <text x="54" y="64" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="end">40s</text>
+    <text x="54" y="244" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="end">300ms</text>
+    <text x="54" y="184" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="end">2s</text>
+    <text x="54" y="124" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="end">10s</text>
+    <text x="54" y="64" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="end">40s</text>
     <text x="20" y="155" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle" transform="rotate(-90,20,155)">TTFT (log)</text>
 
     <rect x="365" y="10" width="60" height="260" fill="url(#cliffZone)"/>
     <line x1="395" y1="10" x2="395" y2="270" stroke="var(--red)" stroke-width="1" stroke-dasharray="4 3" opacity="0.6"/>
-    <text x="395" y="285" fill="var(--red)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle" font-weight="600">KV cache fills</text>
+    <text x="395" y="285" fill="var(--red)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle" font-weight="600">KV cache fills</text>
 
     <line x1="60" y1="180" x2="750" y2="180" stroke="var(--yellow)" stroke-width="1" stroke-dasharray="6 4" opacity="0.5"/>
-    <text x="752" y="176" fill="var(--yellow)" font-family="'JetBrains Mono',monospace" font-size="9" text-anchor="start" opacity="0.7">2s SLA</text>
+    <text x="752" y="176" fill="var(--yellow)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="start" opacity="0.7">2s SLA</text>
 
-    <text x="90" y="258" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle">1</text>
-    <text x="220" y="258" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle">6</text>
-    <text x="350" y="258" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle">12</text>
-    <text x="395" y="258" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle">14</text>
-    <text x="500" y="258" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle">20</text>
-    <text x="710" y="258" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle">48</text>
+    <text x="90" y="258" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">1</text>
+    <text x="220" y="258" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">6</text>
+    <text x="350" y="258" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">12</text>
+    <text x="395" y="258" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">14</text>
+    <text x="500" y="258" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">20</text>
+    <text x="710" y="258" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">48</text>
     <text x="400" y="300" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle">Concurrent sessions</text>
 
     <polyline points="90,233 220,207 350,200 395,198 500,184 710,165" fill="none" stroke="var(--cyan)" stroke-width="2.5"/>
@@ -821,38 +821,38 @@ max_sessions = (<span class="fn">kv_memory</span> - <span class="fn">shared_pref
   <span class="section-tag">The systems lesson</span>
   <h2>Small systems choices, big performance changes</h2>
 
-  <svg viewBox="0 0 760 240" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:760px;height:auto;display:block;margin:12px 0">
+  <svg viewBox="0 0 760 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Chart comparing p99 TTFT for fp16, fp8, and 4-bit KV quantization. Concurrency knee shifts from 8 to 14 to 23 sessions" style="width:100%;max-width:760px;height:auto;display:block;margin:12px 0">
     <rect x="60" y="10" width="690" height="200" fill="none"/>
     <line x1="60" y1="190" x2="750" y2="190" stroke="var(--border)" stroke-width="1"/>
     <line x1="60" y1="140" x2="750" y2="140" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
     <line x1="60" y1="90" x2="750" y2="90" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
     <line x1="60" y1="40" x2="750" y2="40" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
 
-    <text x="54" y="194" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="end">500ms</text>
-    <text x="54" y="144" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="end">2s</text>
-    <text x="54" y="94" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="end">10s</text>
-    <text x="54" y="44" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="end">40s</text>
+    <text x="54" y="194" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="end">500ms</text>
+    <text x="54" y="144" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="end">2s</text>
+    <text x="54" y="94" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="end">10s</text>
+    <text x="54" y="44" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="end">40s</text>
     <text x="20" y="120" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle" transform="rotate(-90,20,120)">TTFT p99 (log)</text>
 
-    <text x="90" y="208" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle">1</text>
-    <text x="200" y="208" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle">8</text>
-    <text x="310" y="208" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle">14</text>
-    <text x="460" y="208" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle">23</text>
-    <text x="710" y="208" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle">48</text>
+    <text x="90" y="208" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">1</text>
+    <text x="200" y="208" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">8</text>
+    <text x="310" y="208" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">14</text>
+    <text x="460" y="208" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">23</text>
+    <text x="710" y="208" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">48</text>
     <text x="400" y="232" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle">Concurrent sessions</text>
 
     <line x1="60" y1="140" x2="750" y2="140" stroke="var(--yellow)" stroke-width="1" stroke-dasharray="6 4" opacity="0.4"/>
 
     <polyline points="90,185 160,175 200,60 310,50 460,45 710,42" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
     <line x1="200" y1="10" x2="200" y2="190" stroke="var(--accent)" stroke-width="1" stroke-dasharray="3 3" opacity="0.5"/>
-    <text x="200" y="228" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle" font-weight="600">fp16 knee</text>
+    <text x="200" y="228" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle" font-weight="600">fp16 knee</text>
 
     <polyline points="90,188 200,178 310,55 460,48 710,44" fill="none" stroke="var(--cyan)" stroke-width="2.5"/>
     <line x1="310" y1="10" x2="310" y2="190" stroke="var(--cyan)" stroke-width="1" stroke-dasharray="3 3" opacity="0.5"/>
 
     <polyline points="90,190 200,185 310,178 460,55 710,48" fill="none" stroke="var(--green)" stroke-width="2.5" stroke-dasharray="8 4"/>
     <line x1="460" y1="10" x2="460" y2="190" stroke="var(--green)" stroke-width="1" stroke-dasharray="3 3" opacity="0.5"/>
-    <text x="460" y="228" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle" font-weight="600">4-bit knee</text>
+    <text x="460" y="228" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle" font-weight="600">4-bit knee</text>
 
     <line x1="560" y1="18" x2="580" y2="18" stroke="var(--accent)" stroke-width="2.5"/>
     <text x="586" y="22" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="11">fp16</text>
@@ -1049,6 +1049,7 @@ max_sessions = (<span class="fn">kv_memory</span> - <span class="fn">shared_pref
   const notesInd = document.getElementById('notes-indicator');
   let current = 0;
   let buildPhase = {};
+  let scrollLock = false;
 
   function initBuilds() {
     slides.forEach((s, i) => {
@@ -1082,7 +1083,9 @@ max_sessions = (<span class="fn">kv_memory</span> - <span class="fn">shared_pref
     slides[current].classList.remove('current');
     current = idx;
     slides[current].classList.add('current');
+    scrollLock = true;
     slides[current].scrollIntoView({ behavior: 'smooth', block: 'start' });
+    setTimeout(function() { scrollLock = false; }, 600);
     update();
   }
 
@@ -1136,16 +1139,20 @@ max_sessions = (<span class="fn">kv_memory</span> - <span class="fn">shared_pref
 
   let scrollTimeout;
   window.addEventListener('scroll', function() {
+    if (scrollLock) return;
     clearTimeout(scrollTimeout);
     scrollTimeout = setTimeout(function() {
+      if (scrollLock) return;
       const vh = window.innerHeight;
       for (let i = 0; i < total; i++) {
         const rect = slides[i].getBoundingClientRect();
         if (rect.top <= vh * 0.5 && rect.bottom > vh * 0.3) {
           if (i !== current) {
+            resetPhases(current);
             slides[current].classList.remove('current');
             current = i;
             slides[current].classList.add('current');
+            completePhases(current);
             update();
           }
           break;
