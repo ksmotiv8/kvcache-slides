@@ -1120,7 +1120,7 @@ L4: <span class="num">24 GB</span> VRAM<br/>
 
   <div data-phase="2">
     <ol start="4" style="font-size:19px">
-      <li><strong>Separate background from interactive.</strong> Background agents can absorb full prefill cost. Reserve cache resources for latency-sensitive workloads.</li>
+      <li><strong>Separate online from offline.</strong> Offline agents can absorb full prefill cost. Reserve cache resources for online, latency-sensitive workloads.</li>
       <li><strong>Benchmark with real data.</strong> Synthetic inputs (like <code>hi hi hi</code> repeated 10K times) overstate compression and cache effectiveness. Use real documents with real model weights.</li>
       <li><strong>Use the cheapest lever first.</strong> KV quantization (fp16 to fp8) is a config change that buys 75% more headroom. Validate output quality on your workload first, then try it before buying more GPUs.</li>
     </ol>
@@ -1129,16 +1129,16 @@ L4: <span class="num">24 GB</span> VRAM<br/>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
-<!-- SLIDE 19: Separate Background from Interactive -->
+<!-- SLIDE 24: Separate Online from Offline -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s19">
   <span class="slide-num">24 / 25</span>
   <span class="section-tag">The systems stack</span>
-  <h2>Separate background from interactive</h2>
+  <h2>Separate online from offline</h2>
 
   <div class="two-col">
     <div>
-      <h3 style="color:var(--cyan)">Interactive tier</h3>
+      <h3 style="color:var(--cyan)">Online tier</h3>
       <ul style="font-size:20px">
         <li>APC enabled</li>
         <li>Strict concurrency limit at knee</li>
@@ -1148,7 +1148,7 @@ L4: <span class="num">24 GB</span> VRAM<br/>
       <p style="font-size:17px;color:var(--text-muted);margin-top:12px">Agents, assistants, user-facing apps. Users wait for TTFT.</p>
     </div>
     <div>
-      <h3 style="color:var(--text-muted)">Background tier</h3>
+      <h3 style="color:var(--text-muted)">Offline tier</h3>
       <ul style="font-size:20px">
         <li>Full prefill acceptable</li>
         <li>No cache contention</li>
@@ -1162,7 +1162,7 @@ L4: <span class="num">24 GB</span> VRAM<br/>
   <div class="callout" style="margin-top:20px">
     The capacity planning question: <strong>which workloads should consume scarce cache resources?</strong>
   </div>
-  <div class="presenter-notes">Not all workloads need the fastest prefill path. Background agents can trade latency for cost. By routing them to a separate tier, you keep the KV cache available for interactive workloads. This is the same pattern as priority queues in any resource-constrained system. Only interactive sessions count toward the knee.</div>
+  <div class="presenter-notes">Not all workloads need the fastest prefill path. Offline agents can trade latency for cost. By routing them to a separate tier, you keep the KV cache available for online workloads. This is the same pattern as priority queues in any resource-constrained system. Only online sessions count toward the knee.</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
