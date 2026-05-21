@@ -615,7 +615,7 @@ body.notes-on .slide.current .presenter-notes {
   </div>
   <div data-phase="2">
     <h3 style="color:var(--green)">Cost</h3>
-    <p>Prefill is the expensive phase. Every token you skip via cache hit is GPU time you do not pay for. Under concurrency, the savings compound.</p>
+    <p>Prefill is the compute-expensive phase — more FLOPs per token than decode, and it blocks the user from seeing any output. Every token you skip via cache hit is GPU time you do not pay for. Under concurrency, the savings compound.</p>
   </div>
   <div data-phase="3">
     <h3 style="color:var(--yellow)">Time to First Token</h3>
