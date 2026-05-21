@@ -949,10 +949,10 @@ L4: <span class="num">24 GB</span> VRAM, ~<span class="num">13 GB</span> availab
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 17: Cache-Aware Routing -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s17" data-build-phases="3">
+<section class="slide" id="s17" data-build-phases="4">
   <span class="slide-num">17 / 20</span>
   <span class="section-tag">The systems stack</span>
-  <h2>Cache-aware routing and LMCache</h2>
+  <h2>Cache-aware routing and tiered KV storage</h2>
 
   <div data-phase="1">
     <h3 style="color:var(--cyan)">Routing: send requests to the right node</h3>
@@ -960,15 +960,20 @@ L4: <span class="num">24 GB</span> VRAM, ~<span class="num">13 GB</span> availab
   </div>
 
   <div data-phase="2">
-    <h3 style="color:var(--green)">LMCache: offload KV to host memory or storage</h3>
-    <p>GPU memory is scarce and expensive. LMCache moves evicted KV entries to host DRAM or NVMe, creating a tiered cache hierarchy. Reloading from host memory is faster than recomputing from scratch.</p>
+    <h3 style="color:var(--green)">Local offload: host DRAM and NVMe</h3>
+    <p>GPU memory is scarce and expensive. LMCache moves evicted KV entries to host DRAM or NVMe. Reloading from host memory is faster than recomputing from scratch — a classic tiered cache.</p>
   </div>
 
   <div data-phase="3">
-    <h3 style="color:var(--accent)">The stack is converging</h3>
-    <p>vLLM + cache-aware routing + LMCache + disaggregated prefill. Each layer is a systems problem: scheduling, placement, eviction, transfer.</p>
+    <h3 style="color:var(--yellow)">Remote caching: decouple KV lifetime from GPU lifetime</h3>
+    <p>Push KV state to a networked cache (Redis, Valkey, or a managed service). KV data survives GPU restarts, enables cross-node cache sharing, and scales capacity independently from compute. Higher latency than local DRAM, but still far cheaper than re-prefilling 12,800 tokens from scratch.</p>
   </div>
-  <div class="presenter-notes">Walk through the emerging systems stack. Cache-aware routing is sticky sessions for GPUs. LMCache is a write-through cache hierarchy like a database buffer pool. Disaggregated prefill is compute/storage separation. Each layer maps directly to a distributed systems primitive the audience already knows.</div>
+
+  <div data-phase="4">
+    <h3 style="color:var(--accent)">The full hierarchy</h3>
+    <p><strong style="color:var(--cyan)">GPU VRAM</strong> → <strong style="color:var(--green)">Host DRAM</strong> → <strong style="color:var(--yellow)">Remote cache</strong> → <strong style="color:var(--red)">Recompute</strong>. Each tier trades latency for capacity. Each boundary is a systems engineering decision: eviction policy, transfer protocol, consistency model.</p>
+  </div>
+  <div class="presenter-notes">Walk through the tiers like a memory hierarchy the audience already knows — L1/L2/L3/main memory, but for KV cache. GPU VRAM is L1: fastest, smallest, gone when the process restarts. Host DRAM is L2: 10-100x larger, microseconds to reload, LMCache manages this today. Remote cache is L3: a networked store like Redis or Valkey. Latency is milliseconds, but capacity scales independently from any single node. A 12,800-token session's KV cache at fp8 is ~900 KB — well within what a networked cache handles at sub-millisecond latency. The key insight: remote caching decouples KV lifetime from GPU lifetime. If a GPU restarts, if the session migrates to a different node, or if you're scaling down and back up, the KV cache persists. This eliminates the re-prefill cost that drives the concurrency cliff. It's the same pattern as session state in web applications — moving from in-process memory to memcached. Finally, recompute is the last resort: full re-prefill. The entire systems stack exists to avoid hitting this tier as much as possible.</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
