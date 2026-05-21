@@ -402,7 +402,7 @@ body.notes-on .slide.current .presenter-notes {
 
   <div data-phase="2">
     <div class="callout">
-      <strong>Peak context at turn 12:</strong> 10,000 + (12 × 1,067) = <strong style="color:var(--cyan)">~22,800 tokens</strong>. At fp8, that is <strong style="color:var(--cyan)">~1.6 GB</strong> of KV cache for one session on a 24 GB GPU. Every number that follows traces back to this workload.
+      <strong>Peak context at turn 12:</strong> 10,000 + (12 × 1,067) = <strong style="color:var(--cyan)">~22,800 tokens</strong>.<br/>At fp8, that is <strong style="color:var(--cyan)">~1.6 GB</strong> of KV cache for one session on a 24 GB GPU.<br/>Every number that follows traces back to this workload.
     </div>
   </div>
   <div class="presenter-notes">Introduce the running example before we use its numbers. The audience needs to internalize where 22,800 tokens comes from  -  it grounds every diagram and chart for the rest of the talk. The system prompt is shared and cacheable across sessions. The per-turn conversation context is unique per session. The peak context at turn 12 is the worst-case memory demand. Mention this is a realistic agentic coding workload  -  Claude Code, Cursor, Copilot sessions all look like this.</div>
