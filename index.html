@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>The Best Prefill Service Is a Distributed Systems Service</title>
+<title>From Distributed Systems to GPU Inference</title>
 <meta name="description" content="LLM inference is no longer just a GPU problem. At scale, it becomes a distributed systems problem."/>
 <meta name="theme-color" content="#0d0d10"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
@@ -191,7 +191,7 @@ body.notes-on .slide.current .presenter-notes {
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s1">
   <span class="slide-num">1 / 27</span>
-  <h1>The Best Prefill Service<br/>Is a Distributed Systems Service</h1>
+  <h1>From Distributed Systems<br/>to GPU Inference</h1>
   <p class="subtitle">A systems engineer's journey into LLM inference.<br/>Routing, scheduling, placement, memory movement, tail latency.</p>
   <div class="presenter-notes">Open by framing the talk: this is a story about discovery. I came from distributed systems, was intimidated by the ML side of inference, and realized the hard problems at scale are the ones I already knew how to think about. The audience should leave with a concrete mental model for why inference at scale is really a distributed systems problem, and KV cache is the object at the center of it.</div>
 </section>
@@ -1036,7 +1036,7 @@ L4: <span class="num">24 GB</span> VRAM<br/>
 <section class="slide" id="s15" data-build-phases="2">
   <span class="slide-num">20 / 27</span>
   <span class="section-tag">The systems lesson</span>
-  <h2>How much is fundamental vs avoidable?</h2>
+  <h2>The cost of cache misses</h2>
   <p style="font-size:17px;color:var(--text-muted);margin-bottom:8px"><strong>Qwen3-4B FP8</strong> on <strong>1x NVIDIA L4 (24 GB)</strong>, vLLM 0.20.2, APC enabled</p>
 
   <table>
@@ -1211,7 +1211,7 @@ L4: <span class="num">24 GB</span> VRAM<br/>
 <section class="slide" id="s20">
   <span class="slide-num">27 / 27</span>
   <span class="section-tag">The conclusion</span>
-  <h2>The world's best prefill service<br/>is a distributed systems service</h2>
+  <h2>From distributed systems<br/>to GPU inference</h2>
 
   <p class="subtitle" style="margin-bottom:32px">Routing, scheduling, placement, memory movement, eviction policies, tail latency, capacity planning. These are our problems. They just happen to run on GPUs.</p>
 
