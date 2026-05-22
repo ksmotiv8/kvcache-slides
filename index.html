@@ -386,7 +386,7 @@ body.notes-on .slide.current .presenter-notes {
 <section class="slide" id="s5" data-build-phases="2">
   <span class="slide-num">6 / 27</span>
   <span class="section-tag">The running example</span>
-  <h2>An agentic coding session</h2>
+  <h2>Sample workload</h2>
 
   <div data-phase="1">
     <p>For the rest of this talk, we will trace a single workload through the system:</p>
@@ -668,7 +668,7 @@ body.notes-on .slide.current .presenter-notes {
 <section class="slide" id="s7b" data-build-phases="2">
   <span class="slide-num">10 / 27</span>
   <span class="section-tag">The architecture</span>
-  <h2>Why prefill is where systems engineers belong</h2>
+  <h2>Why prefill is the problem</h2>
 
   <div data-phase="1">
     <ul>
@@ -693,7 +693,7 @@ body.notes-on .slide.current .presenter-notes {
 <section class="slide" id="s8" data-build-phases="3">
   <span class="slide-num">11 / 27</span>
   <span class="section-tag">The shared state</span>
-  <h2>KV cache: the straw that breaks inference's back</h2>
+  <h2>How KV cache becomes the bottleneck</h2>
 
   <div data-phase="1">
     <h3 style="color:var(--cyan)">Utilization</h3>
@@ -762,7 +762,7 @@ body.notes-on .slide.current .presenter-notes {
 <section class="slide" id="s10">
   <span class="slide-num">13 / 27</span>
   <span class="section-tag">The experiment</span>
-  <h2>Let me show you what this looks like</h2>
+  <h2>Let's measure it</h2>
 
   <div class="two-col">
     <div>
@@ -924,7 +924,7 @@ body.notes-on .slide.current .presenter-notes {
 <section class="slide" id="s13a">
   <span class="slide-num">17 / 27</span>
   <span class="section-tag">The systems lesson</span>
-  <h2>The knee is predictable from first principles</h2>
+  <h2>Predicting the knee</h2>
 
   <div class="code-block" style="font-size:16px;max-width:860px">
 <span class="cm">// Step 1: KV memory per token (from model config)</span><br/>
@@ -947,7 +947,7 @@ body.notes-on .slide.current .presenter-notes {
 <section class="slide" id="s13b">
   <span class="slide-num">18 / 27</span>
   <span class="section-tag">The systems lesson</span>
-  <h2>From per-token size to concurrency ceiling</h2>
+  <h2>From token math to capacity</h2>
 
   <div class="code-block" style="font-size:16px;max-width:860px">
 <span class="cm">// Step 2: total KV capacity (GPU-specific)</span><br/>
@@ -975,7 +975,7 @@ L4: <span class="num">24 GB</span> VRAM<br/>
 <section class="slide" id="s14" data-build-phases="2">
   <span class="slide-num">19 / 27</span>
   <span class="section-tag">The systems lesson</span>
-  <h2>Small systems choices, big performance changes</h2>
+  <h2>One config flag, 75% more headroom</h2>
   <p style="font-size:17px;color:var(--text-muted);margin-bottom:4px"><strong>Qwen3-4B</strong> on <strong>1x NVIDIA L4 (24 GB)</strong>, vLLM 0.20.2</p>
 
   <svg viewBox="0 0 760 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Chart comparing p99 TTFT for fp16, fp8, and 4-bit KV quantization. Concurrency knee shifts from 8 to 14 to 23 sessions" style="width:100%;max-width:760px;height:auto;display:block;margin:12px 0">
