@@ -656,7 +656,7 @@ body.notes-on .slide.current .presenter-notes {
   <div data-phase="2">
     <ul>
       <li>Same pattern as database write/read path separation</li>
-      <li>In production today: NVIDIA Dynamo, AWS Trainium prefill offload, Cerebras wafer-scale decode</li>
+      <li>Industry direction: NVIDIA Dynamo, AWS Trainium prefill offload, Cerebras wafer-scale decode</li>
     </ul>
   </div>
   <div class="presenter-notes">Disaggregation and KV caching are deeply linked. The KV cache IS the interface between prefill and decode. In a monolithic engine, it is an in-memory data structure on one GPU. In a disaggregated architecture, it becomes a distributed object: prefill nodes produce it, decode nodes consume it, and the system must decide where to store it, when to evict it, how to transfer it, and which node should handle the next request for a given session.</div>
