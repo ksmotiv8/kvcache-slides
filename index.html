@@ -158,14 +158,6 @@ body.notes-on .slide.current .presenter-notes {
   p, ul, ol { font-size: 17px; }
 }
 
-#s6 > svg {
-  transition: max-height 0.5s ease;
-  max-height: 380px;
-}
-#s6:has([data-phase].visible) > svg {
-  max-height: 180px;
-}
-
 @media print {
   body { background: #fff; color: #111; }
   .slide { min-height: auto; page-break-inside: avoid; padding: 40px; border-bottom: 1px solid #ccc; }
@@ -190,7 +182,7 @@ body.notes-on .slide.current .presenter-notes {
 <!-- SLIDE 1: Title -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s1">
-  <span class="slide-num">1 / 26</span>
+  <span class="slide-num">1 / 27</span>
   <h1>From Distributed Systems<br/>to GPU Inference</h1>
   <p class="subtitle">A systems engineer's journey into LLM inference.<br/>Routing, scheduling, placement, memory movement, tail latency.</p>
   <div class="presenter-notes">Open by framing the talk: this is a story about discovery. I came from distributed systems, was intimidated by the ML side of inference, and realized the hard problems at scale are the ones I already knew how to think about. The audience should leave with a concrete mental model for why inference at scale is really a distributed systems problem, and KV cache is the object at the center of it.</div>
@@ -199,25 +191,22 @@ body.notes-on .slide.current .presenter-notes {
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 2: I was intimidated / Wait I know these -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s2" data-build-phases="4">
-  <span class="slide-num">2 / 26</span>
+<section class="slide" id="s2" data-build-phases="2">
+  <span class="slide-num">2 / 27</span>
   <span class="section-tag">The starting point</span>
   <h2>I was intimidated by inference</h2>
 
-  <ul style="font-size:24px;margin-bottom:20px">
-    <li data-phase="1"><strong>Attention heads, KV projections, CUDA kernels.</strong></li>
-    <li data-phase="2"><strong>GPU programming, tensor layouts, quantization.</strong></li>
-  </ul>
+  <p style="font-size:22px;margin-bottom:24px">Attention heads. KV projections. CUDA kernels. Tensor layouts. Quantization.</p>
 
-  <div data-phase="3">
+  <div data-phase="1">
     <h3 style="color:var(--cyan);margin-bottom:16px">Then I looked at what actually breaks in production.</h3>
     <div class="two-col">
       <div>
         <h3 style="color:var(--text-muted);font-size:20px">What I expected</h3>
         <ul style="font-size:20px">
-          <li>Matrix math optimization</li>
-          <li>Model architecture tuning</li>
-          <li>CUDA kernel development</li>
+          <li>Matrix math</li>
+          <li>Model architecture</li>
+          <li>CUDA kernels</li>
         </ul>
       </div>
       <div>
@@ -232,272 +221,20 @@ body.notes-on .slide.current .presenter-notes {
     </div>
   </div>
 
-  <div data-phase="4">
+  <div data-phase="2">
     <div class="callout" style="margin-top:20px;border-left-color:var(--cyan)">
       <strong>Wait. I know these problems.</strong>
     </div>
   </div>
-  <div class="presenter-notes">Be honest and vulnerable here. Most systems engineers have this reaction. The ML vocabulary is dense and the hardware is unfamiliar. Build the two intimidating bullets first. Then reveal the two-column comparison: what you expected vs what you found. The right column is distributed systems 101. Let the audience feel the recognition before landing the punchline: "Wait. I know these problems." Pause on that callout before moving on.</div>
+  <div class="presenter-notes">Be honest and vulnerable. The ML vocabulary is dense and the hardware is unfamiliar. But the problems that break production at scale are routing, scheduling, eviction, tail latency. Distributed systems 101. Let the two-column comparison land, then deliver the punchline.</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
-<!-- SLIDE 4: NEW - What is KV Cache -->
+<!-- SLIDE 3: Journey of a Prompt -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s4" data-build-phases="2">
-  <span class="slide-num">3 / 26</span>
-  <span class="section-tag">The fundamentals</span>
-  <h2>What is KV cache?</h2>
-  <p style="font-size:17px;color:var(--text-muted);margin-bottom:8px">Using <strong style="color:var(--cyan)">Qwen3-4B (FP8)</strong> as our running example: 36 layers, 8 KV heads, 128 head_dim</p>
-
-  <svg viewBox="0 0 860 310" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagram showing how input tokens produce Query, Key, and Value vectors through attention layers, with K and V saved into the KV cache across 36 layers" style="width:100%;max-width:860px;height:auto;display:block;margin:4px 0">
-    <!-- Input tokens -->
-    <text x="80" y="24" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" font-weight="600" text-decoration="underline">INPUT TOKENS</text>
-    <rect x="10" y="34" width="32" height="28" rx="4" fill="rgba(130,140,248,0.18)" stroke="var(--accent)" stroke-width="1"/>
-    <text x="26" y="53" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">The</text>
-    <rect x="48" y="34" width="32" height="28" rx="4" fill="rgba(130,140,248,0.18)" stroke="var(--accent)" stroke-width="1"/>
-    <text x="64" y="53" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">cat</text>
-    <rect x="86" y="34" width="32" height="28" rx="4" fill="rgba(130,140,248,0.18)" stroke="var(--accent)" stroke-width="1"/>
-    <text x="102" y="53" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">sat</text>
-    <rect x="124" y="34" width="32" height="28" rx="4" fill="rgba(130,140,248,0.18)" stroke="var(--accent)" stroke-width="1"/>
-    <text x="140" y="53" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">on</text>
-
-    <!-- Arrow down to attention -->
-    <line x1="80" y1="66" x2="80" y2="88" stroke="var(--text-muted)" stroke-width="1.5" marker-end="url(#ad)"/>
-
-    <!-- Attention block -->
-    <rect x="10" y="92" width="340" height="190" rx="10" fill="rgba(255,255,255,0.02)" stroke="var(--border)" stroke-width="1.5"/>
-    <text x="180" y="112" fill="var(--text)" font-family="'Inter',sans-serif" font-size="13" text-anchor="middle" font-weight="700">ATTENTION LAYER (x36 layers)</text>
-
-    <!-- Q K V projections -->
-    <rect x="30" y="126" width="80" height="36" rx="6" fill="rgba(248,113,113,0.15)" stroke="var(--red)" stroke-width="1.5"/>
-    <text x="70" y="149" fill="var(--red)" font-family="'JetBrains Mono',monospace" font-size="13" text-anchor="middle" font-weight="600">Q</text>
-    <rect x="130" y="126" width="80" height="36" rx="6" fill="rgba(34,211,238,0.15)" stroke="var(--cyan)" stroke-width="1.5"/>
-    <text x="170" y="149" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="13" text-anchor="middle" font-weight="600">K</text>
-    <rect x="230" y="126" width="80" height="36" rx="6" fill="rgba(74,222,128,0.15)" stroke="var(--green)" stroke-width="1.5"/>
-    <text x="270" y="149" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="13" text-anchor="middle" font-weight="600">V</text>
-
-    <!-- Labels -->
-    <text x="70" y="178" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">Query</text>
-    <text x="70" y="190" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">"what am I</text>
-    <text x="70" y="202" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">looking for?"</text>
-    <text x="170" y="178" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">Key</text>
-    <text x="170" y="190" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">"what do I</text>
-    <text x="170" y="202" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">contain?"</text>
-    <text x="270" y="178" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">Value</text>
-    <text x="270" y="190" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">"here is my</text>
-    <text x="270" y="202" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">actual content"</text>
-
-    <!-- Attention computation -->
-    <text x="180" y="230" fill="var(--text-dim)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle">Q asks: "which K's are relevant?"</text>
-    <text x="180" y="246" fill="var(--text-dim)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle">Then pulls the matching V's</text>
-    <text x="180" y="268" fill="var(--yellow)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" font-weight="600">Attention(Q, K, V) = softmax(QK&#7488;/&#8730;d) &#183; V</text>
-
-    <!-- Arrow from K,V to KV Cache -->
-    <line x1="310" y1="144" x2="420" y2="144" stroke="var(--cyan)" stroke-width="2" marker-end="url(#ac)"/>
-    <text x="365" y="134" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle" font-weight="600">SAVE</text>
-
-    <!-- KV Cache box -->
-    <rect x="430" y="50" width="400" height="240" rx="12" fill="rgba(34,211,238,0.06)" stroke="var(--cyan)" stroke-width="2"/>
-    <text x="630" y="76" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="14" text-anchor="middle" font-weight="700">KV CACHE</text>
-    <text x="630" y="94" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle">saved K and V for every token, every layer</text>
-
-    <!-- Cache rows - Layer labels -->
-    <text x="470" y="124" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="start">Layer 0</text>
-    <text x="470" y="158" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="start">Layer 1</text>
-    <text x="470" y="192" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="start">Layer 2</text>
-    <text x="470" y="226" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="start">...</text>
-    <text x="470" y="260" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="start">Layer 35</text>
-
-    <!-- Cache grid - K entries -->
-    <rect x="540" y="110" width="28" height="20" rx="3" fill="rgba(34,211,238,0.20)" stroke="var(--cyan)" stroke-width="0.8"/>
-    <text x="554" y="124" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">K</text>
-    <rect x="572" y="110" width="28" height="20" rx="3" fill="rgba(34,211,238,0.20)" stroke="var(--cyan)" stroke-width="0.8"/>
-    <text x="586" y="124" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">K</text>
-    <rect x="604" y="110" width="28" height="20" rx="3" fill="rgba(34,211,238,0.20)" stroke="var(--cyan)" stroke-width="0.8"/>
-    <text x="618" y="124" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">K</text>
-    <rect x="636" y="110" width="28" height="20" rx="3" fill="rgba(34,211,238,0.20)" stroke="var(--cyan)" stroke-width="0.8"/>
-    <text x="650" y="124" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">K</text>
-    <!-- V entries -->
-    <rect x="680" y="110" width="28" height="20" rx="3" fill="rgba(74,222,128,0.20)" stroke="var(--green)" stroke-width="0.8"/>
-    <text x="694" y="124" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">V</text>
-    <rect x="712" y="110" width="28" height="20" rx="3" fill="rgba(74,222,128,0.20)" stroke="var(--green)" stroke-width="0.8"/>
-    <text x="726" y="124" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">V</text>
-    <rect x="744" y="110" width="28" height="20" rx="3" fill="rgba(74,222,128,0.20)" stroke="var(--green)" stroke-width="0.8"/>
-    <text x="758" y="124" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">V</text>
-    <rect x="776" y="110" width="28" height="20" rx="3" fill="rgba(74,222,128,0.20)" stroke="var(--green)" stroke-width="0.8"/>
-    <text x="790" y="124" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">V</text>
-
-    <!-- Repeat indicators for other layers -->
-    <rect x="540" y="144" width="264" height="20" rx="3" fill="rgba(255,255,255,0.03)" stroke="var(--border)" stroke-width="0.5"/>
-    <text x="672" y="158" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">K K K K | V V V V</text>
-    <rect x="540" y="178" width="264" height="20" rx="3" fill="rgba(255,255,255,0.03)" stroke="var(--border)" stroke-width="0.5"/>
-    <text x="672" y="192" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">K K K K | V V V V</text>
-    <text x="672" y="226" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">...</text>
-    <rect x="540" y="246" width="264" height="20" rx="3" fill="rgba(255,255,255,0.03)" stroke="var(--border)" stroke-width="0.5"/>
-    <text x="672" y="260" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">K K K K | V V V V</text>
-
-    <defs>
-      <marker id="ad" markerWidth="6" markerHeight="5" refX="6" refY="2.5" orient="auto"><path d="M0,0 L6,2.5 L0,5" fill="var(--text-muted)"/></marker>
-      <marker id="ac" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="var(--cyan)"/></marker>
-    </defs>
-  </svg>
-
-  <div data-phase="1">
-    <p>Every token that passes through the model produces a <strong style="color:var(--cyan)">Key</strong> and a <strong style="color:var(--green)">Value</strong> vector at every layer. These are the token's contribution to the attention computation.</p>
-  </div>
-  <div data-phase="2">
-    <p><strong>The KV cache saves these vectors</strong> so they do not need to be recomputed. When the next token arrives, it only needs to compute its own Q, K, V and attend against the <em>cached</em> K and V of all previous tokens.</p>
-  </div>
-  <div class="presenter-notes">This is the foundational "what is this thing" slide. The audience needs to understand what K, V, and Q are before any of the systems implications make sense. Keep the explanation concrete: every token produces a Key ("here's what I contain") and a Value ("here's my actual information"). When a new token arrives, its Query ("what am I looking for?") is compared against all cached Keys to find the relevant context, then pulls the corresponding Values. The KV cache stores these so they don't need to be recomputed.</div>
-</section>
-
-<!-- ════════════════════════════════════════════════════════ -->
-<!-- SLIDE 5: KV Cache Scale -->
-<!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s4b">
-  <span class="slide-num">4 / 26</span>
-  <span class="section-tag">The fundamentals</span>
-  <h2>How big does it get?</h2>
-
-  <div class="code-block" style="font-size:18px;max-width:860px">
-<span class="cm">// Per-token KV at fp8</span><br/>
-<span class="fn">layers</span> × <span class="fn">kv_heads</span> × <span class="fn">head_dim</span> × <span class="num">2</span>(K,V) × <span class="fn">dtype_bytes</span><br/>
-<span class="num">36</span>&nbsp;&nbsp;&nbsp;&nbsp; × <span class="num">8</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; × <span class="num">128</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; × <span class="num">2</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; × <span class="num">1</span> = <span class="fn">72 KB per token</span>
-  </div>
-
-  <div class="big-number" style="margin-top:24px">~1.6 GB</div>
-  <p><strong>of cached state for one 22,800-token session</strong></p>
-  <p style="font-size:18px;color:var(--text-muted)">That is 6.7% of a 24 GB L4 GPU, for a single user.</p>
-
-  <div class="callout" style="margin-top:20px">
-    Multiply by concurrent sessions and you see why this becomes a <strong>memory management problem</strong>, not a compute problem.
-  </div>
-  <div class="presenter-notes">This is the punchline of the KV cache explanation. 72 KB per token sounds small, but 22,800 tokens at 72 KB each is 1.6 GB. On a 24 GB GPU, that is nearly 7% of total VRAM for one session. Now imagine 14 concurrent sessions. The audience should feel the weight of this number before we move to the running example.</div>
-</section>
-
-<!-- ════════════════════════════════════════════════════════ -->
-<!-- SLIDE 6: Running Example -->
-<!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s5" data-build-phases="2">
-  <span class="slide-num">5 / 26</span>
-  <span class="section-tag">The running example</span>
-  <h2>Sample workload</h2>
-
-  <div data-phase="1">
-    <p>For the rest of this talk, we will trace a single workload through the system:</p>
-    <table style="font-size:20px;margin-top:16px">
-      <tbody>
-        <tr><td>Model</td><td><strong style="color:var(--cyan)">Qwen3-4B (FP8)</strong></td></tr>
-        <tr><td>System prompt</td><td><strong>10,000 tokens</strong> (shared across all sessions)</td></tr>
-        <tr><td>Conversation</td><td><strong>12 turns</strong>, ~1,067 tokens each</td></tr>
-        <tr><td>Output</td><td><strong>~75 tokens</strong> per turn</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div data-phase="2">
-    <div class="callout">
-      <strong>Peak context at turn 12:</strong> 10,000 + (12 × 1,067) = <strong style="color:var(--cyan)">~22,800 tokens</strong>.<br/>At fp8, that is <strong style="color:var(--cyan)">~1.6 GB</strong> of KV cache for one session on a 24 GB GPU.<br/>Every number that follows traces back to this workload.
-    </div>
-  </div>
-  <div class="presenter-notes">Introduce the running example before we use its numbers. The audience needs to internalize where 22,800 tokens comes from  -  it grounds every diagram and chart for the rest of the talk. The system prompt is shared and cacheable across sessions. The per-turn conversation context is unique per session. The peak context at turn 12 is the worst-case memory demand. Mention this is a realistic agentic coding workload  -  Claude Code, Cursor, Copilot sessions all look like this.</div>
-</section>
-
-<!-- ════════════════════════════════════════════════════════ -->
-<!-- SLIDE 6: Stages of Inference -->
-<!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s6" data-build-phases="2">
-  <span class="slide-num">6 / 26</span>
-  <span class="section-tag">The fundamentals</span>
-  <h2>Two stages of inference</h2>
-  <p style="font-size:17px;color:var(--text-muted);margin-bottom:4px"><strong>Qwen3-4B FP8</strong> on <strong>1x NVIDIA L4 (24 GB)</strong></p>
-
-  <svg viewBox="0 0 860 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Timeline showing prefill phase processing all input tokens in parallel, followed by TTFT marker, then decode phase generating output tokens one at a time" style="width:100%;max-width:860px;height:auto;display:block;margin:8px 0">
-    <!-- Timeline axis -->
-    <line x1="40" y1="130" x2="840" y2="130" stroke="var(--border)" stroke-width="1"/>
-
-    <!-- PREFILL phase -->
-    <rect x="40" y="30" width="360" height="80" rx="10" fill="rgba(130,140,248,0.12)" stroke="var(--accent)" stroke-width="2"/>
-    <text x="220" y="58" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="16" text-anchor="middle" font-weight="700">PREFILL</text>
-    <text x="220" y="80" fill="var(--text-dim)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">Process ALL input tokens at once</text>
-    <text x="220" y="98" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle">Parallel. Compute-heavy. Fills KV cache.</text>
-
-    <!-- Input tokens flowing in -->
-    <rect x="54" y="38" width="20" height="14" rx="2" fill="rgba(130,140,248,0.3)"/>
-    <rect x="78" y="38" width="20" height="14" rx="2" fill="rgba(130,140,248,0.3)"/>
-    <rect x="102" y="38" width="20" height="14" rx="2" fill="rgba(130,140,248,0.3)"/>
-    <rect x="126" y="38" width="20" height="14" rx="2" fill="rgba(130,140,248,0.3)"/>
-    <rect x="150" y="38" width="20" height="14" rx="2" fill="rgba(130,140,248,0.3)"/>
-    <rect x="174" y="38" width="20" height="14" rx="2" fill="rgba(130,140,248,0.3)"/>
-    <rect x="198" y="38" width="20" height="14" rx="2" fill="rgba(130,140,248,0.3)"/>
-    <rect x="222" y="38" width="20" height="14" rx="2" fill="rgba(130,140,248,0.3)"/>
-    <rect x="246" y="38" width="20" height="14" rx="2" fill="rgba(130,140,248,0.3)"/>
-    <rect x="270" y="38" width="20" height="14" rx="2" fill="rgba(130,140,248,0.3)"/>
-    <rect x="294" y="38" width="20" height="14" rx="2" fill="rgba(130,140,248,0.3)"/>
-    <rect x="318" y="38" width="20" height="14" rx="2" fill="rgba(130,140,248,0.3)"/>
-    <rect x="342" y="38" width="20" height="14" rx="2" fill="rgba(130,140,248,0.3)"/>
-    <rect x="366" y="38" width="20" height="14" rx="2" fill="rgba(130,140,248,0.3)"/>
-
-    <!-- TTFT marker -->
-    <line x1="410" y1="20" x2="410" y2="245" stroke="var(--yellow)" stroke-width="2" stroke-dasharray="6 3"/>
-    <rect x="380" y="117" width="60" height="26" rx="4" fill="var(--bg)" stroke="var(--yellow)" stroke-width="1.5"/>
-    <text x="410" y="135" fill="var(--yellow)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" font-weight="700">TTFT</text>
-    <text x="410" y="258" fill="var(--yellow)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">Time to First Token</text>
-
-    <!-- DECODE phase -->
-    <rect x="440" y="30" width="390" height="80" rx="10" fill="rgba(74,222,128,0.10)" stroke="var(--green)" stroke-width="2"/>
-    <text x="635" y="58" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="16" text-anchor="middle" font-weight="700">DECODE</text>
-    <text x="635" y="80" fill="var(--text-dim)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">Generate output tokens ONE at a time</text>
-    <text x="635" y="98" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle">Sequential. Memory-bound. Reads KV cache.</text>
-
-    <!-- Output tokens one by one -->
-    <rect x="454" y="38" width="20" height="14" rx="2" fill="rgba(74,222,128,0.3)"/>
-    <line x1="478" y1="45" x2="488" y2="45" stroke="var(--text-muted)" stroke-width="1" stroke-dasharray="2 2"/>
-    <rect x="492" y="38" width="20" height="14" rx="2" fill="rgba(74,222,128,0.25)"/>
-    <line x1="516" y1="45" x2="526" y2="45" stroke="var(--text-muted)" stroke-width="1" stroke-dasharray="2 2"/>
-    <rect x="530" y="38" width="20" height="14" rx="2" fill="rgba(74,222,128,0.20)"/>
-    <line x1="554" y1="45" x2="564" y2="45" stroke="var(--text-muted)" stroke-width="1" stroke-dasharray="2 2"/>
-    <rect x="568" y="38" width="20" height="14" rx="2" fill="rgba(74,222,128,0.15)"/>
-    <line x1="592" y1="45" x2="602" y2="45" stroke="var(--text-muted)" stroke-width="1" stroke-dasharray="2 2"/>
-    <rect x="606" y="38" width="20" height="14" rx="2" fill="rgba(74,222,128,0.12)"/>
-    <text x="650" y="48" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12">...</text>
-
-    <!-- Bottom labels -->
-    <text x="220" y="160" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle" font-weight="600">22,800 tokens in parallel</text>
-    <text x="220" y="178" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle">GPU ALUs saturated</text>
-    <text x="220" y="194" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle">High arithmetic intensity</text>
-
-    <text x="635" y="160" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle" font-weight="600">75 tokens, one by one</text>
-    <text x="635" y="178" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle">Reads entire KV cache per token</text>
-    <text x="635" y="194" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle">Memory bandwidth is bottleneck</text>
-
-    <!-- KV Cache growing bar -->
-    <rect x="40" y="215" width="790" height="24" rx="4" fill="rgba(34,211,238,0.06)" stroke="var(--cyan)" stroke-width="1"/>
-    <rect x="42" y="217" width="356" height="20" rx="3" fill="rgba(34,211,238,0.15)"/>
-    <rect x="398" y="217" width="430" height="20" rx="3" fill="rgba(34,211,238,0.25)"/>
-    <text x="220" y="232" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">KV cache filling...</text>
-    <text x="613" y="232" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">KV cache growing with each output token</text>
-  </svg>
-
-  <div data-phase="1">
-    <div class="callout">
-      <strong>Prefill</strong> is the "thinking" pause. The user waits while the GPU processes the entire input. This is what determines <strong>Time to First Token (TTFT)</strong>. For agentic workloads with 22K-token inputs, this can take hundreds of milliseconds to seconds.
-    </div>
-  </div>
-  <div data-phase="2">
-    <div class="callout" style="border-left-color:var(--green)">
-      <strong>Decode</strong> is the streaming response. Each new output token reads the entire KV cache (all previous K and V vectors) to compute attention. This is memory-bandwidth-bound, not compute-bound. Users see tokens appearing one at a time.
-    </div>
-  </div>
-  <div class="presenter-notes">Make this concrete. "When you send a prompt to an LLM, two very different things happen. First: prefill. The GPU processes your entire 22,000-token input in parallel. All the matrix multiplications, all the attention computations, all at once. This is compute-heavy, and it's what you experience as the pause before the response starts. That pause is TTFT. Second: decode. The model generates output tokens one at a time. Each new token needs to read the entire KV cache to figure out what to say next. This is memory-bandwidth-bound. You see this as the streaming text effect." The key insight for the audience: these two phases have fundamentally different bottlenecks. Prefill is limited by compute (how fast can you do the math). Decode is limited by memory bandwidth (how fast can you read the cache). Same GPU, different constraints.</div>
-</section>
-
-<!-- ════════════════════════════════════════════════════════ -->
-<!-- SLIDE 6: NEW - Journey of a Prompt -->
-<!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s6" data-build-phases="4">
-  <span class="slide-num">7 / 26</span>
-  <span class="section-tag">The fundamentals</span>
+<section class="slide" id="s3" data-build-phases="4">
+  <span class="slide-num">3 / 27</span>
+  <span class="section-tag">The big picture</span>
   <h2>Journey of a prompt</h2>
 
   <svg viewBox="0 -28 900 362" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Flow diagram of a prompt's journey: user prompt, tokenize, check cache with hit or miss branch, prefill, KV cache storage, TTFT, decode loop, response complete" style="width:100%;max-width:885px;height:auto;display:block;margin:4px 0">
@@ -602,14 +339,279 @@ body.notes-on .slide.current .presenter-notes {
   <div data-phase="2"><p style="font-size:20px"><strong>Step 3:</strong> The engine checks if these tokens match a cached prefix.<br/><strong style="color:var(--green)">Hit</strong> = skip to the new tokens. <strong style="color:var(--red)">Miss</strong> = process everything from scratch.</p></div>
   <div data-phase="3"><p style="font-size:20px"><strong>Step 4-5:</strong> Prefill runs. The KV cache fills. The first output token appears. This is <strong style="color:var(--yellow)">TTFT</strong>.</p></div>
   <div data-phase="4"><p style="font-size:20px"><strong>Step 5-6:</strong> Decode generates tokens one at a time, each reading the full KV cache. The engine tries to retain the cache for the next turn, but eviction pressure can force a re-prefill.</p></div>
-  <div class="presenter-notes">Walk through the diagram step by step. This is the slide where the audience builds their mental model of the full request lifecycle. Emphasize the branch at step 3: cache hit vs miss. This single decision point is where all the systems engineering matters. A cache hit means you skip potentially hundreds of milliseconds of prefill. A cache miss means the user waits for the full computation. What determines hit vs miss? Whether the KV cache has room for this session's data, whether the eviction policy kept it warm, and whether the router sent this request to the node that has the cache. Those are all systems problems. Decode is also systems-relevant  -  memory bandwidth optimization, batching strategies, speculative decoding  -  but prefill is where the variance lives and where systems engineering has the most dramatic impact on user-visible latency.</div>
+  <div class="presenter-notes">Walk through the diagram step by step. This is the slide where the audience builds their mental model of the full request lifecycle. Emphasize the branch at step 3: cache hit vs miss. This single decision point is where all the systems engineering matters. A cache hit means you skip potentially hundreds of milliseconds of prefill. A cache miss means the user waits for the full computation. What determines hit vs miss? Whether the KV cache has room for this session's data, whether the eviction policy kept it warm, and whether the router sent this request to the node that has the cache. Those are all systems problems.</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
-<!-- SLIDE 7: Disaggregation -->
+<!-- SLIDE 4: Two Stages of Inference -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s7" data-build-phases="2">
-  <span class="slide-num">8 / 26</span>
+<section class="slide" id="s4" data-build-phases="2">
+  <span class="slide-num">4 / 27</span>
+  <span class="section-tag">The fundamentals</span>
+  <h2>Two stages of inference</h2>
+  <p style="font-size:17px;color:var(--text-muted);margin-bottom:4px"><strong>Qwen3-4B FP8</strong> on <strong>1x NVIDIA L4 (24 GB)</strong></p>
+
+  <svg viewBox="0 0 860 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Timeline showing prefill phase processing all input tokens in parallel, followed by TTFT marker, then decode phase generating output tokens one at a time" style="width:100%;max-width:860px;height:auto;display:block;margin:8px 0">
+    <!-- Timeline axis -->
+    <line x1="40" y1="130" x2="840" y2="130" stroke="var(--border)" stroke-width="1"/>
+
+    <!-- PREFILL phase -->
+    <rect x="40" y="30" width="360" height="80" rx="10" fill="rgba(130,140,248,0.12)" stroke="var(--accent)" stroke-width="2"/>
+    <text x="220" y="58" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="16" text-anchor="middle" font-weight="700">PREFILL</text>
+    <text x="220" y="80" fill="var(--text-dim)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">Process ALL input tokens at once</text>
+    <text x="220" y="98" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle">Parallel. Compute-heavy. Fills KV cache.</text>
+
+    <!-- Input tokens flowing in -->
+    <rect x="54" y="38" width="20" height="14" rx="2" fill="rgba(130,140,248,0.3)"/>
+    <rect x="78" y="38" width="20" height="14" rx="2" fill="rgba(130,140,248,0.3)"/>
+    <rect x="102" y="38" width="20" height="14" rx="2" fill="rgba(130,140,248,0.3)"/>
+    <rect x="126" y="38" width="20" height="14" rx="2" fill="rgba(130,140,248,0.3)"/>
+    <rect x="150" y="38" width="20" height="14" rx="2" fill="rgba(130,140,248,0.3)"/>
+    <rect x="174" y="38" width="20" height="14" rx="2" fill="rgba(130,140,248,0.3)"/>
+    <rect x="198" y="38" width="20" height="14" rx="2" fill="rgba(130,140,248,0.3)"/>
+    <rect x="222" y="38" width="20" height="14" rx="2" fill="rgba(130,140,248,0.3)"/>
+    <rect x="246" y="38" width="20" height="14" rx="2" fill="rgba(130,140,248,0.3)"/>
+    <rect x="270" y="38" width="20" height="14" rx="2" fill="rgba(130,140,248,0.3)"/>
+    <rect x="294" y="38" width="20" height="14" rx="2" fill="rgba(130,140,248,0.3)"/>
+    <rect x="318" y="38" width="20" height="14" rx="2" fill="rgba(130,140,248,0.3)"/>
+    <rect x="342" y="38" width="20" height="14" rx="2" fill="rgba(130,140,248,0.3)"/>
+    <rect x="366" y="38" width="20" height="14" rx="2" fill="rgba(130,140,248,0.3)"/>
+
+    <!-- TTFT marker -->
+    <line x1="410" y1="20" x2="410" y2="245" stroke="var(--yellow)" stroke-width="2" stroke-dasharray="6 3"/>
+    <rect x="380" y="117" width="60" height="26" rx="4" fill="var(--bg)" stroke="var(--yellow)" stroke-width="1.5"/>
+    <text x="410" y="135" fill="var(--yellow)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" font-weight="700">TTFT</text>
+    <text x="410" y="258" fill="var(--yellow)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">Time to First Token</text>
+
+    <!-- DECODE phase -->
+    <rect x="440" y="30" width="390" height="80" rx="10" fill="rgba(74,222,128,0.10)" stroke="var(--green)" stroke-width="2"/>
+    <text x="635" y="58" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="16" text-anchor="middle" font-weight="700">DECODE</text>
+    <text x="635" y="80" fill="var(--text-dim)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">Generate output tokens ONE at a time</text>
+    <text x="635" y="98" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle">Sequential. Memory-bound. Reads KV cache.</text>
+
+    <!-- Output tokens one by one -->
+    <rect x="454" y="38" width="20" height="14" rx="2" fill="rgba(74,222,128,0.3)"/>
+    <line x1="478" y1="45" x2="488" y2="45" stroke="var(--text-muted)" stroke-width="1" stroke-dasharray="2 2"/>
+    <rect x="492" y="38" width="20" height="14" rx="2" fill="rgba(74,222,128,0.25)"/>
+    <line x1="516" y1="45" x2="526" y2="45" stroke="var(--text-muted)" stroke-width="1" stroke-dasharray="2 2"/>
+    <rect x="530" y="38" width="20" height="14" rx="2" fill="rgba(74,222,128,0.20)"/>
+    <line x1="554" y1="45" x2="564" y2="45" stroke="var(--text-muted)" stroke-width="1" stroke-dasharray="2 2"/>
+    <rect x="568" y="38" width="20" height="14" rx="2" fill="rgba(74,222,128,0.15)"/>
+    <line x1="592" y1="45" x2="602" y2="45" stroke="var(--text-muted)" stroke-width="1" stroke-dasharray="2 2"/>
+    <rect x="606" y="38" width="20" height="14" rx="2" fill="rgba(74,222,128,0.12)"/>
+    <text x="650" y="48" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12">...</text>
+
+    <!-- Bottom labels -->
+    <text x="220" y="160" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle" font-weight="600">22,800 tokens in parallel</text>
+    <text x="220" y="178" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle">GPU ALUs saturated</text>
+    <text x="220" y="194" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle">High arithmetic intensity</text>
+
+    <text x="635" y="160" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle" font-weight="600">75 tokens, one by one</text>
+    <text x="635" y="178" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle">Reads entire KV cache per token</text>
+    <text x="635" y="194" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle">Memory bandwidth is bottleneck</text>
+
+    <!-- KV Cache growing bar -->
+    <rect x="40" y="215" width="790" height="24" rx="4" fill="rgba(34,211,238,0.06)" stroke="var(--cyan)" stroke-width="1"/>
+    <rect x="42" y="217" width="356" height="20" rx="3" fill="rgba(34,211,238,0.15)"/>
+    <rect x="398" y="217" width="430" height="20" rx="3" fill="rgba(34,211,238,0.25)"/>
+    <text x="220" y="232" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">KV cache filling...</text>
+    <text x="613" y="232" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">KV cache growing with each output token</text>
+  </svg>
+
+  <div data-phase="1">
+    <div class="callout">
+      <strong>Prefill</strong> is the "thinking" pause. The user waits while the GPU processes the entire input. This determines <strong>Time to First Token (TTFT)</strong>.
+    </div>
+  </div>
+  <div data-phase="2">
+    <div class="callout" style="border-left-color:var(--green)">
+      <strong>Decode</strong> is the streaming response. Each new output token reads the entire KV cache to compute attention. Memory-bandwidth-bound, not compute-bound.
+    </div>
+  </div>
+  <div class="presenter-notes">Make this concrete. "When you send a prompt to an LLM, two very different things happen. First: prefill. The GPU processes your entire 22,000-token input in parallel. This is compute-heavy, and it's what you experience as the pause before the response starts. That pause is TTFT. Second: decode. The model generates output tokens one at a time. Each new token needs to read the entire KV cache. This is memory-bandwidth-bound." The key insight: these two phases have fundamentally different bottlenecks. Prefill is limited by compute. Decode is limited by memory bandwidth. Same GPU, different constraints.</div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- SLIDE 5: The best prefill optimization -->
+<!-- ════════════════════════════════════════════════════════ -->
+<section class="slide" id="s5">
+  <span class="slide-num">5 / 27</span>
+  <span class="section-tag">The insight</span>
+  <h2 style="font-size:48px;letter-spacing:-0.03em">The best prefill optimization<br/>is avoiding prefill.</h2>
+
+  <p class="subtitle" style="margin-top:24px">That is what the KV cache does. It stores the result of prefill so you never pay for it twice.</p>
+
+  <div class="presenter-notes">Let this land. The audience just learned that prefill is the expensive phase, the one that determines TTFT, the one that saturates compute. Now tell them: the best optimization is to not do it at all. The KV cache is the mechanism that makes that possible. This frames everything that follows: KV cache is not an optimization detail, it is the central object in inference systems design.</div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- SLIDE 6: What is KV Cache -->
+<!-- ════════════════════════════════════════════════════════ -->
+<section class="slide" id="s6" data-build-phases="2">
+  <span class="slide-num">6 / 27</span>
+  <span class="section-tag">The fundamentals</span>
+  <h2>What is KV cache?</h2>
+  <p style="font-size:17px;color:var(--text-muted);margin-bottom:8px">Using <strong style="color:var(--cyan)">Qwen3-4B (FP8)</strong> as our running example: 36 layers, 8 KV heads, 128 head_dim</p>
+
+  <svg viewBox="0 0 860 310" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagram showing how input tokens produce Query, Key, and Value vectors through attention layers, with K and V saved into the KV cache across 36 layers" style="width:100%;max-width:860px;height:auto;display:block;margin:4px 0">
+    <!-- Input tokens -->
+    <text x="80" y="24" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" font-weight="600" text-decoration="underline">INPUT TOKENS</text>
+    <rect x="10" y="34" width="32" height="28" rx="4" fill="rgba(130,140,248,0.18)" stroke="var(--accent)" stroke-width="1"/>
+    <text x="26" y="53" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">The</text>
+    <rect x="48" y="34" width="32" height="28" rx="4" fill="rgba(130,140,248,0.18)" stroke="var(--accent)" stroke-width="1"/>
+    <text x="64" y="53" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">cat</text>
+    <rect x="86" y="34" width="32" height="28" rx="4" fill="rgba(130,140,248,0.18)" stroke="var(--accent)" stroke-width="1"/>
+    <text x="102" y="53" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">sat</text>
+    <rect x="124" y="34" width="32" height="28" rx="4" fill="rgba(130,140,248,0.18)" stroke="var(--accent)" stroke-width="1"/>
+    <text x="140" y="53" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">on</text>
+
+    <!-- Arrow down to attention -->
+    <line x1="80" y1="66" x2="80" y2="88" stroke="var(--text-muted)" stroke-width="1.5" marker-end="url(#ad)"/>
+
+    <!-- Attention block -->
+    <rect x="10" y="92" width="340" height="190" rx="10" fill="rgba(255,255,255,0.02)" stroke="var(--border)" stroke-width="1.5"/>
+    <text x="180" y="112" fill="var(--text)" font-family="'Inter',sans-serif" font-size="13" text-anchor="middle" font-weight="700">ATTENTION LAYER (x36 layers)</text>
+
+    <!-- Q K V projections -->
+    <rect x="30" y="126" width="80" height="36" rx="6" fill="rgba(248,113,113,0.15)" stroke="var(--red)" stroke-width="1.5"/>
+    <text x="70" y="149" fill="var(--red)" font-family="'JetBrains Mono',monospace" font-size="13" text-anchor="middle" font-weight="600">Q</text>
+    <rect x="130" y="126" width="80" height="36" rx="6" fill="rgba(34,211,238,0.15)" stroke="var(--cyan)" stroke-width="1.5"/>
+    <text x="170" y="149" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="13" text-anchor="middle" font-weight="600">K</text>
+    <rect x="230" y="126" width="80" height="36" rx="6" fill="rgba(74,222,128,0.15)" stroke="var(--green)" stroke-width="1.5"/>
+    <text x="270" y="149" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="13" text-anchor="middle" font-weight="600">V</text>
+
+    <!-- Labels -->
+    <text x="70" y="178" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">Query</text>
+    <text x="70" y="190" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">"what am I</text>
+    <text x="70" y="202" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">looking for?"</text>
+    <text x="170" y="178" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">Key</text>
+    <text x="170" y="190" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">"what do I</text>
+    <text x="170" y="202" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">contain?"</text>
+    <text x="270" y="178" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">Value</text>
+    <text x="270" y="190" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">"here is my</text>
+    <text x="270" y="202" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">actual content"</text>
+
+    <!-- Attention computation -->
+    <text x="180" y="230" fill="var(--text-dim)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle">Q asks: "which K's are relevant?"</text>
+    <text x="180" y="246" fill="var(--text-dim)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle">Then pulls the matching V's</text>
+    <text x="180" y="268" fill="var(--yellow)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" font-weight="600">Attention(Q, K, V) = softmax(QK&#7488;/&#8730;d) &#183; V</text>
+
+    <!-- Arrow from K,V to KV Cache -->
+    <line x1="310" y1="144" x2="420" y2="144" stroke="var(--cyan)" stroke-width="2" marker-end="url(#ac)"/>
+    <text x="365" y="134" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle" font-weight="600">SAVE</text>
+
+    <!-- KV Cache box -->
+    <rect x="430" y="50" width="400" height="240" rx="12" fill="rgba(34,211,238,0.06)" stroke="var(--cyan)" stroke-width="2"/>
+    <text x="630" y="76" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="14" text-anchor="middle" font-weight="700">KV CACHE</text>
+    <text x="630" y="94" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle">saved K and V for every token, every layer</text>
+
+    <!-- Cache rows -->
+    <text x="470" y="124" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="start">Layer 0</text>
+    <text x="470" y="158" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="start">Layer 1</text>
+    <text x="470" y="192" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="start">Layer 2</text>
+    <text x="470" y="226" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="start">...</text>
+    <text x="470" y="260" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="start">Layer 35</text>
+
+    <!-- K entries -->
+    <rect x="540" y="110" width="28" height="20" rx="3" fill="rgba(34,211,238,0.20)" stroke="var(--cyan)" stroke-width="0.8"/>
+    <text x="554" y="124" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">K</text>
+    <rect x="572" y="110" width="28" height="20" rx="3" fill="rgba(34,211,238,0.20)" stroke="var(--cyan)" stroke-width="0.8"/>
+    <text x="586" y="124" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">K</text>
+    <rect x="604" y="110" width="28" height="20" rx="3" fill="rgba(34,211,238,0.20)" stroke="var(--cyan)" stroke-width="0.8"/>
+    <text x="618" y="124" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">K</text>
+    <rect x="636" y="110" width="28" height="20" rx="3" fill="rgba(34,211,238,0.20)" stroke="var(--cyan)" stroke-width="0.8"/>
+    <text x="650" y="124" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">K</text>
+    <!-- V entries -->
+    <rect x="680" y="110" width="28" height="20" rx="3" fill="rgba(74,222,128,0.20)" stroke="var(--green)" stroke-width="0.8"/>
+    <text x="694" y="124" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">V</text>
+    <rect x="712" y="110" width="28" height="20" rx="3" fill="rgba(74,222,128,0.20)" stroke="var(--green)" stroke-width="0.8"/>
+    <text x="726" y="124" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">V</text>
+    <rect x="744" y="110" width="28" height="20" rx="3" fill="rgba(74,222,128,0.20)" stroke="var(--green)" stroke-width="0.8"/>
+    <text x="758" y="124" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">V</text>
+    <rect x="776" y="110" width="28" height="20" rx="3" fill="rgba(74,222,128,0.20)" stroke="var(--green)" stroke-width="0.8"/>
+    <text x="790" y="124" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">V</text>
+
+    <!-- Repeat indicators -->
+    <rect x="540" y="144" width="264" height="20" rx="3" fill="rgba(255,255,255,0.03)" stroke="var(--border)" stroke-width="0.5"/>
+    <text x="672" y="158" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">K K K K | V V V V</text>
+    <rect x="540" y="178" width="264" height="20" rx="3" fill="rgba(255,255,255,0.03)" stroke="var(--border)" stroke-width="0.5"/>
+    <text x="672" y="192" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">K K K K | V V V V</text>
+    <text x="672" y="226" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">...</text>
+    <rect x="540" y="246" width="264" height="20" rx="3" fill="rgba(255,255,255,0.03)" stroke="var(--border)" stroke-width="0.5"/>
+    <text x="672" y="260" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">K K K K | V V V V</text>
+
+    <defs>
+      <marker id="ad" markerWidth="6" markerHeight="5" refX="6" refY="2.5" orient="auto"><path d="M0,0 L6,2.5 L0,5" fill="var(--text-muted)"/></marker>
+      <marker id="ac" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="var(--cyan)"/></marker>
+    </defs>
+  </svg>
+
+  <div data-phase="1">
+    <p>Every token produces a <strong style="color:var(--cyan)">Key</strong> and a <strong style="color:var(--green)">Value</strong> vector at every layer. These are the token's contribution to attention.</p>
+  </div>
+  <div data-phase="2">
+    <p><strong>The KV cache saves these vectors</strong> so they do not need to be recomputed. When the next token arrives, it only computes its own Q, K, V and attends against the <em>cached</em> K and V of all previous tokens.</p>
+  </div>
+  <div class="presenter-notes">This is the foundational "what is this thing" slide. Keep the explanation concrete: every token produces a Key ("here's what I contain") and a Value ("here's my actual information"). When a new token arrives, its Query ("what am I looking for?") is compared against all cached Keys to find the relevant context, then pulls the corresponding Values. The KV cache stores these so they don't need to be recomputed. This is the mechanism behind "avoiding prefill" from the previous slide.</div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- SLIDE 7: KV Cache Scale -->
+<!-- ════════════════════════════════════════════════════════ -->
+<section class="slide" id="s7">
+  <span class="slide-num">7 / 27</span>
+  <span class="section-tag">The fundamentals</span>
+  <h2>How big does it get?</h2>
+
+  <div class="code-block" style="font-size:18px;max-width:860px">
+<span class="cm">// Per-token KV at fp8</span><br/>
+<span class="fn">layers</span> × <span class="fn">kv_heads</span> × <span class="fn">head_dim</span> × <span class="num">2</span>(K,V) × <span class="fn">dtype_bytes</span><br/>
+<span class="num">36</span>&nbsp;&nbsp;&nbsp;&nbsp; × <span class="num">8</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; × <span class="num">128</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; × <span class="num">2</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; × <span class="num">1</span> = <span class="fn">72 KB per token</span>
+  </div>
+
+  <div class="big-number" style="margin-top:24px">~1.6 GB</div>
+  <p><strong>of cached state for one 22,800-token session</strong></p>
+  <p style="font-size:18px;color:var(--text-muted)">That is 6.7% of a 24 GB L4 GPU, for a single user.</p>
+
+  <div class="callout" style="margin-top:20px">
+    Multiply by concurrent sessions and you see why this becomes a <strong>memory management problem</strong>, not a compute problem.
+  </div>
+  <div class="presenter-notes">This is the punchline of the KV cache explanation. 72 KB per token sounds small, but 22,800 tokens at 72 KB each is 1.6 GB. On a 24 GB GPU, that is nearly 7% of total VRAM for one session. Now imagine 14 concurrent sessions.</div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- SLIDE 8: Running Example -->
+<!-- ════════════════════════════════════════════════════════ -->
+<section class="slide" id="s8" data-build-phases="2">
+  <span class="slide-num">8 / 27</span>
+  <span class="section-tag">The running example</span>
+  <h2>Sample workload</h2>
+
+  <div data-phase="1">
+    <p>For the rest of this talk, we will trace a single workload through the system:</p>
+    <table style="font-size:20px;margin-top:16px">
+      <tbody>
+        <tr><td>Model</td><td><strong style="color:var(--cyan)">Qwen3-4B (FP8)</strong></td></tr>
+        <tr><td>System prompt</td><td><strong>10,000 tokens</strong> (shared across all sessions)</td></tr>
+        <tr><td>Conversation</td><td><strong>12 turns</strong>, ~1,067 tokens each</td></tr>
+        <tr><td>Output</td><td><strong>~75 tokens</strong> per turn</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div data-phase="2">
+    <div class="callout">
+      <strong>Peak context at turn 12:</strong> 10,000 + (12 × 1,067) = <strong style="color:var(--cyan)">~22,800 tokens</strong>.<br/>At fp8, that is <strong style="color:var(--cyan)">~1.6 GB</strong> of KV cache for one session on a 24 GB GPU.<br/>Every number that follows traces back to this workload.
+    </div>
+  </div>
+  <div class="presenter-notes">Introduce the running example. The audience needs to internalize where 22,800 tokens comes from. The system prompt is shared and cacheable across sessions. The per-turn conversation context is unique per session. This is a realistic agentic coding workload: Claude Code, Cursor, Copilot sessions all look like this.</div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- SLIDE 9: Disaggregation -->
+<!-- ════════════════════════════════════════════════════════ -->
+<section class="slide" id="s9" data-build-phases="2">
+  <span class="slide-num">9 / 27</span>
   <span class="section-tag">The architecture</span>
   <h2>Disaggregation: separating prefill from decode</h2>
 
@@ -654,14 +656,14 @@ body.notes-on .slide.current .presenter-notes {
       <li>Industry direction: NVIDIA Dynamo, AWS Trainium prefill offload, Cerebras wafer-scale decode</li>
     </ul>
   </div>
-  <div class="presenter-notes">Disaggregation and KV caching are deeply linked. The KV cache IS the interface between prefill and decode. In a monolithic engine, it is an in-memory data structure on one GPU. In a disaggregated architecture, it becomes a distributed object: prefill nodes produce it, decode nodes consume it, and the system must decide where to store it, when to evict it, how to transfer it, and which node should handle the next request for a given session.</div>
+  <div class="presenter-notes">Disaggregation and KV caching are deeply linked. The KV cache IS the interface between prefill and decode. In a disaggregated architecture, it becomes a distributed object: prefill nodes produce it, decode nodes consume it, and the system must decide where to store it, when to evict it, how to transfer it, and which node should handle the next request.</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
-<!-- SLIDE 9: Why Prefill Is the Systems Problem -->
+<!-- SLIDE 10: Why Prefill Is the Systems Problem -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s7b" data-build-phases="2">
-  <span class="slide-num">9 / 26</span>
+<section class="slide" id="s10" data-build-phases="2">
+  <span class="slide-num">10 / 27</span>
   <span class="section-tag">The architecture</span>
   <h2>Why prefill is the problem</h2>
 
@@ -679,14 +681,14 @@ body.notes-on .slide.current .presenter-notes {
       These optimizations compound. Better routing means fewer cache misses. Fewer misses mean less prefill compute. Less compute means more capacity. <strong>Classic distributed systems levers applied to a new domain.</strong>
     </div>
   </div>
-  <div class="presenter-notes">This is the "why should you care" slide. Three data-backed reasons: (1) Prefill determines TTFT. In our L4 benchmarks, the concurrency cliff was about KV cache memory pressure, not compute saturation. p99 TTFT jumped 15x when the cache filled, while per-token decode latency stayed constant. (2) Cache hits skip prefill entirely, going from 388ms to 57ms. No systems optimization can make decode 6x faster, but a cache hit gives you that for free. (3) Every distributed systems primitive applies: cache-aware routing is session affinity, eviction policies are LRU/LFU, tiered storage is write-through caching, admission control is backpressure. The hardware is GPUs instead of servers, but the abstractions are identical. The compounding effect is the fun part, and it is why the best prefill service is a distributed systems service.</div>
+  <div class="presenter-notes">Three data-backed reasons: (1) Prefill determines TTFT. In our L4 benchmarks, the concurrency cliff was about KV cache memory pressure, not compute saturation. (2) Cache hits skip prefill entirely, going from 388ms to 57ms. (3) Every distributed systems primitive applies: cache-aware routing is session affinity, eviction policies are LRU/LFU, tiered storage is write-through caching, admission control is backpressure.</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
-<!-- SLIDE 8: KV Cache Makes or Breaks Everything -->
+<!-- SLIDE 11: How KV Cache Becomes the Bottleneck -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s8" data-build-phases="3">
-  <span class="slide-num">10 / 26</span>
+<section class="slide" id="s11" data-build-phases="3">
+  <span class="slide-num">11 / 27</span>
   <span class="section-tag">The shared state</span>
   <h2>How KV cache becomes the bottleneck</h2>
 
@@ -702,14 +704,14 @@ body.notes-on .slide.current .presenter-notes {
     <h3 style="color:var(--yellow)">Time to First Token</h3>
     <p>Users wait for prefill to complete before seeing the first output token. Caching the prefix cuts that wait from seconds to milliseconds. But only if the cache has capacity and the eviction policy cooperates.</p>
   </div>
-  <div class="presenter-notes">Three concrete dimensions where KV cache is the lever. Utilization: without caching, adding concurrent users means linearly more prefill work. Cost: prefill is compute-heavy, so avoiding it directly reduces GPU-hours. TTFT: users experience prefill as the "thinking" pause before the response starts streaming. When the cache works, TTFT drops dramatically. When it doesn't (cache miss, evicted session), users notice immediately. This is why KV cache management is the central systems challenge in inference.</div>
+  <div class="presenter-notes">Three dimensions where KV cache is the lever. Utilization: without caching, adding users means linearly more prefill work. Cost: prefill is compute-heavy, so avoiding it reduces GPU-hours. TTFT: users experience prefill as the "thinking" pause. When the cache works, TTFT drops dramatically. When it doesn't, users notice immediately.</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
-<!-- SLIDE 9: Prefix Caching -->
+<!-- SLIDE 12: Prefix Caching -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s9" data-build-phases="2">
-  <span class="slide-num">11 / 26</span>
+<section class="slide" id="s12" data-build-phases="2">
+  <span class="slide-num">12 / 27</span>
   <span class="section-tag">The shared state</span>
   <h2>Prefix caching: how it actually works</h2>
 
@@ -748,14 +750,14 @@ body.notes-on .slide.current .presenter-notes {
       <strong>The constraint:</strong> matching is prefix-only. If tokens diverge at any position, everything after that point must be recomputed. Exact token-for-token match, or nothing.
     </div>
   </div>
-  <div class="presenter-notes">Emphasize the two dimensions of caching. Cross-session: the system prompt is identical for every user, so 50 concurrent sessions share the same 10K tokens of cached KV. That is 500K tokens computed once instead of 50 times. Within-session: each turn builds on the previous conversation, so only the new turn needs prefill. Both dimensions save prefill compute, but they work differently. Cross-session sharing is automatic for any shared prefix. Within-session caching depends on the eviction policy keeping the session's KV data in memory between turns. The critical limitation is prefix-only. Rearranging content, inserting a different document in the middle, or changing a single token early in the prompt invalidates everything after it. This is why workload design matters: put the stable content first (system prompt), variable content last.</div>
+  <div class="presenter-notes">Two dimensions of caching. Cross-session: the system prompt is identical for every user. Within-session: each turn builds on the previous conversation. The critical limitation is prefix-only matching. This is why workload design matters: put the stable content first (system prompt), variable content last.</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
-<!-- SLIDE 10: The Experiment -->
+<!-- SLIDE 13: The Experiment -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s10">
-  <span class="slide-num">12 / 26</span>
+<section class="slide" id="s13">
+  <span class="slide-num">13 / 27</span>
   <span class="section-tag">The experiment</span>
   <h2>Let's measure it</h2>
 
@@ -787,14 +789,14 @@ body.notes-on .slide.current .presenter-notes {
   <div class="callout" style="margin-top:20px">
     <strong>The question:</strong> how many concurrent agentic sessions can this GPU handle before things break?
   </div>
-  <div class="presenter-notes">Transition to the live data section. This is the workload from slide 6 but now at scale. We sweep concurrency from 1 to 48 to find where the system breaks. The L4 is a $0.70/hr GPU, representative of cost-optimized deployments. Important caveat: these specific numbers are L4-specific, but the formula and the shape of the cliff generalize across GPUs. On an A100 or H100, the knee moves right (more VRAM = more sessions), but the cliff is equally sharp when you hit it.</div>
+  <div class="presenter-notes">Transition to the live data section. We sweep concurrency from 1 to 48 to find where the system breaks. The L4 is a $0.70/hr GPU, representative of cost-optimized deployments. These specific numbers are L4-specific, but the shape of the cliff generalizes across GPUs.</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
-<!-- SLIDE 11a: Before the cliff -->
+<!-- SLIDE 14: Before the cliff -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s11a">
-  <span class="slide-num">13 / 26</span>
+<section class="slide" id="s14">
+  <span class="slide-num">14 / 27</span>
   <span class="section-tag">The experiment</span>
   <h2>At 12 concurrent sessions, everything looks fine</h2>
 
@@ -816,14 +818,14 @@ body.notes-on .slide.current .presenter-notes {
   <div class="callout" style="margin-top:24px">
     <strong>The KV cache still fits.</strong> 12 sessions x 12.8K unique tokens = ~154K tokens. Capacity is ~178K. There is headroom. Now add two more sessions.
   </div>
-  <div class="presenter-notes">This is the "calm before the storm" slide. Let the audience absorb that the system works. 12 concurrent agentic sessions on a single $0.70/hr L4 GPU. Median latency is about a second, tail latency is ~2.6 seconds. Not amazing, but functional. The key number: 12 sessions x 12.8K unique tokens = ~154K tokens of KV cache. Capacity is ~178K. There is still room. Then say: "Now add two more sessions." Pause. Next slide.</div>
+  <div class="presenter-notes">This is the "calm before the storm" slide. Let the audience absorb that the system works. 12 concurrent agentic sessions on a single $0.70/hr L4. Then say: "Now add two more sessions." Pause. Next slide.</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
-<!-- SLIDE: p50 vs p99 contrast -->
+<!-- SLIDE 15: p50 vs p99 contrast -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s12">
-  <span class="slide-num">14 / 26</span>
+<section class="slide" id="s15">
+  <span class="slide-num">15 / 27</span>
   <span class="section-tag">The experiment</span>
   <h2>Now add two more sessions</h2>
 
@@ -845,14 +847,14 @@ body.notes-on .slide.current .presenter-notes {
   <div class="callout red" style="margin-top:24px">
     <strong>Bimodal distribution.</strong> Lucky requests hit warm cache: 1-2s. Unlucky requests pay full re-prefill: 30-50s. The median hides a broken system.
   </div>
-  <div class="presenter-notes">The audience just saw everything looking fine at C=12. Now show what happens when you go from 12 to 14 sessions. The p50 barely moved, but the p99 exploded. If your dashboard shows average TTFT, it will show ~5 seconds. That average is fiction: nobody experiences 5 seconds. Half experience 1.3 seconds, the other half experience 39 seconds. Let the contrast between the two big numbers sink in. Then say: "Let me show you the full picture."</div>
+  <div class="presenter-notes">The audience just saw everything looking fine at C=12. Now show C=14. The p50 barely moved, but the p99 exploded. Nobody experiences the average. Half experience 1.3 seconds, the other half experience 39 seconds.</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
-<!-- SLIDE: The Cliff Chart -->
+<!-- SLIDE 16: The Cliff Chart -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s11">
-  <span class="slide-num">15 / 26</span>
+<section class="slide" id="s16">
+  <span class="slide-num">16 / 27</span>
   <span class="section-tag">The experiment</span>
   <h2>The concurrency cliff</h2>
   <p style="font-size:17px;color:var(--text-muted);margin-bottom:4px"><strong>Qwen3-4B FP8</strong> on <strong>1x NVIDIA L4 (24 GB)</strong>, vLLM 0.20.2, APC enabled</p>
@@ -910,14 +912,14 @@ body.notes-on .slide.current .presenter-notes {
   </svg>
 
   <p>p99 TTFT jumps from <strong>2.6 seconds to 38.9 seconds</strong> between C=12 and C=14. Not a single re-prefill. <strong>Cascading evictions</strong> under contention, with queuing delays compounding.</p>
-  <div class="presenter-notes">Now show the full picture. The audience already saw the two numbers (1.29s vs 38.9s). This chart shows the shape: everything is flat until the KV cache fills, then p99 explodes while p50 barely moves. Below 12 sessions, everything fits. At 14, LRU eviction kicks in and multiple sessions thrash for the same cache space, evicting each other in a cascade. The GPU is not saturated; the memory is full.</div>
+  <div class="presenter-notes">The full picture. Everything is flat until the KV cache fills, then p99 explodes while p50 barely moves. The GPU is not saturated; the memory is full.</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
-<!-- SLIDE: Per-token KV size -->
+<!-- SLIDE 17: Per-token KV size -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s13a">
-  <span class="slide-num">16 / 26</span>
+<section class="slide" id="s17">
+  <span class="slide-num">17 / 27</span>
   <span class="section-tag">The systems lesson</span>
   <h2>Predicting the knee</h2>
 
@@ -933,14 +935,14 @@ body.notes-on .slide.current .presenter-notes {
     <li><strong>Model architecture</strong> → <code>config.json</code>: <code>num_hidden_layers</code>, <code>num_key_value_heads</code>, <code>head_dim</code></li>
     <li><strong>KV precision</strong> → <code>kv_cache_dtype</code>: fp16 = 2B, fp8 = 1B, 4-bit = 0.5B</li>
   </ul>
-  <div class="presenter-notes">Step 1 of the capacity calculation. The per-token KV size comes directly from config.json. GQA (grouped-query attention) is why Qwen3-4B has 8 KV heads instead of 32, a 4x memory savings built into the architecture. Walk through the alignment: 36 layers, 8 KV heads, 128 head_dim, times 2 for K and V, times 1 byte for fp8. The result is ~72 KB per token. Every input token produces this much cached state.</div>
+  <div class="presenter-notes">Step 1 of the capacity calculation. The per-token KV size comes directly from config.json. GQA (grouped-query attention) is why Qwen3-4B has 8 KV heads instead of 32, a 4x memory savings built into the architecture.</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
-<!-- SLIDE: Capacity + concurrency estimate -->
+<!-- SLIDE 18: Capacity + concurrency estimate -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s13b">
-  <span class="slide-num">17 / 26</span>
+<section class="slide" id="s18">
+  <span class="slide-num">18 / 27</span>
   <span class="section-tag">The systems lesson</span>
   <h2>From token math to capacity</h2>
 
@@ -961,14 +963,14 @@ L4: <span class="num">24 GB</span> VRAM<br/>
   <div class="callout" style="margin-top:20px">
     <strong>How to get available KV memory:</strong> vLLM logs it at startup. Look for <code># GPU blocks</code> in the output. Multiply by block size (16 tokens) and per-token KV bytes to get your capacity in tokens. Or use <code>gpu_memory_utilization</code> (default 0.9) and subtract model weight size. Roughly ~50-55% of raw VRAM ends up available for KV.
   </div>
-  <div class="presenter-notes">Step 2 and 3. The key practical question is "how do I get the 13 GB number?" Two approaches: (1) Look at vLLM startup logs. It prints "# GPU blocks: N". Multiply N by the block size (default 16 tokens) to get total token capacity. (2) Back-of-envelope: take total VRAM (24 GB for L4), subtract model weight size (Qwen3-4B FP8 is ~4 GB), subtract ~4-6 GB for CUDA graphs and activations. The remainder is KV budget. vLLM's default gpu_memory_utilization of 0.9 means it targets 90% of VRAM, and model weights + overhead typically consume 45-50% of that. Step 3 is simple division. Gets you within 20% of the observed knee.</div>
+  <div class="presenter-notes">Steps 2 and 3. The key practical question is "how do I get the 13 GB number?" Two approaches: vLLM startup logs, or back-of-envelope subtraction. Step 3 is simple division. Gets you within 20% of the observed knee.</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
-<!-- SLIDE 14: Quantization Moves the Knee -->
+<!-- SLIDE 19: Quantization Moves the Knee -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s14" data-build-phases="2">
-  <span class="slide-num">18 / 26</span>
+<section class="slide" id="s19" data-build-phases="2">
+  <span class="slide-num">19 / 27</span>
   <span class="section-tag">The systems lesson</span>
   <h2>One config flag, 75% more headroom</h2>
   <p style="font-size:17px;color:var(--text-muted);margin-bottom:4px"><strong>Qwen3-4B</strong> on <strong>1x NVIDIA L4 (24 GB)</strong>, vLLM 0.20.2</p>
@@ -1022,14 +1024,14 @@ L4: <span class="num">24 GB</span> VRAM<br/>
       <strong>4-bit caveat:</strong> KV quantization below fp8 can measurably impact output quality on reasoning and long-context tasks. fp8 is generally safe; 4-bit requires quality validation for your workload.
     </div>
   </div>
-  <div class="presenter-notes">This is the "live tuning" slide. One config change, three different concurrency ceilings. fp16 to fp8 doubles capacity and moves the knee from ~8 to ~14. fp8 to 4-bit extends it to ~23. You didn't retrain the model or buy a bigger GPU. You changed a config flag and got 75% more concurrent sessions. This is a systems lever, not an ML lever. Important caveat for 4-bit: our fp8 tests showed no quality degradation on Qwen3-4B, but sub-8-bit KV quantization (4-bit, 2-bit) can introduce measurable output quality loss, especially on multi-step reasoning and long-context tasks. Always validate quality metrics before deploying aggressive quantization in production. fp8 is the safe default; 4-bit is a tradeoff you need to evaluate per workload.</div>
+  <div class="presenter-notes">One config change, three different concurrency ceilings. fp16 to fp8 doubles capacity and moves the knee from ~8 to ~14. fp8 to 4-bit extends it to ~23. This is a systems lever, not an ML lever.</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
-<!-- SLIDE 15: Best/Worst/Realistic -->
+<!-- SLIDE 20: Best/Worst/Realistic -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s15" data-build-phases="2">
-  <span class="slide-num">19 / 26</span>
+<section class="slide" id="s20" data-build-phases="2">
+  <span class="slide-num">20 / 27</span>
   <span class="section-tag">The systems lesson</span>
   <h2>The cost of cache misses</h2>
   <p style="font-size:17px;color:var(--text-muted);margin-bottom:8px"><strong>Qwen3-4B FP8</strong> on <strong>1x NVIDIA L4 (24 GB)</strong>, vLLM 0.20.2, APC enabled</p>
@@ -1053,14 +1055,14 @@ L4: <span class="num">24 GB</span> VRAM<br/>
       <strong>Miss depth matters.</strong> Realistic misses happen at any turn depth (turn 3 = ~3K tokens). Worst forces every miss at peak depth (turn 12 = ~12.8K tokens). Real traffic is much kinder than worst case.
     </div>
   </div>
-  <div class="presenter-notes">The gap between best and realistic represents the fundamental cost of per-session uniqueness. The gap between realistic and worst shows how much eviction patterns matter. A session evicted at turn 3 only costs ~3,000 tokens to re-prefill. Worst case forces every miss at maximum depth. Real traffic has a distribution of miss depths, which is why realistic stays much closer to best.</div>
+  <div class="presenter-notes">The gap between best and realistic represents the fundamental cost of per-session uniqueness. The gap between realistic and worst shows how much eviction patterns matter.</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
-<!-- SLIDE 16: Same GPU Different Workloads -->
+<!-- SLIDE 21: Same GPU Different Workloads -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s16">
-  <span class="slide-num">20 / 26</span>
+<section class="slide" id="s21">
+  <span class="slide-num">21 / 27</span>
   <span class="section-tag">The systems lesson</span>
   <h2>The knee is workload-specific</h2>
   <p style="font-size:17px;color:var(--text-muted);margin-bottom:8px"><strong>Qwen3-4B FP8</strong> on <strong>1x NVIDIA L4 (24 GB)</strong>, formula: <code>(kv_capacity - shared_prefix) / per_session_unique</code></p>
@@ -1074,14 +1076,14 @@ L4: <span class="num">24 GB</span> VRAM<br/>
       <tr><td><strong>Long-doc summarization</strong></td><td class="r">2K</td><td class="r">38K</td><td class="r rd">~4 sessions</td></tr>
     </tbody>
   </table>
-  <div class="presenter-notes">Show the table and let the contrast speak. 168 sessions vs 3 sessions on the same GPU. The only variable is per-session unique context. Pause on this before moving to the implications slide.</div>
+  <div class="presenter-notes">Let the contrast speak. 168 sessions vs 3 sessions on the same GPU. The only variable is per-session unique context.</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
-<!-- SLIDE 21: Mixed Workload Implications -->
+<!-- SLIDE 22: Mixed Workload Implications -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s16b">
-  <span class="slide-num">21 / 26</span>
+<section class="slide" id="s22">
+  <span class="slide-num">22 / 27</span>
   <span class="section-tag">The systems lesson</span>
   <h2>Mixed workloads need per-workload limits</h2>
 
@@ -1094,14 +1096,14 @@ L4: <span class="num">24 GB</span> VRAM<br/>
   <div class="callout warn" style="margin-top:20px">
     <strong>If you serve mixed workloads on shared GPUs:</strong> one long-context session can evict the KV cache for a dozen short-context sessions. Isolate or prioritize.
   </div>
-  <div class="presenter-notes">The same GPU can handle 168 concurrent single-turn QA sessions or 3 code review sessions. A mixed deployment needs workload-class-aware admission control. This is exactly the kind of scheduling problem that distributed systems engineers already solve in database and queue systems. One long-context session can thrash the cache for many short-context sessions. The solution is the same as in any shared-resource system: either isolate the workloads or implement priority-based admission control.</div>
+  <div class="presenter-notes">The same GPU can handle 168 concurrent single-turn QA sessions or 3 code review sessions. A mixed deployment needs workload-class-aware admission control. One long-context session can thrash the cache for many short-context sessions.</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 23: Cache-Aware Routing -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s17" data-build-phases="2">
-  <span class="slide-num">22 / 26</span>
+<section class="slide" id="s23" data-build-phases="2">
+  <span class="slide-num">23 / 27</span>
   <span class="section-tag">The systems stack</span>
   <h2>Cache-aware routing</h2>
 
@@ -1114,14 +1116,14 @@ L4: <span class="num">24 GB</span> VRAM<br/>
     <h3 style="color:var(--green)">Local offload: host DRAM and NVMe</h3>
     <p>GPU memory is scarce and expensive. LMCache moves evicted KV entries to host DRAM or NVMe. Reloading from host memory is faster than recomputing from scratch. A classic tiered cache.</p>
   </div>
-  <div class="presenter-notes">Two concepts that work within a single node. Routing is session affinity: the same idea as sticky sessions in web infrastructure, but the "session state" is gigabytes of KV cache. Local offload extends the cache hierarchy beyond GPU VRAM. LMCache is a concrete implementation. Host DRAM is 10-100x larger than GPU VRAM, and reloading from it is microseconds vs. milliseconds for re-prefill.</div>
+  <div class="presenter-notes">Two concepts within a single node. Routing is session affinity: sticky sessions, but the "session state" is gigabytes of KV cache. Local offload extends the cache hierarchy beyond GPU VRAM.</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 24: Tiered KV Storage -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s17b" data-build-phases="2">
-  <span class="slide-num">23 / 26</span>
+<section class="slide" id="s24" data-build-phases="2">
+  <span class="slide-num">24 / 27</span>
   <span class="section-tag">The systems stack</span>
   <h2>Tiered KV storage</h2>
 
@@ -1134,14 +1136,14 @@ L4: <span class="num">24 GB</span> VRAM<br/>
     <h3 style="color:var(--accent)">The full hierarchy</h3>
     <p><strong style="color:var(--cyan)">GPU VRAM</strong> → <strong style="color:var(--green)">Host DRAM</strong> → <strong style="color:var(--yellow)">Remote cache</strong> → <strong style="color:var(--red)">Recompute</strong>. Each tier trades latency for capacity. Each boundary is a systems engineering decision: eviction policy, transfer protocol, consistency model.</p>
   </div>
-  <div class="presenter-notes">Remote caching is L3 in the memory hierarchy. A networked store like Redis or Valkey. A 12,800-token session's KV cache at fp8 is ~900 KB, well within what a networked cache handles at sub-millisecond latency. The key insight: remote caching decouples KV lifetime from GPU lifetime. If a GPU restarts, if the session migrates to a different node, or if you're scaling down and back up, the KV cache persists. This is the same pattern as session state in web applications, moving from in-process memory to memcached. Recompute is the last resort: full re-prefill. The entire systems stack exists to avoid hitting this tier.</div>
+  <div class="presenter-notes">Remote caching is L3 in the memory hierarchy. A 12,800-token session's KV cache at fp8 is ~900 KB, well within what a networked cache handles at sub-millisecond latency. This decouples KV lifetime from GPU lifetime. Same pattern as session state in web applications, moving from in-process memory to memcached.</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
-<!-- SLIDE 18: Operate in Production -->
+<!-- SLIDE 25: Operate in Production -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s18" data-build-phases="2">
-  <span class="slide-num">24 / 26</span>
+<section class="slide" id="s25" data-build-phases="2">
+  <span class="slide-num">25 / 27</span>
   <span class="section-tag">The systems stack</span>
   <h2>How to operate this in production</h2>
 
@@ -1160,14 +1162,14 @@ L4: <span class="num">24 GB</span> VRAM<br/>
       <li><strong>Use the cheapest lever first.</strong> KV quantization (fp16 to fp8) is a config change that buys 75% more headroom. Validate output quality on your workload first, then try it before buying more GPUs.</li>
     </ol>
   </div>
-  <div class="presenter-notes">Operational checklist. These are the concrete things to do on Monday morning. Each is a systems engineering task, not an ML task. The monitoring point is critical: most inference dashboards show average TTFT, which hides the cliff. Point 5 about benchmarking: many KV cache benchmarks use synthetic "hi hi hi" inputs with only 2 unique tokens. Real medical text has 14% token diversity. Real model weights produce high-entropy KV activations that compress poorly. Your capacity plans will be wrong if you benchmark with synthetic data.</div>
+  <div class="presenter-notes">Operational checklist. Each is a systems engineering task, not an ML task. The monitoring point is critical: most inference dashboards show average TTFT, which hides the cliff.</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
-<!-- SLIDE 24: Separate Online from Offline -->
+<!-- SLIDE 26: Separate Online from Offline -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s19">
-  <span class="slide-num">25 / 26</span>
+<section class="slide" id="s26">
+  <span class="slide-num">26 / 27</span>
   <span class="section-tag">The systems stack</span>
   <h2>Separate online from offline</h2>
 
@@ -1197,14 +1199,14 @@ L4: <span class="num">24 GB</span> VRAM<br/>
   <div class="callout" style="margin-top:20px">
     The capacity planning question: <strong>which workloads should consume scarce cache resources?</strong>
   </div>
-  <div class="presenter-notes">Not all workloads need the fastest prefill path. Offline agents can trade latency for cost. By routing them to a separate tier, you keep the KV cache available for online workloads. This is the same pattern as priority queues in any resource-constrained system. Only online sessions count toward the knee.</div>
+  <div class="presenter-notes">Not all workloads need the fastest prefill path. By routing offline agents to a separate tier, you keep KV cache available for online workloads. Same pattern as priority queues in any resource-constrained system.</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
-<!-- SLIDE 20: Closing -->
+<!-- SLIDE 27: Closing -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s20">
-  <span class="slide-num">26 / 26</span>
+<section class="slide" id="s27">
+  <span class="slide-num">27 / 27</span>
   <span class="section-tag">The conclusion</span>
   <h2>From distributed systems<br/>to GPU inference</h2>
 
@@ -1219,7 +1221,7 @@ L4: <span class="num">24 GB</span> VRAM<br/>
       Full blog series: <strong style="color:var(--cyan)">ksmotiv8.github.io/kvbenchdocs/kvcache/</strong>
     </p>
   </div>
-  <div class="presenter-notes">Close the loop on the opening story. Started intimidated, discovered familiar problems wearing GPU clothes, found them complex and fun. The invitation to the audience: you don't need to become an ML expert to contribute to inference engineering. Start with the system. Thank you.</div>
+  <div class="presenter-notes">Close the loop. Started intimidated, discovered familiar problems wearing GPU clothes, found them complex and fun. Start with the system. Thank you.</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
@@ -1227,7 +1229,7 @@ L4: <span class="num">24 GB</span> VRAM<br/>
 <!-- ════════════════════════════════════════════════════════ -->
 <div id="nav">
   <button id="prevBtn" aria-label="Previous slide">Prev</button>
-  <span id="counter">27 / 26</span>
+  <span id="counter">1 / 27</span>
   <button id="nextBtn" aria-label="Next slide">Next</button>
 </div>
 <div id="notes-indicator">P: notes off</div>
