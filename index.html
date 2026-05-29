@@ -238,101 +238,85 @@ body.notes-on .slide.current .presenter-notes {
   <h2>Journey of a prompt</h2>
 
   <svg viewBox="0 -28 900 362" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Flow diagram of a prompt's journey: user prompt, tokenize, check cache with hit or miss branch, prefill, KV cache storage, TTFT, decode loop, response complete" style="width:100%;max-width:885px;height:auto;display:block;margin:4px 0">
-    <!-- Step 1: User sends prompt -->
-    <rect x="10" y="10" width="170" height="56" rx="8" fill="rgba(130,140,248,0.12)" stroke="var(--accent)" stroke-width="1.5"/>
-    <text x="95" y="32" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" font-weight="700">1. USER PROMPT</text>
-    <text x="95" y="50" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">"Refactor this function..."</text>
-
-    <!-- Arrow 1->2 -->
-    <line x1="185" y1="38" x2="220" y2="38" stroke="var(--text-muted)" stroke-width="1.5" marker-end="url(#aj)"/>
-
-    <!-- Step 2: Tokenize -->
-    <rect x="225" y="10" width="130" height="56" rx="8" fill="rgba(255,255,255,0.04)" stroke="var(--border)" stroke-width="1.5"/>
-    <text x="290" y="32" fill="var(--text)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" font-weight="700">2. TOKENIZE</text>
-    <text x="290" y="50" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">text -> 22,800 tokens</text>
-
-    <!-- Arrow 2->3 -->
-    <line x1="360" y1="38" x2="395" y2="38" stroke="var(--text-muted)" stroke-width="1.5" marker-end="url(#aj)"/>
-
-    <!-- Step 3: Check cache -->
-    <rect x="400" y="10" width="160" height="56" rx="8" fill="rgba(34,211,238,0.10)" stroke="var(--cyan)" stroke-width="1.5"/>
-    <text x="480" y="32" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" font-weight="700">3. CHECK CACHE</text>
-    <text x="480" y="50" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">prefix match? reuse KV</text>
-
-    <!-- Branch: cache hit vs miss -->
-    <!-- Cache HIT path — curves down to KV Cache, skipping prefill -->
-    <line x1="480" y1="66" x2="480" y2="82" stroke="var(--green)" stroke-width="1.5"/>
-    <path d="M 480 82 C 480 130, 540 130, 580 130" fill="none" stroke="var(--green)" stroke-width="1.5" marker-end="url(#ag)"/>
-    <rect x="470" y="90" width="60" height="18" rx="3" fill="var(--bg)"/>
-    <text x="500" y="103" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" font-weight="600">HIT!</text>
-
-    <!-- Cache MISS path (bottom) -->
-    <line x1="565" y1="38" x2="680" y2="38" stroke="var(--red)" stroke-width="1.5" marker-end="url(#ar)"/>
-    <rect x="590" y="27" width="60" height="18" rx="3" fill="var(--bg)"/>
-    <text x="620" y="40" fill="var(--red)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" font-weight="600">MISS</text>
-
-    <!-- Step 4: Prefill -->
-    <rect x="685" y="10" width="160" height="56" rx="8" fill="rgba(130,140,248,0.12)" stroke="var(--accent)" stroke-width="1.5"/>
-    <text x="765" y="28" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" font-weight="700">4. PREFILL</text>
-    <text x="765" y="44" fill="var(--green)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">hit: only new tokens</text>
-    <text x="765" y="58" fill="var(--red)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">miss: all 22,800 tokens</text>
-
-    <!-- Arrow down to KV cache -->
-    <line x1="765" y1="70" x2="765" y2="95" stroke="var(--cyan)" stroke-width="1.5" marker-end="url(#aj)"/>
-
-    <!-- KV Cache central -->
-    <rect x="580" y="100" width="270" height="60" rx="10" fill="rgba(34,211,238,0.08)" stroke="var(--cyan)" stroke-width="2"/>
-    <text x="715" y="124" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="13" text-anchor="middle" font-weight="700">KV CACHE (GPU VRAM)</text>
-    <text x="715" y="146" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle">K and V vectors stored for all processed tokens</text>
-
-    <!-- Arrow down to decode -->
-    <line x1="715" y1="164" x2="715" y2="186" stroke="var(--green)" stroke-width="1.5" marker-end="url(#aj)"/>
-
-    <!-- Step 5: TTFT -->
-    <rect x="375" y="175" width="120" height="40" rx="6" fill="rgba(250,204,21,0.12)" stroke="var(--yellow)" stroke-width="2"/>
-    <text x="435" y="193" fill="var(--yellow)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle" font-weight="700">TTFT</text>
-    <text x="435" y="207" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">first token out</text>
-    <line x1="498" y1="195" x2="580" y2="195" stroke="var(--yellow)" stroke-width="1.5" stroke-dasharray="4 3"/>
-
-    <!-- Step 6: Decode loop -->
-    <rect x="580" y="190" width="270" height="56" rx="10" fill="rgba(74,222,128,0.10)" stroke="var(--green)" stroke-width="1.5"/>
-    <text x="715" y="212" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle" font-weight="700">5. DECODE LOOP</text>
-    <text x="715" y="230" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle">read KV → gen token → append → repeat</text>
-
-    <!-- Loop arrow -->
-    <path d="M 850 220 C 874 220, 874 155, 850 155" fill="none" stroke="var(--green)" stroke-width="1.5" marker-end="url(#ag2)"/>
-    <text x="882" y="192" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" transform="rotate(90,882,192)">loop</text>
-
-    <!-- Step 7: Response -->
-    <line x1="715" y1="250" x2="715" y2="272" stroke="var(--text-muted)" stroke-width="1.5" marker-end="url(#aj)"/>
-    <rect x="580" y="278" width="270" height="42" rx="8" fill="rgba(74,222,128,0.06)" stroke="var(--green)" stroke-width="1.5"/>
-    <text x="715" y="300" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle" font-weight="700">6. RESPONSE COMPLETE</text>
-    <text x="715" y="316" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">KV cache kept if memory allows</text>
-
-    <!-- Left side: where cost lives -->
-    <rect x="10" y="100" width="260" height="220" rx="10" fill="rgba(255,255,255,0.02)" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3"/>
-    <text x="140" y="124" fill="var(--text)" font-family="'Inter',sans-serif" font-size="13" text-anchor="middle" font-weight="700">Where the cost lives</text>
-
-    <rect x="30" y="140" width="16" height="16" rx="2" fill="rgba(130,140,248,0.3)"/>
-    <text x="56" y="153" fill="var(--text-dim)" font-family="'Inter',sans-serif" font-size="12" text-anchor="start">Prefill compute (FLOPS)</text>
-    <rect x="30" y="168" width="16" height="16" rx="2" fill="rgba(34,211,238,0.3)"/>
-    <text x="56" y="181" fill="var(--text-dim)" font-family="'Inter',sans-serif" font-size="12" text-anchor="start">KV cache memory (GB)</text>
-    <rect x="30" y="196" width="16" height="16" rx="2" fill="rgba(74,222,128,0.3)"/>
-    <text x="56" y="209" fill="var(--text-dim)" font-family="'Inter',sans-serif" font-size="12" text-anchor="start">Memory bandwidth (GB/s)</text>
-    <rect x="30" y="224" width="16" height="16" rx="2" fill="rgba(250,204,21,0.3)"/>
-    <text x="56" y="237" fill="var(--text-dim)" font-family="'Inter',sans-serif" font-size="12" text-anchor="start">User-visible latency (TTFT)</text>
-
-    <text x="140" y="268" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle">Cache hit: skip prefill cost</text>
-    <text x="140" y="284" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle">Cache miss: pay full prefill</text>
-    <text x="140" y="300" fill="var(--red)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle" font-weight="600">22,800 tokens @ ~17ms/1K = ~388ms</text>
-    <text x="140" y="314" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="9" text-anchor="middle">Qwen3-4B FP8 · 1x L4 24GB</text>
-
     <defs>
       <marker id="aj" markerWidth="6" markerHeight="5" refX="6" refY="2.5" orient="auto"><path d="M0,0 L6,2.5 L0,5" fill="var(--text-muted)"/></marker>
       <marker id="ag" markerWidth="6" markerHeight="5" refX="6" refY="2.5" orient="auto"><path d="M0,0 L6,2.5 L0,5" fill="var(--green)"/></marker>
       <marker id="ag2" markerWidth="6" markerHeight="5" refX="6" refY="2.5" orient="auto"><path d="M0,0 L6,2.5 L0,5" fill="var(--green)"/></marker>
       <marker id="ar" markerWidth="6" markerHeight="5" refX="6" refY="2.5" orient="auto"><path d="M0,0 L6,2.5 L0,5" fill="var(--red)"/></marker>
     </defs>
+
+    <!-- Phase 1: User Prompt → Tokenize -->
+    <g data-phase="1">
+      <rect x="10" y="10" width="170" height="56" rx="8" fill="rgba(130,140,248,0.12)" stroke="var(--accent)" stroke-width="1.5"/>
+      <text x="95" y="32" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" font-weight="700">1. USER PROMPT</text>
+      <text x="95" y="50" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">"Refactor this function..."</text>
+      <line x1="185" y1="38" x2="220" y2="38" stroke="var(--text-muted)" stroke-width="1.5" marker-end="url(#aj)"/>
+      <rect x="225" y="10" width="130" height="56" rx="8" fill="rgba(255,255,255,0.04)" stroke="var(--border)" stroke-width="1.5"/>
+      <text x="290" y="32" fill="var(--text)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" font-weight="700">2. TOKENIZE</text>
+      <text x="290" y="50" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">text -> 22,800 tokens</text>
+      <line x1="360" y1="38" x2="395" y2="38" stroke="var(--text-muted)" stroke-width="1.5" marker-end="url(#aj)"/>
+    </g>
+
+    <!-- Phase 2: Check Cache + HIT/MISS branches -->
+    <g data-phase="2">
+      <rect x="400" y="10" width="160" height="56" rx="8" fill="rgba(34,211,238,0.10)" stroke="var(--cyan)" stroke-width="1.5"/>
+      <text x="480" y="32" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" font-weight="700">3. CHECK CACHE</text>
+      <text x="480" y="50" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">prefix match? reuse KV</text>
+      <!-- Cache HIT path — curves down to KV Cache, skipping prefill -->
+      <line x1="480" y1="66" x2="480" y2="82" stroke="var(--green)" stroke-width="1.5"/>
+      <path d="M 480 82 C 480 130, 540 130, 580 130" fill="none" stroke="var(--green)" stroke-width="1.5" marker-end="url(#ag)"/>
+      <rect x="470" y="90" width="60" height="18" rx="3" fill="var(--bg)"/>
+      <text x="500" y="103" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" font-weight="600">HIT!</text>
+      <!-- Cache MISS path -->
+      <line x1="565" y1="38" x2="680" y2="38" stroke="var(--red)" stroke-width="1.5" marker-end="url(#ar)"/>
+      <rect x="590" y="27" width="60" height="18" rx="3" fill="var(--bg)"/>
+      <text x="620" y="40" fill="var(--red)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" font-weight="600">MISS</text>
+    </g>
+
+    <!-- Phase 3: Prefill → KV Cache → TTFT -->
+    <g data-phase="3">
+      <rect x="685" y="10" width="160" height="56" rx="8" fill="rgba(130,140,248,0.12)" stroke="var(--accent)" stroke-width="1.5"/>
+      <text x="765" y="28" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" font-weight="700">4. PREFILL</text>
+      <text x="765" y="44" fill="var(--green)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">hit: only new tokens</text>
+      <text x="765" y="58" fill="var(--red)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">miss: all 22,800 tokens</text>
+      <line x1="765" y1="70" x2="765" y2="95" stroke="var(--cyan)" stroke-width="1.5" marker-end="url(#aj)"/>
+      <rect x="580" y="100" width="270" height="60" rx="10" fill="rgba(34,211,238,0.08)" stroke="var(--cyan)" stroke-width="2"/>
+      <text x="715" y="124" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="13" text-anchor="middle" font-weight="700">KV CACHE (GPU VRAM)</text>
+      <text x="715" y="146" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle">K and V vectors stored for all processed tokens</text>
+      <rect x="375" y="175" width="120" height="40" rx="6" fill="rgba(250,204,21,0.12)" stroke="var(--yellow)" stroke-width="2"/>
+      <text x="435" y="193" fill="var(--yellow)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle" font-weight="700">TTFT</text>
+      <text x="435" y="207" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">first token out</text>
+      <line x1="498" y1="195" x2="580" y2="195" stroke="var(--yellow)" stroke-width="1.5" stroke-dasharray="4 3"/>
+    </g>
+
+    <!-- Phase 4: Decode loop → Response + cost legend -->
+    <g data-phase="4">
+      <line x1="715" y1="164" x2="715" y2="186" stroke="var(--green)" stroke-width="1.5" marker-end="url(#aj)"/>
+      <rect x="580" y="190" width="270" height="56" rx="10" fill="rgba(74,222,128,0.10)" stroke="var(--green)" stroke-width="1.5"/>
+      <text x="715" y="212" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle" font-weight="700">5. DECODE LOOP</text>
+      <text x="715" y="230" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle">read KV → gen token → append → repeat</text>
+      <path d="M 850 220 C 874 220, 874 155, 850 155" fill="none" stroke="var(--green)" stroke-width="1.5" marker-end="url(#ag2)"/>
+      <text x="882" y="192" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" transform="rotate(90,882,192)">loop</text>
+      <line x1="715" y1="250" x2="715" y2="272" stroke="var(--text-muted)" stroke-width="1.5" marker-end="url(#aj)"/>
+      <rect x="580" y="278" width="270" height="42" rx="8" fill="rgba(74,222,128,0.06)" stroke="var(--green)" stroke-width="1.5"/>
+      <text x="715" y="300" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle" font-weight="700">6. RESPONSE COMPLETE</text>
+      <text x="715" y="316" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">KV cache kept if memory allows</text>
+      <!-- Where cost lives legend -->
+      <rect x="10" y="100" width="260" height="220" rx="10" fill="rgba(255,255,255,0.02)" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3"/>
+      <text x="140" y="124" fill="var(--text)" font-family="'Inter',sans-serif" font-size="13" text-anchor="middle" font-weight="700">Where the cost lives</text>
+      <rect x="30" y="140" width="16" height="16" rx="2" fill="rgba(130,140,248,0.3)"/>
+      <text x="56" y="153" fill="var(--text-dim)" font-family="'Inter',sans-serif" font-size="12" text-anchor="start">Prefill compute (FLOPS)</text>
+      <rect x="30" y="168" width="16" height="16" rx="2" fill="rgba(34,211,238,0.3)"/>
+      <text x="56" y="181" fill="var(--text-dim)" font-family="'Inter',sans-serif" font-size="12" text-anchor="start">KV cache memory (GB)</text>
+      <rect x="30" y="196" width="16" height="16" rx="2" fill="rgba(74,222,128,0.3)"/>
+      <text x="56" y="209" fill="var(--text-dim)" font-family="'Inter',sans-serif" font-size="12" text-anchor="start">Memory bandwidth (GB/s)</text>
+      <rect x="30" y="224" width="16" height="16" rx="2" fill="rgba(250,204,21,0.3)"/>
+      <text x="56" y="237" fill="var(--text-dim)" font-family="'Inter',sans-serif" font-size="12" text-anchor="start">User-visible latency (TTFT)</text>
+      <text x="140" y="268" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle">Cache hit: skip prefill cost</text>
+      <text x="140" y="284" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle">Cache miss: pay full prefill</text>
+      <text x="140" y="300" fill="var(--red)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle" font-weight="600">22,800 tokens @ ~17ms/1K = ~388ms</text>
+      <text x="140" y="314" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="9" text-anchor="middle">Qwen3-4B FP8 · 1x L4 24GB</text>
+    </g>
   </svg>
 
   <div data-phase="1"><p style="font-size:20px"><strong>Step 1-2:</strong> Your prompt arrives and is split into tokens. Consider a 22,800-token agentic session.</p></div>
