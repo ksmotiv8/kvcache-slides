@@ -182,7 +182,7 @@ body.notes-on .slide.current .presenter-notes {
 <!-- SLIDE 1: Title -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s1">
-  <span class="slide-num">1 / 22</span>
+  <span class="slide-num">1 / 24</span>
   <h1>From Distributed Systems<br/>to GPU Inference</h1>
   <p class="subtitle">A systems engineer's journey into LLM inference.<br/>Routing, scheduling, placement, memory movement, tail latency.</p>
   <div class="presenter-notes">Open by framing the talk: this is a story about discovery. I came from distributed systems, was intimidated by the ML side of inference, and realized the hard problems at scale are the ones I already knew how to think about. The audience should leave with a concrete mental model for why inference at scale is really a distributed systems problem, and KV cache is the object at the center of it.</div>
@@ -192,7 +192,7 @@ body.notes-on .slide.current .presenter-notes {
 <!-- SLIDE 2: I was intimidated / Wait I know these -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s2" data-build-phases="2">
-  <span class="slide-num">2 / 22</span>
+  <span class="slide-num">2 / 24</span>
   <span class="section-tag">Perspective of a distributed systems engineer</span>
   <h2>Inference seems intimidating at first</h2>
 
@@ -219,7 +219,7 @@ body.notes-on .slide.current .presenter-notes {
 <!-- SLIDE 3: Agenda -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s3">
-  <span class="slide-num">3 / 22</span>
+  <span class="slide-num">3 / 24</span>
   <h2>Agenda</h2>
 
   <p style="font-size:22px;margin-bottom:28px">We are going to dig into the lifecycle of inference: the stages, the components, and the techniques used to make it faster and more efficient.</p>
@@ -243,7 +243,7 @@ body.notes-on .slide.current .presenter-notes {
 <!-- SLIDE 4: Journey of a Prompt -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s4" data-build-phases="7">
-  <span class="slide-num">4 / 22</span>
+  <span class="slide-num">4 / 24</span>
   <span class="section-tag">Steps in inference</span>
   <h2>Journey of a prompt</h2>
 
@@ -342,7 +342,7 @@ body.notes-on .slide.current .presenter-notes {
 <!-- SLIDE 4: Two Stages of Inference -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s5" data-build-phases="2">
-  <span class="slide-num">5 / 22</span>
+  <span class="slide-num">5 / 24</span>
   <span class="section-tag">Inference pipeline</span>
   <h2>Two stages of inference</h2>
   <p style="font-size:17px;color:var(--text-muted);margin-bottom:4px"><strong>Qwen3-4B FP8</strong> on <strong>1x NVIDIA L4 (24 GB)</strong></p>
@@ -435,7 +435,7 @@ body.notes-on .slide.current .presenter-notes {
 <!-- SLIDE 5: The best prefill optimization -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s6">
-  <span class="slide-num">6 / 22</span>
+  <span class="slide-num">6 / 24</span>
   <span class="section-tag">KV cache</span>
   <h2 style="font-size:48px;letter-spacing:-0.03em">The best prefill optimization<br/>is avoiding prefill.</h2>
 
@@ -448,7 +448,7 @@ body.notes-on .slide.current .presenter-notes {
 <!-- SLIDE 6: What is KV Cache -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s7">
-  <span class="slide-num">7 / 22</span>
+  <span class="slide-num">7 / 24</span>
   <span class="section-tag">The fundamentals</span>
   <h2>What is KV cache?</h2>
   <p style="font-size:17px;color:var(--text-muted);margin-bottom:8px">Using <strong style="color:var(--cyan)">Qwen3-4B (FP8)</strong> as our running example: 36 layers, 8 KV heads, 128 head_dim</p>
@@ -553,7 +553,7 @@ body.notes-on .slide.current .presenter-notes {
 <!-- SLIDE 7: KV Cache Scale -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s8">
-  <span class="slide-num">8 / 22</span>
+  <span class="slide-num">8 / 24</span>
   <span class="section-tag">The fundamentals</span>
   <h2>One session burns 1.6 GB of KV</h2>
 
@@ -577,7 +577,7 @@ body.notes-on .slide.current .presenter-notes {
 <!-- SLIDE 9: Disaggregation -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s9" data-build-phases="2">
-  <span class="slide-num">9 / 22</span>
+  <span class="slide-num">9 / 24</span>
   <span class="section-tag">The architecture</span>
   <h2>Disaggregation: separating prefill from decode</h2>
 
@@ -626,10 +626,143 @@ body.notes-on .slide.current .presenter-notes {
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
-<!-- SLIDE 10: Prefix Caching -->
+<!-- SLIDE 10: Dynamo Disaggregated Lifecycle -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s10" data-build-phases="2">
-  <span class="slide-num">10 / 22</span>
+<section class="slide" id="s10" data-build-phases="3">
+  <span class="slide-num">10 / 24</span>
+  <span class="section-tag">The architecture</span>
+  <h2>Inside NVIDIA Dynamo: the request lifecycle</h2>
+
+  <svg viewBox="0 0 900 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Sequence diagram showing the disaggregated inference lifecycle in NVIDIA Dynamo: client to frontend to router to prefill worker, KV transfer via NIXL, decode worker streams response back" style="width:100%;max-width:900px;height:auto;display:block;margin:4px 0">
+    <defs>
+      <marker id="aDyn" markerWidth="6" markerHeight="5" refX="6" refY="2.5" orient="auto"><path d="M0,0 L6,2.5 L0,5" fill="var(--text-muted)"/></marker>
+      <marker id="aDynC" markerWidth="6" markerHeight="5" refX="6" refY="2.5" orient="auto"><path d="M0,0 L6,2.5 L0,5" fill="var(--cyan)"/></marker>
+      <marker id="aDynA" markerWidth="6" markerHeight="5" refX="6" refY="2.5" orient="auto"><path d="M0,0 L6,2.5 L0,5" fill="var(--accent)"/></marker>
+      <marker id="aDynG" markerWidth="6" markerHeight="5" refX="6" refY="2.5" orient="auto"><path d="M0,0 L6,2.5 L0,5" fill="var(--green)"/></marker>
+      <marker id="aDynY" markerWidth="6" markerHeight="5" refX="6" refY="2.5" orient="auto"><path d="M0,0 L6,2.5 L0,5" fill="var(--yellow)"/></marker>
+    </defs>
+
+    <!-- Column headers -->
+    <rect x="30" y="6" width="100" height="30" rx="6" fill="rgba(255,255,255,0.06)" stroke="var(--border)" stroke-width="1"/>
+    <text x="80" y="26" fill="var(--text)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" font-weight="600">CLIENT</text>
+
+    <rect x="190" y="6" width="110" height="30" rx="6" fill="rgba(255,255,255,0.06)" stroke="var(--border)" stroke-width="1"/>
+    <text x="245" y="26" fill="var(--text)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" font-weight="600">FRONTEND</text>
+
+    <rect x="370" y="6" width="110" height="30" rx="6" fill="rgba(34,211,238,0.12)" stroke="var(--cyan)" stroke-width="1.5"/>
+    <text x="425" y="26" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" font-weight="600">ROUTER</text>
+
+    <rect x="550" y="6" width="130" height="30" rx="6" fill="rgba(130,140,248,0.15)" stroke="var(--accent)" stroke-width="1.5"/>
+    <text x="615" y="26" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" font-weight="600">PREFILL NODE</text>
+
+    <rect x="750" y="6" width="130" height="30" rx="6" fill="rgba(74,222,128,0.12)" stroke="var(--green)" stroke-width="1.5"/>
+    <text x="815" y="26" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" font-weight="600">DECODE NODE</text>
+
+    <!-- Lifelines -->
+    <line x1="80" y1="40" x2="80" y2="330" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3"/>
+    <line x1="245" y1="40" x2="245" y2="330" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3"/>
+    <line x1="425" y1="40" x2="425" y2="330" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3"/>
+    <line x1="615" y1="40" x2="615" y2="330" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3"/>
+    <line x1="815" y1="40" x2="815" y2="330" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3"/>
+
+    <!-- Phase 1: Request arrives, routing -->
+    <g data-phase="1">
+      <!-- 1. Client -> Frontend -->
+      <line x1="85" y1="60" x2="240" y2="60" stroke="var(--text-muted)" stroke-width="1.5" marker-end="url(#aDyn)"/>
+      <text x="162" y="54" fill="var(--text-dim)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle">request</text>
+
+      <!-- 2. Frontend -> Router (tokenize + preprocess) -->
+      <line x1="250" y1="85" x2="420" y2="85" stroke="var(--text-muted)" stroke-width="1.5" marker-end="url(#aDyn)"/>
+      <text x="335" y="79" fill="var(--text-dim)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle">tokenized request</text>
+
+      <!-- Router self-arrow: query KVIndexer -->
+      <path d="M 430 100 L 460 100 L 460 118 L 430 118" fill="none" stroke="var(--cyan)" stroke-width="1.5" marker-end="url(#aDynC)"/>
+      <text x="498" y="112" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="start">KVIndexer lookup</text>
+
+      <!-- 3. Router -> Prefill Node -->
+      <line x1="430" y1="135" x2="610" y2="135" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#aDynA)"/>
+      <text x="520" y="129" fill="var(--accent)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle">prefill request</text>
+    </g>
+
+    <!-- Phase 2: Prefill + KV transfer -->
+    <g data-phase="2">
+      <!-- Prefill computation block -->
+      <rect x="595" y="148" width="40" height="32" rx="3" fill="rgba(130,140,248,0.20)" stroke="var(--accent)" stroke-width="1"/>
+      <text x="615" y="168" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle">KV</text>
+
+      <!-- Prefill -> Router: disaggregated_params -->
+      <line x1="610" y1="195" x2="430" y2="195" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#aDynA)"/>
+      <text x="520" y="189" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle">transfer metadata</text>
+
+      <!-- Router -> Decode Node -->
+      <line x1="430" y1="215" x2="810" y2="215" stroke="var(--green)" stroke-width="1.5" marker-end="url(#aDynG)"/>
+      <text x="620" y="209" fill="var(--green)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle">decode request + metadata</text>
+
+      <!-- KV Transfer: Prefill <-> Decode (NIXL) -->
+      <line x1="620" y1="235" x2="810" y2="235" stroke="var(--yellow)" stroke-width="2.5" marker-end="url(#aDynY)"/>
+      <rect x="665" y="225" width="100" height="16" rx="3" fill="var(--bg)"/>
+      <text x="715" y="237" fill="var(--yellow)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle" font-weight="600">NIXL (RDMA)</text>
+    </g>
+
+    <!-- Phase 3: Decode + stream -->
+    <g data-phase="3">
+      <!-- Decode computation block -->
+      <rect x="795" y="252" width="40" height="28" rx="3" fill="rgba(74,222,128,0.20)" stroke="var(--green)" stroke-width="1"/>
+      <text x="815" y="270" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="9" text-anchor="middle">gen</text>
+
+      <!-- Decode -> Frontend: stream tokens -->
+      <line x1="810" y1="293" x2="250" y2="293" stroke="var(--green)" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#aDynG)"/>
+      <text x="530" y="287" fill="var(--green)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle">stream tokens</text>
+
+      <!-- Frontend -> Client: response -->
+      <line x1="240" y1="313" x2="85" y2="313" stroke="var(--text-muted)" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#aDyn)"/>
+      <text x="162" y="307" fill="var(--text-dim)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle">response</text>
+    </g>
+  </svg>
+
+  <div class="presenter-notes">Walk through the Dynamo lifecycle step by step. Phase 1: request arrives at the Frontend (OpenAI-compatible HTTP server), gets tokenized, forwarded to the PrefillRouter. The router queries the KVIndexer (a radix tree tracking cached blocks per worker) to find the prefill node with the most KV cache overlap, minimizing redundant computation. Phase 2: the prefill node computes KV vectors and returns transfer metadata. The router selects a decode node and forwards the request. NIXL performs direct GPU-to-GPU KV transfer via RDMA or NVLink, zero-copy. Phase 3: the decode node generates tokens one at a time, streaming back through the Frontend. Key insight: the router is the brain, the KV cache is the shared state, and NIXL is the data plane. This is the same architecture pattern as a CDN: route to where the data lives, transfer state when you can't.</div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- SLIDE 11: Disaggregation: the data -->
+<!-- ════════════════════════════════════════════════════════ -->
+<section class="slide" id="s11" data-build-phases="2">
+  <span class="slide-num">11 / 24</span>
+  <span class="section-tag">The architecture</span>
+  <h2>Disaggregation: the data</h2>
+  <p style="font-size:17px;color:var(--text-muted);margin-bottom:8px">Prefill is compute-bound (90-95% GPU utilization). Decode is memory-bound (20-40%). Running both on the same GPU wastes whichever resource isn't the bottleneck.</p>
+
+  <table style="font-size:16px">
+    <thead><tr><th>System</th><th>Metric</th><th>Result</th></tr></thead>
+    <tbody>
+      <tr><td><strong style="color:var(--cyan)">NVIDIA Dynamo</strong></td><td>Throughput (Llama 70B, Hopper)</td><td class="r g">2x</td></tr>
+      <tr><td><strong style="color:var(--cyan)">Dynamo + Baseten</strong></td><td>TTFT (Qwen3 Coder 480B, production)</td><td class="r g">2x faster</td></tr>
+      <tr><td><strong style="color:var(--accent)">Splitwise</strong> (MSFT)</td><td>Throughput at same cost (A100/H100)</td><td class="r g">1.4x at 20% lower cost</td></tr>
+      <tr><td><strong style="color:var(--accent)">DistServe</strong> (OSDI '24)</td><td>Goodput vs vLLM (summarization)</td><td class="r g">4.48x</td></tr>
+      <tr><td><strong style="color:var(--yellow)">Mooncake</strong> (Kimi)</td><td>Request capacity (prod, 100B+ tok/day)</td><td class="r g">+107-498%</td></tr>
+      <tr><td><strong style="color:var(--yellow)">Moreh</strong> (MI300X)</td><td>p99 inter-token latency (DeepSeek-R1)</td><td class="r g">12-51x reduction</td></tr>
+    </tbody>
+  </table>
+
+  <div data-phase="1">
+    <div class="callout" style="margin-top:16px">
+      <strong>The pattern:</strong> prefill and decode have fundamentally different hardware profiles. Separating them lets each phase run on optimal hardware, and lets each pool scale independently.
+    </div>
+  </div>
+
+  <div data-phase="2">
+    <div class="callout warn" style="margin-top:12px">
+      <strong>Caveat:</strong> disaggregation adds KV transfer latency (~27ms over InfiniBand). Short prompts with high cache hit rates can see 20-30% degradation. The gains scale with input length and output-to-input ratio.
+    </div>
+  </div>
+  <div class="presenter-notes">Every major inference system has converged on disaggregation: Dynamo, llm-d, SGLang, vLLM, Mooncake, DistServe. The Splitwise numbers are the cleanest: prefill achieves 90-95% GPU compute utilization at 200-400 ops/byte, while decode gets only 20-40% at 60-80 ops/byte. Running both on the same GPU wastes compute during decode and bandwidth during prefill. The 27ms KV transfer cost of disaggregation replaces 200-500ms of queuing delay from prefill-decode interference. Not all workloads benefit equally, but for long-context and reasoning workloads, the data is unambiguous.</div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- SLIDE 12: Prefix Caching -->
+<!-- ════════════════════════════════════════════════════════ -->
+<section class="slide" id="s12" data-build-phases="2">
+  <span class="slide-num">12 / 24</span>
   <span class="section-tag">The shared state</span>
   <h2>Prefix caching: how it actually works</h2>
 
@@ -674,8 +807,8 @@ body.notes-on .slide.current .presenter-notes {
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 13: The Experiment -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s11">
-  <span class="slide-num">11 / 22</span>
+<section class="slide" id="s13">
+  <span class="slide-num">13 / 24</span>
   <span class="section-tag">The experiment</span>
   <h2>Benchmark setup</h2>
 
@@ -713,8 +846,8 @@ body.notes-on .slide.current .presenter-notes {
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 14: Before the cliff -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s12">
-  <span class="slide-num">12 / 22</span>
+<section class="slide" id="s14">
+  <span class="slide-num">14 / 24</span>
   <span class="section-tag">The experiment</span>
   <h2>At 12 concurrent sessions, everything looks fine</h2>
 
@@ -742,8 +875,8 @@ body.notes-on .slide.current .presenter-notes {
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 15: p50 vs p99 contrast -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s13">
-  <span class="slide-num">13 / 22</span>
+<section class="slide" id="s15">
+  <span class="slide-num">15 / 24</span>
   <span class="section-tag">The experiment</span>
   <h2>Now add two more sessions</h2>
 
@@ -771,8 +904,8 @@ body.notes-on .slide.current .presenter-notes {
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 16: The Cliff Chart -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s14">
-  <span class="slide-num">14 / 22</span>
+<section class="slide" id="s16">
+  <span class="slide-num">16 / 24</span>
   <span class="section-tag">The experiment</span>
   <h2>The concurrency cliff</h2>
   <p style="font-size:17px;color:var(--text-muted);margin-bottom:4px"><strong>Qwen3-4B FP8</strong> on <strong>1x NVIDIA L4 (24 GB)</strong>, vLLM 0.20.2, APC enabled</p>
@@ -836,8 +969,8 @@ body.notes-on .slide.current .presenter-notes {
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 15: Predict the concurrency knee -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s15" data-build-phases="2">
-  <span class="slide-num">15 / 22</span>
+<section class="slide" id="s17" data-build-phases="2">
+  <span class="slide-num">17 / 24</span>
   <span class="section-tag">The systems lesson</span>
   <h2>Predict the concurrency knee</h2>
 
@@ -863,8 +996,8 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 19: Quantization Moves the Knee -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s16" data-build-phases="2">
-  <span class="slide-num">16 / 22</span>
+<section class="slide" id="s18" data-build-phases="2">
+  <span class="slide-num">18 / 24</span>
   <span class="section-tag">The systems lesson</span>
   <h2>One config flag, 75% more headroom</h2>
   <p style="font-size:17px;color:var(--text-muted);margin-bottom:4px"><strong>Qwen3-4B</strong> on <strong>1x NVIDIA L4 (24 GB)</strong>, vLLM 0.20.2</p>
@@ -924,8 +1057,8 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 20: Best/Worst/Realistic -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s17" data-build-phases="2">
-  <span class="slide-num">17 / 22</span>
+<section class="slide" id="s19" data-build-phases="2">
+  <span class="slide-num">19 / 24</span>
   <span class="section-tag">The systems lesson</span>
   <h2>The cost of cache misses</h2>
   <p style="font-size:17px;color:var(--text-muted);margin-bottom:8px"><strong>Qwen3-4B FP8</strong> on <strong>1x NVIDIA L4 (24 GB)</strong>, vLLM 0.20.2, APC enabled</p>
@@ -955,8 +1088,8 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 21: Same GPU Different Workloads -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s18" data-build-phases="1">
-  <span class="slide-num">18 / 22</span>
+<section class="slide" id="s20" data-build-phases="1">
+  <span class="slide-num">20 / 24</span>
   <span class="section-tag">The systems lesson</span>
   <h2>The knee is workload-specific</h2>
   <p style="font-size:17px;color:var(--text-muted);margin-bottom:8px"><strong>Qwen3-4B FP8</strong> on <strong>1x NVIDIA L4 (24 GB)</strong>, formula: <code>(kv_capacity - shared_prefix) / per_session_unique</code></p>
@@ -982,8 +1115,8 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 23: Cache-Aware Routing -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s19" data-build-phases="2">
-  <span class="slide-num">19 / 22</span>
+<section class="slide" id="s21" data-build-phases="2">
+  <span class="slide-num">21 / 24</span>
   <span class="section-tag">The systems stack</span>
   <h2>Cache-aware routing</h2>
 
@@ -1002,8 +1135,8 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 24: Tiered KV Storage -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s20" data-build-phases="2">
-  <span class="slide-num">20 / 22</span>
+<section class="slide" id="s22" data-build-phases="2">
+  <span class="slide-num">22 / 24</span>
   <span class="section-tag">The systems stack</span>
   <h2>Tiered KV storage</h2>
 
@@ -1022,8 +1155,8 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 25: Operate in Production -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s21" data-build-phases="2">
-  <span class="slide-num">21 / 22</span>
+<section class="slide" id="s23" data-build-phases="2">
+  <span class="slide-num">23 / 24</span>
   <span class="section-tag">The systems stack</span>
   <h2>Operating rules</h2>
 
@@ -1048,8 +1181,8 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 27: Closing -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s22">
-  <span class="slide-num">22 / 22</span>
+<section class="slide" id="s24">
+  <span class="slide-num">24 / 24</span>
   <span class="section-tag">The conclusion</span>
   <h2>From distributed systems<br/>to GPU inference</h2>
 
@@ -1072,7 +1205,7 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
 <!-- ════════════════════════════════════════════════════════ -->
 <div id="nav">
   <button id="prevBtn" aria-label="Previous slide">Prev</button>
-  <span id="counter">1 / 22</span>
+  <span id="counter">1 / 24</span>
   <button id="nextBtn" aria-label="Next slide">Next</button>
 </div>
 <div id="notes-indicator">P: notes off</div>
