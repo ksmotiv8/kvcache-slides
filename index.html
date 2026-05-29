@@ -218,7 +218,7 @@ body.notes-on .slide.current .presenter-notes {
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 3: Journey of a Prompt -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s3" data-build-phases="6">
+<section class="slide" id="s3" data-build-phases="7">
   <span class="slide-num">3 / 27</span>
   <span class="section-tag">The big picture</span>
   <h2>Journey of a prompt</h2>
@@ -286,25 +286,27 @@ body.notes-on .slide.current .presenter-notes {
       <rect x="580" y="278" width="270" height="42" rx="8" fill="rgba(74,222,128,0.06)" stroke="var(--green)" stroke-width="1.5"/>
       <text x="715" y="300" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle" font-weight="700">6. RESPONSE COMPLETE</text>
       <text x="715" y="316" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">KV cache kept if memory allows</text>
-      <!-- Where cost lives legend -->
-      <rect x="10" y="100" width="260" height="220" rx="10" fill="rgba(255,255,255,0.02)" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3"/>
-      <text x="140" y="124" fill="var(--text)" font-family="'Inter',sans-serif" font-size="13" text-anchor="middle" font-weight="700">Where the cost lives</text>
-      <rect x="30" y="140" width="16" height="16" rx="2" fill="rgba(130,140,248,0.3)"/>
-      <text x="56" y="153" fill="var(--text-dim)" font-family="'Inter',sans-serif" font-size="12" text-anchor="start">Prefill compute (FLOPS)</text>
-      <rect x="30" y="168" width="16" height="16" rx="2" fill="rgba(34,211,238,0.3)"/>
-      <text x="56" y="181" fill="var(--text-dim)" font-family="'Inter',sans-serif" font-size="12" text-anchor="start">KV cache memory (GB)</text>
-      <rect x="30" y="196" width="16" height="16" rx="2" fill="rgba(74,222,128,0.3)"/>
-      <text x="56" y="209" fill="var(--text-dim)" font-family="'Inter',sans-serif" font-size="12" text-anchor="start">Memory bandwidth (GB/s)</text>
-      <rect x="30" y="224" width="16" height="16" rx="2" fill="rgba(250,204,21,0.3)"/>
-      <text x="56" y="237" fill="var(--text-dim)" font-family="'Inter',sans-serif" font-size="12" text-anchor="start">User-visible latency (TTFT)</text>
-      <text x="140" y="268" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle">Cache hit: skip prefill cost</text>
-      <text x="140" y="284" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle">Cache miss: pay full prefill</text>
-      <text x="140" y="300" fill="var(--red)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle" font-weight="600">22,800 tokens @ ~17ms/1K = ~388ms</text>
-      <text x="140" y="314" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="9" text-anchor="middle">Qwen3-4B FP8 · 1x L4 24GB</text>
     </g>
 
-    <!-- Phase 6: Cache HIT path — curves down to KV Cache, skipping prefill -->
+    <!-- Phase 6: Where cost lives legend -->
     <g data-phase="6">
+      <rect x="10" y="80" width="320" height="260" rx="10" fill="rgba(255,255,255,0.03)" stroke="var(--border)" stroke-width="1.5" stroke-dasharray="4 3"/>
+      <text x="170" y="110" fill="var(--text)" font-family="'Inter',sans-serif" font-size="16" text-anchor="middle" font-weight="700">Where the cost lives</text>
+      <rect x="30" y="130" width="20" height="20" rx="3" fill="rgba(130,140,248,0.3)"/>
+      <text x="62" y="147" fill="var(--text-dim)" font-family="'Inter',sans-serif" font-size="15" text-anchor="start">Prefill compute (FLOPS)</text>
+      <rect x="30" y="164" width="20" height="20" rx="3" fill="rgba(34,211,238,0.3)"/>
+      <text x="62" y="181" fill="var(--text-dim)" font-family="'Inter',sans-serif" font-size="15" text-anchor="start">KV cache memory (GB)</text>
+      <rect x="30" y="198" width="20" height="20" rx="3" fill="rgba(74,222,128,0.3)"/>
+      <text x="62" y="215" fill="var(--text-dim)" font-family="'Inter',sans-serif" font-size="15" text-anchor="start">Memory bandwidth (GB/s)</text>
+      <rect x="30" y="232" width="20" height="20" rx="3" fill="rgba(250,204,21,0.3)"/>
+      <text x="62" y="249" fill="var(--text-dim)" font-family="'Inter',sans-serif" font-size="15" text-anchor="start">User-visible latency (TTFT)</text>
+      <text x="170" y="284" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="14" text-anchor="middle">Cache hit: skip prefill cost</text>
+      <text x="170" y="304" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="14" text-anchor="middle">Cache miss: pay full prefill</text>
+      <text x="170" y="326" fill="var(--red)" font-family="'Inter',sans-serif" font-size="14" text-anchor="middle" font-weight="600">22,800 tokens @ ~17ms/1K = ~388ms</text>
+    </g>
+
+    <!-- Phase 7: Cache HIT path — curves down to KV Cache, skipping prefill -->
+    <g data-phase="7">
       <line x1="480" y1="66" x2="480" y2="82" stroke="var(--green)" stroke-width="1.5"/>
       <path d="M 480 82 C 480 130, 540 130, 580 130" fill="none" stroke="var(--green)" stroke-width="1.5" marker-end="url(#ag)"/>
       <rect x="470" y="90" width="60" height="18" rx="3" fill="var(--bg)"/>
