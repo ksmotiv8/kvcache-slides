@@ -268,15 +268,15 @@ body.notes-on .slide.current .presenter-notes {
       <rect x="580" y="100" width="270" height="60" rx="10" fill="rgba(34,211,238,0.08)" stroke="var(--cyan)" stroke-width="2"/>
       <text x="715" y="124" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="13" text-anchor="middle" font-weight="700">KV CACHE (GPU VRAM)</text>
       <text x="715" y="146" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle">K and V vectors stored for all processed tokens</text>
+    </g>
+
+    <!-- Phase 5: Decode loop + TTFT → Response + cost legend -->
+    <g data-phase="5">
+      <line x1="715" y1="164" x2="715" y2="186" stroke="var(--green)" stroke-width="1.5" marker-end="url(#aj)"/>
       <rect x="375" y="175" width="120" height="40" rx="6" fill="rgba(250,204,21,0.12)" stroke="var(--yellow)" stroke-width="2"/>
       <text x="435" y="193" fill="var(--yellow)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle" font-weight="700">TTFT</text>
       <text x="435" y="207" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">first token out</text>
       <line x1="498" y1="195" x2="580" y2="195" stroke="var(--yellow)" stroke-width="1.5" stroke-dasharray="4 3"/>
-    </g>
-
-    <!-- Phase 5: Decode loop → Response + cost legend -->
-    <g data-phase="5">
-      <line x1="715" y1="164" x2="715" y2="186" stroke="var(--green)" stroke-width="1.5" marker-end="url(#aj)"/>
       <rect x="580" y="190" width="270" height="56" rx="10" fill="rgba(74,222,128,0.10)" stroke="var(--green)" stroke-width="1.5"/>
       <text x="715" y="212" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle" font-weight="700">5. DECODE LOOP</text>
       <text x="715" y="230" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle">read KV → gen token → append → repeat</text>
