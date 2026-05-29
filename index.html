@@ -343,86 +343,90 @@ body.notes-on .slide.current .presenter-notes {
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s5" data-build-phases="3">
   <span class="slide-num">5 / 24</span>
-  <span class="section-tag">The architecture</span>
+  <span class="section-tag">Journey of a prompt</span>
   <h2>Inside NVIDIA Dynamo: the request lifecycle</h2>
 
-  <svg viewBox="0 0 900 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Sequence diagram showing the disaggregated inference lifecycle in NVIDIA Dynamo: client to frontend to router to prefill worker, KV transfer via NIXL, decode worker streams response back" style="width:100%;max-width:900px;height:auto;display:block;margin:4px 0">
+  <svg viewBox="0 0 860 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Sequence diagram showing the disaggregated inference lifecycle in NVIDIA Dynamo: client to router to prefill node, KV transfer via NIXL to decode node, response streams back" style="width:100%;max-width:900px;height:auto;display:block;margin:4px 0">
     <defs>
-      <marker id="aDyn" markerWidth="6" markerHeight="5" refX="6" refY="2.5" orient="auto"><path d="M0,0 L6,2.5 L0,5" fill="var(--text-muted)"/></marker>
-      <marker id="aDynC" markerWidth="6" markerHeight="5" refX="6" refY="2.5" orient="auto"><path d="M0,0 L6,2.5 L0,5" fill="var(--cyan)"/></marker>
-      <marker id="aDynA" markerWidth="6" markerHeight="5" refX="6" refY="2.5" orient="auto"><path d="M0,0 L6,2.5 L0,5" fill="var(--accent)"/></marker>
-      <marker id="aDynG" markerWidth="6" markerHeight="5" refX="6" refY="2.5" orient="auto"><path d="M0,0 L6,2.5 L0,5" fill="var(--green)"/></marker>
-      <marker id="aDynY" markerWidth="6" markerHeight="5" refX="6" refY="2.5" orient="auto"><path d="M0,0 L6,2.5 L0,5" fill="var(--yellow)"/></marker>
+      <marker id="aDyn" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5" fill="var(--text-muted)"/></marker>
+      <marker id="aDynC" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5" fill="var(--cyan)"/></marker>
+      <marker id="aDynA" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5" fill="var(--accent)"/></marker>
+      <marker id="aDynG" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5" fill="var(--green)"/></marker>
+      <marker id="aDynY" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5" fill="var(--yellow)"/></marker>
     </defs>
 
-    <!-- Column headers -->
-    <rect x="30" y="6" width="100" height="30" rx="6" fill="rgba(255,255,255,0.06)" stroke="var(--border)" stroke-width="1"/>
-    <text x="80" y="26" fill="var(--text)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" font-weight="600">CLIENT</text>
+    <!-- Column headers (4 columns, bigger) -->
+    <rect x="20" y="6" width="120" height="36" rx="8" fill="rgba(255,255,255,0.06)" stroke="var(--border)" stroke-width="1.5"/>
+    <text x="80" y="30" fill="var(--text)" font-family="'JetBrains Mono',monospace" font-size="14" text-anchor="middle" font-weight="600">CLIENT</text>
 
-    <rect x="190" y="6" width="110" height="30" rx="6" fill="rgba(255,255,255,0.06)" stroke="var(--border)" stroke-width="1"/>
-    <text x="245" y="26" fill="var(--text)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" font-weight="600">FRONTEND</text>
+    <rect x="230" y="6" width="150" height="36" rx="8" fill="rgba(34,211,238,0.12)" stroke="var(--cyan)" stroke-width="1.5"/>
+    <text x="305" y="30" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="14" text-anchor="middle" font-weight="600">ROUTER</text>
 
-    <rect x="370" y="6" width="110" height="30" rx="6" fill="rgba(34,211,238,0.12)" stroke="var(--cyan)" stroke-width="1.5"/>
-    <text x="425" y="26" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" font-weight="600">ROUTER</text>
+    <rect x="470" y="6" width="160" height="36" rx="8" fill="rgba(130,140,248,0.15)" stroke="var(--accent)" stroke-width="1.5"/>
+    <text x="550" y="30" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="14" text-anchor="middle" font-weight="600">PREFILL NODE</text>
 
-    <rect x="550" y="6" width="130" height="30" rx="6" fill="rgba(130,140,248,0.15)" stroke="var(--accent)" stroke-width="1.5"/>
-    <text x="615" y="26" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" font-weight="600">PREFILL NODE</text>
-
-    <rect x="750" y="6" width="130" height="30" rx="6" fill="rgba(74,222,128,0.12)" stroke="var(--green)" stroke-width="1.5"/>
-    <text x="815" y="26" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" font-weight="600">DECODE NODE</text>
+    <rect x="710" y="6" width="140" height="36" rx="8" fill="rgba(74,222,128,0.12)" stroke="var(--green)" stroke-width="1.5"/>
+    <text x="780" y="30" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="14" text-anchor="middle" font-weight="600">DECODE NODE</text>
 
     <!-- Lifelines -->
-    <line x1="80" y1="40" x2="80" y2="330" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3"/>
-    <line x1="245" y1="40" x2="245" y2="330" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3"/>
-    <line x1="425" y1="40" x2="425" y2="330" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3"/>
-    <line x1="615" y1="40" x2="615" y2="330" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3"/>
-    <line x1="815" y1="40" x2="815" y2="330" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3"/>
+    <line x1="80" y1="46" x2="80" y2="330" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3"/>
+    <line x1="305" y1="46" x2="305" y2="330" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3"/>
+    <line x1="550" y1="46" x2="550" y2="330" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3"/>
+    <line x1="780" y1="46" x2="780" y2="330" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3"/>
 
     <!-- Phase 1: Request arrives, routing -->
     <g data-phase="1">
-      <line x1="85" y1="60" x2="240" y2="60" stroke="var(--text-muted)" stroke-width="1.5" marker-end="url(#aDyn)"/>
-      <text x="162" y="54" fill="var(--text-dim)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle">request</text>
+      <!-- Client -> Router -->
+      <line x1="86" y1="70" x2="298" y2="70" stroke="var(--text-muted)" stroke-width="1.5" marker-end="url(#aDyn)"/>
+      <text x="192" y="63" fill="var(--text-dim)" font-family="'Inter',sans-serif" font-size="13" text-anchor="middle">request</text>
 
-      <line x1="250" y1="85" x2="420" y2="85" stroke="var(--text-muted)" stroke-width="1.5" marker-end="url(#aDyn)"/>
-      <text x="335" y="79" fill="var(--text-dim)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle">tokenized request</text>
+      <!-- Router self-arrow: tokenize + KVIndexer -->
+      <path d="M 312 90 L 350 90 L 350 112 L 312 112" fill="none" stroke="var(--cyan)" stroke-width="1.5" marker-end="url(#aDynC)"/>
+      <text x="360" y="96" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="start">tokenize</text>
+      <text x="360" y="112" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="start">KVIndexer lookup</text>
 
-      <path d="M 430 100 L 460 100 L 460 118 L 430 118" fill="none" stroke="var(--cyan)" stroke-width="1.5" marker-end="url(#aDynC)"/>
-      <text x="498" y="112" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="start">KVIndexer lookup</text>
-
-      <line x1="430" y1="135" x2="610" y2="135" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#aDynA)"/>
-      <text x="520" y="129" fill="var(--accent)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle">prefill request</text>
+      <!-- Router -> Prefill Node -->
+      <line x1="312" y1="135" x2="543" y2="135" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#aDynA)"/>
+      <text x="428" y="128" fill="var(--accent)" font-family="'Inter',sans-serif" font-size="13" text-anchor="middle">prefill request</text>
     </g>
 
     <!-- Phase 2: Prefill + KV transfer -->
     <g data-phase="2">
-      <rect x="595" y="148" width="40" height="32" rx="3" fill="rgba(130,140,248,0.20)" stroke="var(--accent)" stroke-width="1"/>
-      <text x="615" y="168" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle">KV</text>
+      <!-- Prefill computation block -->
+      <rect x="530" y="150" width="40" height="36" rx="4" fill="rgba(130,140,248,0.20)" stroke="var(--accent)" stroke-width="1.5"/>
+      <text x="550" y="173" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">KV</text>
 
-      <line x1="610" y1="195" x2="430" y2="195" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#aDynA)"/>
-      <text x="520" y="189" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle">transfer metadata</text>
+      <!-- Prefill -> Router: transfer metadata -->
+      <line x1="543" y1="202" x2="312" y2="202" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#aDynA)"/>
+      <text x="428" y="196" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">transfer metadata</text>
 
-      <line x1="430" y1="215" x2="810" y2="215" stroke="var(--green)" stroke-width="1.5" marker-end="url(#aDynG)"/>
-      <text x="620" y="209" fill="var(--green)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle">decode request + metadata</text>
+      <!-- Router -> Decode Node -->
+      <line x1="312" y1="228" x2="773" y2="228" stroke="var(--green)" stroke-width="1.5" marker-end="url(#aDynG)"/>
+      <text x="543" y="222" fill="var(--green)" font-family="'Inter',sans-serif" font-size="13" text-anchor="middle">decode request + metadata</text>
 
-      <line x1="620" y1="235" x2="810" y2="235" stroke="var(--yellow)" stroke-width="2.5" marker-end="url(#aDynY)"/>
-      <rect x="665" y="225" width="100" height="16" rx="3" fill="var(--bg)"/>
-      <text x="715" y="237" fill="var(--yellow)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle" font-weight="600">NIXL (RDMA)</text>
+      <!-- KV Transfer: Prefill -> Decode (NIXL) -->
+      <line x1="556" y1="252" x2="773" y2="252" stroke="var(--yellow)" stroke-width="2.5" marker-end="url(#aDynY)"/>
+      <rect x="612" y="241" width="110" height="20" rx="4" fill="var(--bg)"/>
+      <text x="667" y="255" fill="var(--yellow)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle" font-weight="600">NIXL (RDMA)</text>
     </g>
 
     <!-- Phase 3: Decode + stream -->
     <g data-phase="3">
-      <rect x="795" y="252" width="40" height="28" rx="3" fill="rgba(74,222,128,0.20)" stroke="var(--green)" stroke-width="1"/>
-      <text x="815" y="270" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="9" text-anchor="middle">gen</text>
+      <!-- Decode computation block -->
+      <rect x="760" y="268" width="40" height="30" rx="4" fill="rgba(74,222,128,0.20)" stroke="var(--green)" stroke-width="1.5"/>
+      <text x="780" y="288" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">gen</text>
 
-      <line x1="810" y1="293" x2="250" y2="293" stroke="var(--green)" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#aDynG)"/>
-      <text x="530" y="287" fill="var(--green)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle">stream tokens</text>
+      <!-- Decode -> Router: stream tokens -->
+      <line x1="773" y1="310" x2="312" y2="310" stroke="var(--green)" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#aDynG)"/>
+      <text x="543" y="304" fill="var(--green)" font-family="'Inter',sans-serif" font-size="13" text-anchor="middle">stream tokens</text>
 
-      <line x1="240" y1="313" x2="85" y2="313" stroke="var(--text-muted)" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#aDyn)"/>
-      <text x="162" y="307" fill="var(--text-dim)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle">response</text>
+      <!-- Router -> Client: response -->
+      <line x1="298" y1="328" x2="86" y2="328" stroke="var(--text-muted)" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#aDyn)"/>
+      <text x="192" y="322" fill="var(--text-dim)" font-family="'Inter',sans-serif" font-size="13" text-anchor="middle">response</text>
     </g>
   </svg>
 
-  <div class="presenter-notes">Walk through the Dynamo lifecycle step by step. Phase 1: request arrives at the Frontend (OpenAI-compatible HTTP server), gets tokenized, forwarded to the PrefillRouter. The router queries the KVIndexer (a radix tree tracking cached blocks per worker) to find the prefill node with the most KV cache overlap, minimizing redundant computation. Phase 2: the prefill node computes KV vectors and returns transfer metadata. The router selects a decode node and forwards the request. NIXL performs direct GPU-to-GPU KV transfer via RDMA or NVLink, zero-copy. Phase 3: the decode node generates tokens one at a time, streaming back through the Frontend. Key insight: the router is the brain, the KV cache is the shared state, and NIXL is the data plane. This is the same architecture pattern as a CDN: route to where the data lives, transfer state when you can't.</div>
+  <div class="presenter-notes">Walk through the Dynamo lifecycle. Phase 1: request arrives at the Router, which tokenizes the input and queries the KVIndexer (a radix tree tracking cached blocks per worker) to find the prefill node with the most KV cache overlap. Phase 2: the prefill node computes KV vectors and returns transfer metadata. The router selects a decode node and forwards the request. NIXL performs direct GPU-to-GPU KV transfer via RDMA or NVLink, zero-copy. Phase 3: the decode node generates tokens one at a time, streaming back through the router. The router is the brain, the KV cache is the shared state, and NIXL is the data plane.</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
