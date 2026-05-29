@@ -552,25 +552,45 @@ body.notes-on .slide.current .presenter-notes {
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 7: KV Cache Scale -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s8">
+<section class="slide" id="s8" data-build-phases="1">
   <span class="slide-num">8 / 24</span>
   <span class="section-tag">Tiny model, big cache</span>
   <h2>One session burns 1.6 GB of KV</h2>
 
-  <div class="code-block" style="font-size:18px;max-width:860px">
+  <div style="display:grid;grid-template-columns:1fr 340px;gap:32px;align-items:start">
+    <div>
+      <div class="code-block" style="font-size:18px;max-width:560px">
 <span class="cm">// Per-token KV at fp8</span><br/>
 <span class="fn">layers</span> × <span class="fn">kv_heads</span> × <span class="fn">head_dim</span> × <span class="num">2</span>(K,V) × <span class="fn">dtype_bytes</span><br/>
 <span class="num">36</span>&nbsp;&nbsp;&nbsp;&nbsp; × <span class="num">8</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; × <span class="num">128</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; × <span class="num">2</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; × <span class="num">1</span> = <span class="fn">72 KB per token</span>
-  </div>
+      </div>
 
-  <div class="big-number" style="margin-top:24px">~1.6 GB</div>
-  <p><strong>of cached state for one 22,800-token session</strong></p>
-  <p style="font-size:18px;color:var(--text-muted)">That is 6.7% of a 24 GB L4 GPU, for a single user.</p>
+      <div class="big-number" style="margin-top:24px">~1.6 GB</div>
+      <p><strong>of cached state for one 22,800-token session</strong></p>
+      <p style="font-size:18px;color:var(--text-muted)">That is 6.7% of a 24 GB L4 GPU, for a single user.</p>
 
-  <div class="callout" style="margin-top:20px">
-    Multiply by concurrent sessions and you see why this becomes a <strong>memory management problem</strong>, not a compute problem.
+      <div class="callout" style="margin-top:20px">
+        Multiply by concurrent sessions and you see why this becomes a <strong>memory management problem</strong>, not a compute problem.
+      </div>
+    </div>
+
+    <div data-phase="1">
+      <table style="font-size:14px;max-width:340px">
+        <thead><tr><th>GPU</th><th>VRAM</th><th>BW</th><th>Sessions</th></tr></thead>
+        <tbody>
+          <tr><td>T4</td><td class="r">16 GB</td><td class="r" style="color:var(--text-muted)">320</td><td class="r">~5</td></tr>
+          <tr><td><strong style="color:var(--cyan)">L4</strong></td><td class="r cy">24 GB</td><td class="r" style="color:var(--text-muted)">300</td><td class="r cy">~7</td></tr>
+          <tr><td>L40S</td><td class="r">48 GB</td><td class="r" style="color:var(--text-muted)">864</td><td class="r">~15</td></tr>
+          <tr><td>A100</td><td class="r">80 GB</td><td class="r" style="color:var(--text-muted)">2,039</td><td class="r">~27</td></tr>
+          <tr><td>H100</td><td class="r">80 GB</td><td class="r" style="color:var(--text-muted)">3,350</td><td class="r">~27</td></tr>
+          <tr><td>H200</td><td class="r">141 GB</td><td class="r" style="color:var(--text-muted)">4,800</td><td class="r g">~48</td></tr>
+          <tr><td>B200</td><td class="r">192 GB</td><td class="r" style="color:var(--text-muted)">8,000</td><td class="r g">~66</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:12px;color:var(--text-muted);margin-top:8px;max-width:340px">Sessions = ~50-55% of VRAM for KV / 1.6 GB. BW in GB/s. Same Qwen3-4B FP8 workload.</p>
+    </div>
   </div>
-  <div class="presenter-notes">This is the punchline of the KV cache explanation. 72 KB per token sounds small, but 22,800 tokens at 72 KB each is 1.6 GB. On a 24 GB GPU, that is nearly 7% of total VRAM for one session. Now imagine 14 concurrent sessions.</div>
+  <div class="presenter-notes">72 KB per token sounds small, but 22,800 tokens at 72 KB each is 1.6 GB. On a 24 GB L4, that is nearly 7% of total VRAM for a single session. The GPU table drives the point: more VRAM = more concurrent sessions, period. An H100 and A100 both have 80 GB, so they serve the same ~27 sessions despite the H100 having 64% more bandwidth. Bandwidth determines decode speed; VRAM determines concurrency. The H200's 141 GB nearly doubles the H100's session count. B200 at 192 GB pushes to 66. The bottleneck is memory capacity, not compute.</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
