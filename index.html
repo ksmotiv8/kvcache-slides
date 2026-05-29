@@ -348,7 +348,7 @@ body.notes-on .slide.current .presenter-notes {
   <span class="section-tag">Journey of a prompt</span>
   <h2>Inside NVIDIA Dynamo: the request lifecycle</h2>
 
-  <svg viewBox="0 0 880 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Sequence diagram showing the disaggregated inference lifecycle in NVIDIA Dynamo: client to router to prefill node, KV transfer via NIXL to decode node, response streams back" style="width:100%;max-width:960px;height:auto;display:block;margin:4px 0">
+  <svg viewBox="0 0 900 430" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Sequence diagram showing the disaggregated inference lifecycle in NVIDIA Dynamo: client to router to prefill node, KV transfer via NIXL to decode node, response streams back" style="width:100%;max-width:960px;height:auto;display:block;margin:4px 0">
     <defs>
       <marker id="aDyn" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="var(--text-muted)"/></marker>
       <marker id="aDynC" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="var(--cyan)"/></marker>
@@ -357,69 +357,69 @@ body.notes-on .slide.current .presenter-notes {
       <marker id="aDynY" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="var(--yellow)"/></marker>
     </defs>
 
-    <!-- ═══ ZONE: NVIDIA DYNAMO (Router is Dynamo) ═══ -->
-    <rect x="190" y="4" width="200" height="390" rx="12" fill="rgba(34,211,238,0.04)" stroke="var(--cyan)" stroke-width="2" stroke-dasharray="0"/>
-    <text x="290" y="394" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle" font-weight="700" opacity="0.8">NVIDIA DYNAMO</text>
+    <!-- ═══ Bottom bar: NVIDIA DYNAMO zone ═══ -->
+    <rect x="200" y="398" width="168" height="6" rx="3" fill="var(--cyan)" opacity="0.7"/>
+    <text x="284" y="420" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle" font-weight="700" opacity="0.8">NVIDIA DYNAMO</text>
 
-    <!-- ═══ ZONE: GPU Workers (managed by Dynamo) ═══ -->
-    <rect x="430" y="4" width="440" height="390" rx="12" fill="rgba(255,255,255,0.02)" stroke="var(--text-muted)" stroke-width="1.5" stroke-dasharray="6 4" opacity="0.5"/>
-    <text x="650" y="394" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle" font-weight="600" opacity="0.6">INFERENCE ENGINE (vLLM / SGLang)</text>
+    <!-- ═══ Bottom bar: INFERENCE ENGINE zone ═══ -->
+    <rect x="450" y="398" width="430" height="6" rx="3" fill="var(--text-muted)" opacity="0.3"/>
+    <text x="665" y="420" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle" font-weight="600" opacity="0.6">INFERENCE ENGINE (vLLM / SGLang)</text>
 
     <!-- Column headers -->
-    <rect x="10" y="16" width="140" height="44" rx="8" fill="rgba(255,255,255,0.06)" stroke="var(--border)" stroke-width="1.5"/>
-    <text x="80" y="44" fill="var(--text)" font-family="'JetBrains Mono',monospace" font-size="17" text-anchor="middle" font-weight="700">CLIENT</text>
+    <rect x="10" y="20" width="140" height="44" rx="8" fill="rgba(255,255,255,0.06)" stroke="var(--border)" stroke-width="1.5"/>
+    <text x="80" y="48" fill="var(--text)" font-family="'JetBrains Mono',monospace" font-size="17" text-anchor="middle" font-weight="700">CLIENT</text>
 
-    <rect x="210" y="16" width="160" height="44" rx="8" fill="rgba(34,211,238,0.15)" stroke="var(--cyan)" stroke-width="2.5"/>
-    <text x="290" y="44" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="17" text-anchor="middle" font-weight="700">ROUTER</text>
+    <rect x="210" y="20" width="148" height="44" rx="8" fill="rgba(34,211,238,0.15)" stroke="var(--cyan)" stroke-width="2.5"/>
+    <text x="284" y="48" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="17" text-anchor="middle" font-weight="700">ROUTER</text>
 
-    <rect x="460" y="16" width="170" height="44" rx="8" fill="rgba(130,140,248,0.15)" stroke="var(--accent)" stroke-width="2"/>
-    <text x="545" y="44" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="17" text-anchor="middle" font-weight="700">PREFILL</text>
+    <rect x="460" y="20" width="170" height="44" rx="8" fill="rgba(130,140,248,0.15)" stroke="var(--accent)" stroke-width="2"/>
+    <text x="545" y="48" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="17" text-anchor="middle" font-weight="700">PREFILL</text>
 
-    <rect x="710" y="16" width="140" height="44" rx="8" fill="rgba(74,222,128,0.12)" stroke="var(--green)" stroke-width="2"/>
-    <text x="780" y="44" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="17" text-anchor="middle" font-weight="700">DECODE</text>
+    <rect x="720" y="20" width="150" height="44" rx="8" fill="rgba(74,222,128,0.12)" stroke="var(--green)" stroke-width="2"/>
+    <text x="795" y="48" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="17" text-anchor="middle" font-weight="700">DECODE</text>
 
     <!-- Lifelines -->
-    <line x1="80" y1="64" x2="80" y2="380" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3"/>
-    <line x1="290" y1="64" x2="290" y2="380" stroke="var(--cyan)" stroke-width="1" stroke-dasharray="4 3" opacity="0.5"/>
-    <line x1="545" y1="64" x2="545" y2="380" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3"/>
-    <line x1="780" y1="64" x2="780" y2="380" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3"/>
+    <line x1="80" y1="68" x2="80" y2="390" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3"/>
+    <line x1="284" y1="68" x2="284" y2="390" stroke="var(--cyan)" stroke-width="1" stroke-dasharray="4 3" opacity="0.5"/>
+    <line x1="545" y1="68" x2="545" y2="390" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3"/>
+    <line x1="795" y1="68" x2="795" y2="390" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3"/>
 
     <!-- Phase 1: Request arrives, routing -->
     <g data-phase="1">
-      <line x1="88" y1="90" x2="282" y2="90" stroke="var(--text-muted)" stroke-width="2" marker-end="url(#aDyn)"/>
-      <text x="185" y="82" fill="var(--text-dim)" font-family="'Inter',sans-serif" font-size="16" text-anchor="middle">request</text>
+      <line x1="88" y1="96" x2="276" y2="96" stroke="var(--text-muted)" stroke-width="2" marker-end="url(#aDyn)"/>
+      <text x="182" y="88" fill="var(--text-dim)" font-family="'Inter',sans-serif" font-size="16" text-anchor="middle">request</text>
 
-      <path d="M 298 112 L 348 112 L 348 142 L 298 142" fill="none" stroke="var(--cyan)" stroke-width="2" marker-end="url(#aDynC)"/>
-      <text x="358" y="122" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="15" text-anchor="start">tokenize</text>
-      <text x="358" y="142" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="15" text-anchor="start">KVIndexer lookup</text>
+      <path d="M 292 118 L 342 118 L 342 148 L 292 148" fill="none" stroke="var(--cyan)" stroke-width="2" marker-end="url(#aDynC)"/>
+      <text x="282" y="128" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="14" text-anchor="end">tokenize</text>
+      <text x="282" y="148" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="14" text-anchor="end">KVIndexer</text>
 
-      <line x1="298" y1="166" x2="537" y2="166" stroke="var(--accent)" stroke-width="2" marker-end="url(#aDynA)"/>
-      <text x="418" y="158" fill="var(--accent)" font-family="'Inter',sans-serif" font-size="16" text-anchor="middle">prefill request</text>
+      <line x1="292" y1="172" x2="537" y2="172" stroke="var(--accent)" stroke-width="2" marker-end="url(#aDynA)"/>
+      <text x="414" y="164" fill="var(--accent)" font-family="'Inter',sans-serif" font-size="16" text-anchor="middle">prefill request</text>
     </g>
 
     <!-- Phase 2: Prefill + KV transfer -->
     <g data-phase="2">
-      <rect x="524" y="182" width="42" height="40" rx="5" fill="rgba(130,140,248,0.20)" stroke="var(--accent)" stroke-width="1.5"/>
-      <text x="545" y="207" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="15" text-anchor="middle">KV</text>
+      <rect x="524" y="190" width="42" height="40" rx="5" fill="rgba(130,140,248,0.20)" stroke="var(--accent)" stroke-width="1.5"/>
+      <text x="545" y="215" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="15" text-anchor="middle">KV</text>
 
-      <line x1="537" y1="238" x2="298" y2="238" stroke="var(--accent)" stroke-width="2" stroke-dasharray="6 3" marker-end="url(#aDynA)"/>
-      <text x="418" y="230" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="15" text-anchor="middle">transfer metadata</text>
+      <line x1="537" y1="246" x2="292" y2="246" stroke="var(--accent)" stroke-width="2" stroke-dasharray="6 3" marker-end="url(#aDynA)"/>
+      <text x="414" y="238" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="15" text-anchor="middle">transfer metadata</text>
 
-      <line x1="298" y1="266" x2="772" y2="266" stroke="var(--green)" stroke-width="2" marker-end="url(#aDynG)"/>
-      <text x="535" y="258" fill="var(--green)" font-family="'Inter',sans-serif" font-size="16" text-anchor="middle">decode request + metadata</text>
+      <line x1="292" y1="274" x2="787" y2="274" stroke="var(--green)" stroke-width="2" marker-end="url(#aDynG)"/>
+      <text x="540" y="266" fill="var(--green)" font-family="'Inter',sans-serif" font-size="16" text-anchor="middle">decode request + metadata</text>
 
-      <line x1="553" y1="292" x2="772" y2="292" stroke="var(--yellow)" stroke-width="3" marker-end="url(#aDynY)"/>
-      <rect x="604" y="280" width="128" height="24" rx="5" fill="var(--bg)"/>
-      <text x="668" y="297" fill="var(--yellow)" font-family="'JetBrains Mono',monospace" font-size="15" text-anchor="middle" font-weight="700">NIXL (RDMA)</text>
+      <line x1="553" y1="300" x2="787" y2="300" stroke="var(--yellow)" stroke-width="3" marker-end="url(#aDynY)"/>
+      <rect x="612" y="288" width="128" height="24" rx="5" fill="var(--bg)"/>
+      <text x="676" y="305" fill="var(--yellow)" font-family="'JetBrains Mono',monospace" font-size="15" text-anchor="middle" font-weight="700">NIXL (RDMA)</text>
     </g>
 
     <!-- Phase 3: Decode + stream -->
     <g data-phase="3">
-      <rect x="759" y="310" width="42" height="34" rx="5" fill="rgba(74,222,128,0.20)" stroke="var(--green)" stroke-width="1.5"/>
-      <text x="780" y="332" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="14" text-anchor="middle">gen</text>
+      <rect x="774" y="320" width="42" height="34" rx="5" fill="rgba(74,222,128,0.20)" stroke="var(--green)" stroke-width="1.5"/>
+      <text x="795" y="342" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="14" text-anchor="middle">gen</text>
 
-      <line x1="772" y1="358" x2="88" y2="358" stroke="var(--green)" stroke-width="2" stroke-dasharray="6 3" marker-end="url(#aDynG)"/>
-      <text x="430" y="350" fill="var(--green)" font-family="'Inter',sans-serif" font-size="16" text-anchor="middle">stream tokens → response</text>
+      <line x1="787" y1="368" x2="88" y2="368" stroke="var(--green)" stroke-width="2" stroke-dasharray="6 3" marker-end="url(#aDynG)"/>
+      <text x="438" y="360" fill="var(--green)" font-family="'Inter',sans-serif" font-size="16" text-anchor="middle">stream tokens → response</text>
     </g>
   </svg>
 
