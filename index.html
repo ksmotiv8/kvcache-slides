@@ -231,7 +231,7 @@ body.notes-on .slide.current .presenter-notes {
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 3: Journey of a Prompt -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s3" data-build-phases="5">
+<section class="slide" id="s3" data-build-phases="6">
   <span class="slide-num">3 / 27</span>
   <span class="section-tag">The big picture</span>
   <h2>Journey of a prompt</h2>
@@ -244,11 +244,15 @@ body.notes-on .slide.current .presenter-notes {
       <marker id="ar" markerWidth="6" markerHeight="5" refX="6" refY="2.5" orient="auto"><path d="M0,0 L6,2.5 L0,5" fill="var(--red)"/></marker>
     </defs>
 
-    <!-- Phase 1: User Prompt → Tokenize -->
+    <!-- Phase 1: User Prompt -->
     <g data-phase="1">
       <rect x="10" y="10" width="170" height="56" rx="8" fill="rgba(130,140,248,0.12)" stroke="var(--accent)" stroke-width="1.5"/>
       <text x="95" y="32" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" font-weight="700">1. USER PROMPT</text>
       <text x="95" y="50" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">"Refactor this function..."</text>
+    </g>
+
+    <!-- Phase 2: Tokenize -->
+    <g data-phase="2">
       <line x1="185" y1="38" x2="220" y2="38" stroke="var(--text-muted)" stroke-width="1.5" marker-end="url(#aj)"/>
       <rect x="225" y="10" width="130" height="56" rx="8" fill="rgba(255,255,255,0.04)" stroke="var(--border)" stroke-width="1.5"/>
       <text x="290" y="32" fill="var(--text)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" font-weight="700">2. TOKENIZE</text>
@@ -256,8 +260,8 @@ body.notes-on .slide.current .presenter-notes {
       <line x1="360" y1="38" x2="395" y2="38" stroke="var(--text-muted)" stroke-width="1.5" marker-end="url(#aj)"/>
     </g>
 
-    <!-- Phase 2: Check Cache + MISS path -->
-    <g data-phase="2">
+    <!-- Phase 3: Check Cache + MISS path -->
+    <g data-phase="3">
       <rect x="400" y="10" width="160" height="56" rx="8" fill="rgba(34,211,238,0.10)" stroke="var(--cyan)" stroke-width="1.5"/>
       <text x="480" y="32" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" font-weight="700">3. CHECK CACHE</text>
       <text x="480" y="50" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">prefix match? reuse KV</text>
@@ -267,15 +271,7 @@ body.notes-on .slide.current .presenter-notes {
       <text x="620" y="40" fill="var(--red)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" font-weight="600">MISS</text>
     </g>
 
-    <!-- Phase 3: Cache HIT path — curves down to KV Cache, skipping prefill -->
-    <g data-phase="3">
-      <line x1="480" y1="66" x2="480" y2="82" stroke="var(--green)" stroke-width="1.5"/>
-      <path d="M 480 82 C 480 130, 540 130, 580 130" fill="none" stroke="var(--green)" stroke-width="1.5" marker-end="url(#ag)"/>
-      <rect x="470" y="90" width="60" height="18" rx="3" fill="var(--bg)"/>
-      <text x="500" y="103" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" font-weight="600">HIT!</text>
-    </g>
-
-    <!-- Phase 4: Prefill → KV Cache → TTFT -->
+    <!-- Phase 4: Prefill → KV Cache → TTFT (the MISS path completes) -->
     <g data-phase="4">
       <rect x="685" y="10" width="160" height="56" rx="8" fill="rgba(130,140,248,0.12)" stroke="var(--accent)" stroke-width="1.5"/>
       <text x="765" y="28" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" font-weight="700">4. PREFILL</text>
@@ -319,14 +315,17 @@ body.notes-on .slide.current .presenter-notes {
       <text x="140" y="300" fill="var(--red)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle" font-weight="600">22,800 tokens @ ~17ms/1K = ~388ms</text>
       <text x="140" y="314" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="9" text-anchor="middle">Qwen3-4B FP8 · 1x L4 24GB</text>
     </g>
+
+    <!-- Phase 6: Cache HIT path — curves down to KV Cache, skipping prefill -->
+    <g data-phase="6">
+      <line x1="480" y1="66" x2="480" y2="82" stroke="var(--green)" stroke-width="1.5"/>
+      <path d="M 480 82 C 480 130, 540 130, 580 130" fill="none" stroke="var(--green)" stroke-width="1.5" marker-end="url(#ag)"/>
+      <rect x="470" y="90" width="60" height="18" rx="3" fill="var(--bg)"/>
+      <text x="500" y="103" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" font-weight="600">HIT!</text>
+    </g>
   </svg>
 
-  <div data-phase="1"><p style="font-size:20px"><strong>Step 1-2:</strong> Your prompt arrives and is split into tokens. Consider a 22,800-token agentic session.</p></div>
-  <div data-phase="2"><p style="font-size:20px"><strong>Step 3:</strong> The engine checks if these tokens match a cached prefix. <strong style="color:var(--red)">Miss</strong> = process everything from scratch.</p></div>
-  <div data-phase="3"><p style="font-size:20px"><strong style="color:var(--green)">Hit</strong> = skip prefill, go straight to the cached KV state.</p></div>
-  <div data-phase="4"><p style="font-size:20px"><strong>Step 4-5:</strong> Prefill runs. The KV cache fills. The first output token appears. This is <strong style="color:var(--yellow)">TTFT</strong>.</p></div>
-  <div data-phase="5"><p style="font-size:20px"><strong>Step 5-6:</strong> Decode generates tokens one at a time, each reading the full KV cache. The engine tries to retain the cache for the next turn, but eviction pressure can force a re-prefill.</p></div>
-  <div class="presenter-notes">Walk through the diagram step by step. This is the slide where the audience builds their mental model of the full request lifecycle. Emphasize the branch at step 3: cache hit vs miss. This single decision point is where all the systems engineering matters. A cache hit means you skip potentially hundreds of milliseconds of prefill. A cache miss means the user waits for the full computation. What determines hit vs miss? Whether the KV cache has room for this session's data, whether the eviction policy kept it warm, and whether the router sent this request to the node that has the cache. Those are all systems problems.</div>
+  <div class="presenter-notes">Build the diagram step by step. Phase 1: prompt arrives. Phase 2: tokenized into 22,800 tokens. Phase 3: engine checks cache — MISS means process everything from scratch. Phase 4: prefill runs, KV cache fills, first token appears (TTFT). Phase 5: decode loop generates tokens one at a time reading the full KV cache, response completes — engine tries to retain cache but eviction pressure can force re-prefill. Phase 6: reveal the HIT path — skip prefill entirely, go straight to cached KV state. This is the punchline: the best prefill optimization is avoiding prefill.</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
