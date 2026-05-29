@@ -555,7 +555,7 @@ body.notes-on .slide.current .presenter-notes {
 <section class="slide" id="s8" data-build-phases="1">
   <span class="slide-num">8 / 24</span>
   <span class="section-tag">Qwen3-4B (FP8) on 1x NVIDIA L4</span>
-  <h2>One session burns 1.6 GB of KV</h2>
+  <h2>Sizing KV for a single session</h2>
 
   <div style="display:grid;grid-template-columns:1fr 340px;gap:32px;align-items:start">
     <div>
@@ -565,7 +565,8 @@ body.notes-on .slide.current .presenter-notes {
 <span class="num">36</span>&nbsp;&nbsp;&nbsp;&nbsp; × <span class="num">8</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; × <span class="num">128</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; × <span class="num">2</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; × <span class="num">1</span> = <span class="fn">72 KB per token</span>
       </div>
 
-      <p style="margin-top:20px"><strong>22,800 tokens x 72 KB = ~1.6 GB of cached state.</strong> That is 6.7% of this GPU, for a single user.</p>
+      <div class="big-number" style="margin-top:20px">~1.6 GB</div>
+      <p style="font-size:18px;color:var(--text-muted)">6.7% of this GPU, for a single user.</p>
 
       <div class="callout" style="margin-top:20px">
         Multiply by concurrent sessions and you see why this becomes a <strong>memory management problem</strong>, not a compute problem.
