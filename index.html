@@ -699,13 +699,22 @@ body.notes-on .slide.current .presenter-notes {
   <span class="slide-num">10 / 26</span>
   <h2>What makes KV caching hard</h2>
 
-  <ul style="font-size:22px;line-height:1.8">
-    <li><strong style="color:var(--cyan)">GBs per session</strong>: only a handful of sessions fit in GPU VRAM</li>
-    <li><strong style="color:var(--cyan)">VRAM isn't all yours</strong>: model weights, CUDA kernels, activations, and engine overhead (vLLM default: 90% <code>gpu_memory_utilization</code>) all compete for the same memory</li>
-    <li><strong style="color:var(--cyan)">No cross-session sharing</strong>: KV vectors are only reusable when prompts share a common prefix. Different conversations = different cache entries</li>
-  </ul>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:32px;margin-top:32px;max-width:900px">
+    <div style="border-left:3px solid var(--cyan);padding-left:20px">
+      <p style="font-size:20px;color:var(--cyan);font-weight:700;margin-bottom:8px">GBs per session</p>
+      <p style="font-size:18px;color:var(--text-dim)">Only a handful of sessions fit in GPU VRAM</p>
+    </div>
+    <div style="border-left:3px solid var(--accent);padding-left:20px">
+      <p style="font-size:20px;color:var(--accent);font-weight:700;margin-bottom:8px">VRAM isn't all yours</p>
+      <p style="font-size:18px;color:var(--text-dim)">Model weights, CUDA kernels, and activations compete for the same memory</p>
+    </div>
+    <div style="border-left:3px solid var(--yellow);padding-left:20px">
+      <p style="font-size:20px;color:var(--yellow);font-weight:700;margin-bottom:8px">Shared prefix requirement</p>
+      <p style="font-size:18px;color:var(--text-dim)">Minimal or no reuse across sessions</p>
+    </div>
+  </div>
 
-  <div class="presenter-notes">Three reasons KV caching is hard. First: scale. 1.6 GB per session on a 24 GB L4 means ~7 sessions max if you gave ALL VRAM to KV. But you can't — model weights alone are ~4 GB for Qwen3-4B FP8, then CUDA context takes ~500 MB, activations scale with batch size, and vLLM reserves 10% as buffer by default. Realistically you get 50-55% of VRAM for KV. Second: sharing. Unlike CPU caches where any process benefits from cached memory pages, KV cache entries are prompt-specific. Two users asking different questions produce completely different KV tensors. Only when prompts share a prefix (like a system prompt) can you reuse KV blocks.</div>
+  <div class="presenter-notes">Three reasons KV caching is hard. First: scale. 1.6 GB per session on a 24 GB L4 means ~7 sessions max if you gave ALL VRAM to KV. But you can't — model weights alone are ~4 GB for Qwen3-4B FP8, then CUDA context takes ~500 MB, activations scale with batch size, and vLLM reserves 10% as buffer by default (gpu_memory_utilization=0.9). Realistically you get 50-55% of VRAM for KV. Second: sharing. Unlike CPU caches where any process benefits from cached memory pages, KV cache entries are prompt-specific. Two users asking different questions produce completely different KV tensors. Only when prompts share a prefix (like a system prompt) can you reuse KV blocks.</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
