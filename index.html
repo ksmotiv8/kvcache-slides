@@ -190,29 +190,13 @@ body.notes-on .slide.current .presenter-notes {
   <div class="presenter-notes">Open by framing the talk: this is a story about discovery. I came from distributed systems, was intimidated by the ML side of inference, and realized the hard problems at scale are the ones I already knew how to think about. The audience should leave with a concrete mental model for why inference at scale is really a distributed systems problem, and KV cache is the object at the center of it.</div>
 </section>
 
-<!-- ════════════════════════════════════════════════════════ -->
-<!-- SLIDE 10: What makes KV caching hard -->
-<!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s2">
-  <span class="slide-num">2 / 26</span>
-
-  <h2>What makes KV caching hard</h2>
-
-  <ul style="font-size:22px;line-height:1.8">
-    <li><strong style="color:var(--cyan)">GBs per session</strong>: GBs of KV per session means only a handful of sessions fit in GPU VRAM</li>
-    <li><strong style="color:var(--cyan)">VRAM isn't all yours</strong>: model weights, CUDA kernels, activations, and engine overhead (vLLM default: 90% <code>gpu_memory_utilization</code>) all compete for the same memory</li>
-    <li><strong style="color:var(--cyan)">No cross-session sharing</strong>: KV vectors are only reusable when prompts share a common prefix. Different conversations = different cache entries</li>
-  </ul>
-
-  <div class="presenter-notes">Three reasons KV caching is hard. First: scale. 1.6 GB per session on a 24 GB L4 means ~7 sessions max if you gave ALL VRAM to KV. But you can't — model weights alone are ~4 GB for Qwen3-4B FP8, then CUDA context takes ~500 MB, activations scale with batch size, and vLLM reserves 10% as buffer by default. Realistically you get 50-55% of VRAM for KV. Second: sharing. Unlike CPU caches where any process benefits from cached memory pages, KV cache entries are prompt-specific. Two users asking different questions produce completely different KV tensors. Only when prompts share a prefix (like a system prompt) can you reuse KV blocks.</div>
-</section>
 
 
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 2: I was intimidated / Wait I know these -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s3" data-build-phases="2">
-  <span class="slide-num">3 / 26</span>
+<section class="slide" id="s2" data-build-phases="2">
+  <span class="slide-num">2 / 26</span>
   <span class="section-tag">Perspective of a distributed systems engineer</span>
   <h2>Inference seems intimidating at first</h2>
 
@@ -238,8 +222,8 @@ body.notes-on .slide.current .presenter-notes {
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 3: Agenda -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s4">
-  <span class="slide-num">4 / 26</span>
+<section class="slide" id="s3">
+  <span class="slide-num">3 / 26</span>
   <h2>Agenda</h2>
 
   <p style="font-size:22px;margin-bottom:28px">We are going to dig into the lifecycle of inference: the stages, the components, and the techniques used to make it faster and more efficient.</p>
@@ -262,8 +246,8 @@ body.notes-on .slide.current .presenter-notes {
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 4: Journey of a Prompt -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s5" data-build-phases="7">
-  <span class="slide-num">5 / 26</span>
+<section class="slide" id="s4" data-build-phases="7">
+  <span class="slide-num">4 / 26</span>
   <span class="section-tag">Steps in inference</span>
   <h2>Journey of a prompt</h2>
 
@@ -361,8 +345,8 @@ body.notes-on .slide.current .presenter-notes {
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 5: Dynamo Disaggregated Lifecycle -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s6" data-build-phases="3">
-  <span class="slide-num">6 / 26</span>
+<section class="slide" id="s5" data-build-phases="3">
+  <span class="slide-num">5 / 26</span>
   <span class="section-tag">Journey of a prompt</span>
   <h2>Inside NVIDIA Dynamo: the request lifecycle</h2>
 
@@ -447,8 +431,8 @@ body.notes-on .slide.current .presenter-notes {
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 6: Two Stages of Inference -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s7" data-build-phases="2">
-  <span class="slide-num">7 / 26</span>
+<section class="slide" id="s6" data-build-phases="2">
+  <span class="slide-num">6 / 26</span>
   <span class="section-tag">Inference pipeline</span>
   <h2>Two stages of inference</h2>
   <p style="font-size:17px;color:var(--text-muted);margin-bottom:4px"><strong>Qwen3-4B FP8</strong> on <strong>1x NVIDIA L4 (24 GB)</strong></p>
@@ -540,8 +524,8 @@ body.notes-on .slide.current .presenter-notes {
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 5: The best prefill optimization -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s8">
-  <span class="slide-num">8 / 26</span>
+<section class="slide" id="s7">
+  <span class="slide-num">7 / 26</span>
   <span class="section-tag">Optimizing prefill stage</span>
   <h2 style="font-size:48px;letter-spacing:-0.03em">Minimize generating prefill.</h2>
 
@@ -553,8 +537,8 @@ body.notes-on .slide.current .presenter-notes {
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 6: What is KV Cache -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s9">
-  <span class="slide-num">9 / 26</span>
+<section class="slide" id="s8">
+  <span class="slide-num">8 / 26</span>
   <span class="section-tag">The fundamentals</span>
   <h2>What is KV cache?</h2>
   <p style="font-size:17px;color:var(--text-muted);margin-bottom:8px">Using <strong style="color:var(--cyan)">Qwen3-4B (FP8)</strong> as our running example: 36 layers, 8 KV heads, 128 head_dim</p>
@@ -658,8 +642,8 @@ body.notes-on .slide.current .presenter-notes {
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 7: KV Cache Scale -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s10" data-build-phases="1">
-  <span class="slide-num">10 / 26</span>
+<section class="slide" id="s9" data-build-phases="1">
+  <span class="slide-num">9 / 26</span>
   <span class="section-tag">Qwen3-4B (FP8)</span>
   <h2>Sizing KV for a single session</h2>
 
@@ -707,6 +691,22 @@ body.notes-on .slide.current .presenter-notes {
   <div class="presenter-notes">72 KB per token sounds small, but 22,800 tokens at 72 KB each is 1.6 GB. On a 24 GB L4, that is nearly 7% of total VRAM for a single session. The GPU table drives the point: more VRAM = more concurrent sessions, period. An H100 and A100 both have 80 GB, so they serve the same ~27 sessions despite the H100 having 64% more bandwidth. Bandwidth determines decode speed; VRAM determines concurrency. The H200's 141 GB nearly doubles the H100's session count. B200 at 192 GB pushes to 66. The bottleneck is memory capacity, not compute.</div>
 </section>
 
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- SLIDE 10: What makes KV caching hard -->
+<!-- ════════════════════════════════════════════════════════ -->
+<section class="slide" id="s10" style="justify-content:flex-start;padding-top:100px">
+  <span class="slide-num">10 / 26</span>
+  <h2>What makes KV caching hard</h2>
+
+  <ul style="font-size:22px;line-height:1.8">
+    <li><strong style="color:var(--cyan)">GBs per session</strong>: GBs of KV per session means only a handful of sessions fit in GPU VRAM</li>
+    <li><strong style="color:var(--cyan)">VRAM isn't all yours</strong>: model weights, CUDA kernels, activations, and engine overhead (vLLM default: 90% <code>gpu_memory_utilization</code>) all compete for the same memory</li>
+    <li><strong style="color:var(--cyan)">No cross-session sharing</strong>: KV vectors are only reusable when prompts share a common prefix. Different conversations = different cache entries</li>
+  </ul>
+
+  <div class="presenter-notes">Three reasons KV caching is hard. First: scale. 1.6 GB per session on a 24 GB L4 means ~7 sessions max if you gave ALL VRAM to KV. But you can't — model weights alone are ~4 GB for Qwen3-4B FP8, then CUDA context takes ~500 MB, activations scale with batch size, and vLLM reserves 10% as buffer by default. Realistically you get 50-55% of VRAM for KV. Second: sharing. Unlike CPU caches where any process benefits from cached memory pages, KV cache entries are prompt-specific. Two users asking different questions produce completely different KV tensors. Only when prompts share a prefix (like a system prompt) can you reuse KV blocks.</div>
+</section>
 
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 11: Memory tiers -->
