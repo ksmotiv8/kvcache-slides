@@ -648,9 +648,22 @@ body.notes-on .slide.current .presenter-notes {
   <div class="sizing-grid" style="display:grid;grid-template-columns:1fr 340px;gap:32px;align-items:start">
     <div>
       <div class="code-block" style="font-size:24px;max-width:900px">
-<span class="cm">// Per-token KV at fp8</span><br/>
-<span class="fn">layers</span> × <span class="fn">kv_heads</span> × <span class="fn">head_dim</span> × <span class="num">2</span>(K,V) × <span class="fn">bytes</span><br/>
-<span class="num">36</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; × <span class="num">8</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; × <span class="num">128</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; × <span class="num">2</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; × <span class="num">1</span>&nbsp;&nbsp;&nbsp;&nbsp; = <span class="fn">72 KB</span>
+<span class="cm">// Per-token KV at fp8</span>
+<table style="border:none;border-collapse:collapse;font-size:24px;margin-top:8px"><tr style="color:var(--cyan)">
+<td style="border:none;padding:0 6px;text-align:center">layers</td><td style="border:none;padding:0 4px">×</td>
+<td style="border:none;padding:0 6px;text-align:center">kv_heads</td><td style="border:none;padding:0 4px">×</td>
+<td style="border:none;padding:0 6px;text-align:center">head_dim</td><td style="border:none;padding:0 4px">×</td>
+<td style="border:none;padding:0 6px;text-align:center">2<span style="color:var(--text-dim)">(K,V)</span></td><td style="border:none;padding:0 4px">×</td>
+<td style="border:none;padding:0 6px;text-align:center">bytes</td><td style="border:none;padding:0 8px"></td>
+<td style="border:none"></td>
+</tr><tr style="color:var(--yellow)">
+<td style="border:none;padding:0 6px;text-align:center">36</td><td style="border:none;padding:0 4px;color:var(--text-dim)">×</td>
+<td style="border:none;padding:0 6px;text-align:center">8</td><td style="border:none;padding:0 4px;color:var(--text-dim)">×</td>
+<td style="border:none;padding:0 6px;text-align:center">128</td><td style="border:none;padding:0 4px;color:var(--text-dim)">×</td>
+<td style="border:none;padding:0 6px;text-align:center">2</td><td style="border:none;padding:0 4px;color:var(--text-dim)">×</td>
+<td style="border:none;padding:0 6px;text-align:center">1</td><td style="border:none;padding:0 8px;color:var(--text-dim)">=</td>
+<td style="border:none;padding:0 6px;color:var(--cyan);font-weight:700">72 KB</td>
+</tr></table>
       </div>
 
       <div class="big-number" style="margin-top:20px">~1.6 GB</div>
