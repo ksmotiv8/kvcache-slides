@@ -199,25 +199,12 @@ body.notes-on .slide.current .presenter-notes {
   <p style="font-size:22px;margin-bottom:24px">Attention heads. KV projections. CUDA kernels. Tensor parallelism. Quantization formats.</p>
 
   <div data-phase="1">
-    <h3 style="color:var(--cyan);margin-bottom:16px">But look at what actually breaks in production. These are all systems problems.</h3>
-    <div class="two-col">
-      <div>
-        <h3 style="color:var(--text-muted);font-size:20px">The ML surface</h3>
-        <ul style="font-size:20px">
-          <li>Matrix math</li>
-          <li>Model architecture</li>
-          <li>CUDA kernels</li>
-        </ul>
-      </div>
-      <div>
-        <ul style="font-size:20px">
-          <li><strong>Routing</strong> and <strong>scheduling</strong></li>
-          <li><strong>Backpressure</strong> and <strong>admission control</strong></li>
-          <li><strong>Tail latency</strong> and <strong>capacity planning</strong></li>
-          <li><strong>Cache eviction</strong> and <strong>memory movement</strong></li>
-        </ul>
-      </div>
-    </div>
+    <ul style="font-size:22px">
+      <li><strong>Routing</strong> and <strong>scheduling</strong></li>
+      <li><strong>Backpressure</strong> and <strong>admission control</strong></li>
+      <li><strong>Tail latency</strong> and <strong>capacity planning</strong></li>
+      <li><strong>Cache eviction</strong> and <strong>memory movement</strong></li>
+    </ul>
   </div>
 
   <div data-phase="2">
