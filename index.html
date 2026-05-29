@@ -662,19 +662,18 @@ body.notes-on .slide.current .presenter-notes {
     </div>
 
     <div data-phase="1">
-      <table style="font-size:18px;max-width:340px">
-        <thead><tr><th>GPU</th><th>VRAM</th><th>Sessions</th></tr></thead>
+      <table style="font-size:22px;max-width:300px;margin-top:-8px">
+        <thead><tr><th>GPU</th><th>VRAM</th></tr></thead>
         <tbody>
-          <tr><td>T4</td><td class="r">16 GB</td><td class="r">~5</td></tr>
-          <tr><td><strong style="color:var(--cyan)">L4</strong></td><td class="r cy">24 GB</td><td class="r cy">~7</td></tr>
-          <tr><td>L40S</td><td class="r">48 GB</td><td class="r">~15</td></tr>
-          <tr><td>A100</td><td class="r">80 GB</td><td class="r">~27</td></tr>
-          <tr><td>H100</td><td class="r">80 GB</td><td class="r">~27</td></tr>
-          <tr><td>H200</td><td class="r">141 GB</td><td class="r g">~48</td></tr>
-          <tr><td>B200</td><td class="r">192 GB</td><td class="r g">~66</td></tr>
+          <tr><td>T4</td><td class="r">16 GB</td></tr>
+          <tr><td><strong style="color:var(--cyan)">L4</strong></td><td class="r cy">24 GB</td></tr>
+          <tr><td>L40S</td><td class="r">48 GB</td></tr>
+          <tr><td>A100</td><td class="r">80 GB</td></tr>
+          <tr><td>H100</td><td class="r">80 GB</td></tr>
+          <tr><td>H200</td><td class="r">141 GB</td></tr>
+          <tr><td>B200</td><td class="r">192 GB</td></tr>
         </tbody>
       </table>
-      <p style="font-size:13px;color:var(--text-muted);margin-top:8px;max-width:340px">Sessions = ~50-55% of VRAM for KV / 1.6 GB. Same Qwen3-4B FP8 workload.</p>
     </div>
   </div>
   <div class="presenter-notes">72 KB per token sounds small, but 22,800 tokens at 72 KB each is 1.6 GB. On a 24 GB L4, that is nearly 7% of total VRAM for a single session. The GPU table drives the point: more VRAM = more concurrent sessions, period. An H100 and A100 both have 80 GB, so they serve the same ~27 sessions despite the H100 having 64% more bandwidth. Bandwidth determines decode speed; VRAM determines concurrency. The H200's 141 GB nearly doubles the H100's session count. B200 at 192 GB pushes to 66. The bottleneck is memory capacity, not compute.</div>
