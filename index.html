@@ -440,7 +440,7 @@ body.notes-on .slide.current .presenter-notes {
   <span class="section-tag">KV cache</span>
   <h2 style="font-size:48px;letter-spacing:-0.03em">The best prefill optimization<br/>is avoiding prefill.</h2>
 
-  <p class="subtitle" style="margin-top:24px">That is what the KV cache does. It stores the result of prefill so you never pay for it twice.</p>
+  <p class="subtitle" style="margin-top:24px">KV Cache retains the prefill results to help avoid paying for the prefill compute on the next turn.</p>
 
   <div class="presenter-notes">Let this land. The audience just learned that prefill is the expensive phase, the one that determines TTFT, the one that saturates compute. Now tell them: the best optimization is to not do it at all. The KV cache is the mechanism that makes that possible. This frames everything that follows: KV cache is not an optimization detail, it is the central object in inference systems design.</div>
 </section>
