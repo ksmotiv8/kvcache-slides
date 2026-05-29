@@ -153,6 +153,8 @@ body.notes-on .slide.current .presenter-notes {
   h2 { font-size: 28px; }
   .big-number { font-size: 48px; }
   .two-col { grid-template-columns: 1fr; gap: 24px; }
+  .stages-grid { grid-template-columns: 1fr !important; }
+  .sizing-grid { grid-template-columns: 1fr !important; }
   table { font-size: 14px; }
   td, th { padding: 8px 10px; }
   p, ul, ol { font-size: 17px; }
@@ -429,7 +431,7 @@ body.notes-on .slide.current .presenter-notes {
   <h2>Two stages of inference</h2>
   <p style="font-size:17px;color:var(--text-muted);margin-bottom:4px"><strong>Qwen3-4B FP8</strong> on <strong>1x NVIDIA L4 (24 GB)</strong></p>
 
-  <div style="display:grid;grid-template-columns:1fr 280px;gap:32px;align-items:start">
+  <div class="stages-grid" style="display:grid;grid-template-columns:1fr 280px;gap:32px;align-items:start">
     <svg viewBox="0 0 860 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Timeline showing prefill phase processing all input tokens in parallel, followed by TTFT marker, then decode phase generating output tokens one at a time" style="width:100%;height:auto;display:block;margin:8px 0">
       <!-- Timeline axis -->
       <line x1="40" y1="130" x2="840" y2="130" stroke="var(--border)" stroke-width="1"/>
@@ -639,7 +641,7 @@ body.notes-on .slide.current .presenter-notes {
   <span class="section-tag">Qwen3-4B (FP8)</span>
   <h2>Sizing KV for a single session</h2>
 
-  <div style="display:grid;grid-template-columns:1fr 340px;gap:32px;align-items:start">
+  <div class="sizing-grid" style="display:grid;grid-template-columns:1fr 340px;gap:32px;align-items:start">
     <div>
       <div class="code-block" style="font-size:18px;max-width:560px">
 <span class="cm">// Per-token KV at fp8</span><br/>
