@@ -700,7 +700,7 @@ body.notes-on .slide.current .presenter-notes {
   <h2>What makes KV caching hard</h2>
 
   <ul style="font-size:22px;line-height:1.8">
-    <li><strong style="color:var(--cyan)">GBs per session</strong>: GBs of KV per session means only a handful of sessions fit in GPU VRAM</li>
+    <li><strong style="color:var(--cyan)">GBs per session</strong>: only a handful of sessions fit in GPU VRAM</li>
     <li><strong style="color:var(--cyan)">VRAM isn't all yours</strong>: model weights, CUDA kernels, activations, and engine overhead (vLLM default: 90% <code>gpu_memory_utilization</code>) all compete for the same memory</li>
     <li><strong style="color:var(--cyan)">No cross-session sharing</strong>: KV vectors are only reusable when prompts share a common prefix. Different conversations = different cache entries</li>
   </ul>
