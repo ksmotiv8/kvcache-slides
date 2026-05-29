@@ -701,16 +701,13 @@ body.notes-on .slide.current .presenter-notes {
 
   <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:32px;margin-top:32px;max-width:900px">
     <div style="border-left:3px solid var(--cyan);padding-left:20px">
-      <p style="font-size:20px;color:var(--cyan);font-weight:700;margin-bottom:8px">GBs per session</p>
-      <p style="font-size:18px;color:var(--text-dim)">Only a handful of sessions fit in GPU VRAM</p>
+      <p style="font-size:24px;color:var(--cyan);font-weight:700">GBs per session</p>
     </div>
     <div style="border-left:3px solid var(--accent);padding-left:20px">
-      <p style="font-size:20px;color:var(--accent);font-weight:700;margin-bottom:8px">VRAM isn't all yours</p>
-      <p style="font-size:18px;color:var(--text-dim)">Model weights, CUDA kernels, and activations compete for the same memory</p>
+      <p style="font-size:24px;color:var(--accent);font-weight:700">VRAM overhead</p>
     </div>
     <div style="border-left:3px solid var(--yellow);padding-left:20px">
-      <p style="font-size:20px;color:var(--yellow);font-weight:700;margin-bottom:8px">Shared prefix requirement</p>
-      <p style="font-size:18px;color:var(--text-dim)">Minimal or no reuse across sessions</p>
+      <p style="font-size:24px;color:var(--yellow);font-weight:700">Prefix caching</p>
     </div>
   </div>
 
