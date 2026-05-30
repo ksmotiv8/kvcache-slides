@@ -224,9 +224,14 @@ body.notes-on .slide.current .presenter-notes {
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s3">
   <span class="slide-num">3 / 26</span>
+  <span class="section-tag">Agenda</span>
   <h2 style="font-size:48px;letter-spacing:-0.03em">Utilization</h2>
 
   <p class="subtitle" style="margin-top:24px">The key metric that drives availability, performance, and economics.</p>
+
+  <div class="callout" style="margin-top:28px">
+    <strong>Running example:</strong> Qwen3-4B (FP8) on 1x NVIDIA L4 (24 GB). 10K system prompt, 12-turn conversation, ~22K tokens peak context.
+  </div>
 
   <div class="presenter-notes">Frame utilization as the central theme. GPU utilization isn't just about keeping the hardware busy — it directly determines how many users you can serve (availability), how fast each request completes (performance), and how much you pay per token (economics). Everything in this talk — KV cache management, disaggregation, prefix caching, tiered storage — is ultimately about improving utilization.</div>
 </section>
@@ -236,7 +241,7 @@ body.notes-on .slide.current .presenter-notes {
   <span class="slide-num">4 / 26</span>
   <span class="section-tag">Inference pipeline</span>
   <h2>Two stages of inference</h2>
-  <p style="font-size:17px;color:var(--text-muted);margin-bottom:4px"><strong>Running example:</strong> Qwen3-4B (FP8) on 1x NVIDIA L4 (24 GB) &mdash; 10K system prompt, 12-turn conversation, ~22K tokens peak</p>
+  <p style="font-size:17px;color:var(--text-muted);margin-bottom:4px"><strong>Qwen3-4B FP8</strong> on <strong>1x NVIDIA L4 (24 GB)</strong></p>
 
   <div class="stages-grid" style="display:grid;grid-template-columns:1fr 280px;gap:32px;align-items:start">
     <svg viewBox="0 0 860 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Timeline showing prefill phase processing all input tokens in parallel, followed by TTFT marker, then decode phase generating output tokens one at a time" style="width:100%;height:auto;display:block;margin:8px 0">
