@@ -704,7 +704,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE: Why prefix matching -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s10" data-build-phases="2">
+<section class="slide" id="s10" data-build-phases="1">
   <span class="slide-num">10 / 26</span>
   <h2 style="margin-top:-10px">Why only prefix matching works</h2>
 
@@ -768,9 +768,6 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
     </div>
   </div>
 
-  <div data-phase="2">
-    <p style="font-size:22px;margin-top:16px;color:var(--text-dim)">Reuse is only valid when the full prefix matches. Match from the start, reuse up to the point of divergence, recompute the rest.</p>
-  </div>
 
   <div class="presenter-notes">Layer L's KV at position i is projected from layer L-1's output, which attended over positions 0..i. Through the full layer stack, KV[i] becomes a function of every token from 0 to i. Change one early token: different attention weights, different hidden states, every KV after it is invalid. The "Time flies / Fruit flies" example makes this tangible: "flies" is the same token at the same position, but the model's internal representation is completely different (verb vs noun) because attention propagated different context from position 0 through every layer. This cascading dependency is why only prefix matching works — you can reuse KV up to the first point of divergence, but nothing after it.</div>
 </section>
