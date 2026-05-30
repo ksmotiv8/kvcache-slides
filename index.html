@@ -700,9 +700,9 @@ body.notes-on .slide.current .presenter-notes {
 
   <div data-phase="1">
     <ul>
-      <li><strong>Cross-session:</strong> the system prompt is identical for every user. Compute it once, reuse across all sessions.</li>
-      <li><strong>Within-session:</strong> prior turns are already cached from earlier in the conversation. Only the new turn needs prefill.</li>
-      <li>Matching is by <strong>token block hashing</strong>. If two requests share the same token prefix, the engine skips the redundant compute.</li>
+      <li><strong>Cross-session:</strong> the system prompt is identical for every user.</li>
+      <li><strong>Within-session:</strong> prior turns are already cached from earlier in the conversation.</li>
+      <li>If two requests share the same token prefix, the engine skips the redundant compute.</li>
     </ul>
   </div>
   <div data-phase="2">
