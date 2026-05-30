@@ -1460,16 +1460,21 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
   <span class="section-tag">Motivation</span>
   <h2>Disaggregated Prefill - Decode</h2>
 
-  <div class="two-col" style="gap:48px;margin-top:24px">
-    <div style="border-left:4px solid var(--accent);padding-left:20px">
-      <p style="font-size:24px;color:var(--accent);font-weight:700;margin-bottom:12px">Prefill</p>
-      <p style="font-size:22px">Compute-heavy. Batches long prompts. Benefits from high-FLOPS hardware.</p>
-    </div>
-    <div style="border-left:4px solid var(--green);padding-left:20px">
-      <p style="font-size:24px;color:var(--green);font-weight:700;margin-bottom:12px">Decode</p>
-      <p style="font-size:22px">Memory-bandwidth-bound. One token at a time. Latency-sensitive.</p>
-    </div>
-  </div>
+  <svg viewBox="0 0 860 130" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:880px;height:auto;display:block;margin:20px 0 0">
+    <rect x="10" y="10" width="380" height="110" rx="10" fill="rgba(130,140,248,0.12)" stroke="var(--accent)" stroke-width="2"/>
+    <text x="200" y="42" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="22" text-anchor="middle" font-weight="700">PREFILL</text>
+    <text x="200" y="68" fill="var(--text)" font-family="'Inter',sans-serif" font-size="15" text-anchor="middle">Compute-heavy. Batches long prompts.</text>
+    <text x="200" y="90" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="13" text-anchor="middle">Benefits from high-FLOPS hardware</text>
+    <text x="200" y="112" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle" font-weight="600" opacity="0.7">COMPUTE-BOUND</text>
+
+    <rect x="470" y="10" width="380" height="110" rx="10" fill="rgba(74,222,128,0.10)" stroke="var(--green)" stroke-width="2"/>
+    <text x="660" y="42" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="22" text-anchor="middle" font-weight="700">DECODE</text>
+    <text x="660" y="68" fill="var(--text)" font-family="'Inter',sans-serif" font-size="15" text-anchor="middle">One token at a time. Latency-sensitive.</text>
+    <text x="660" y="90" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="13" text-anchor="middle">Reads entire KV cache every step</text>
+    <text x="660" y="112" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle" font-weight="600" opacity="0.7">MEMORY-BANDWIDTH-BOUND</text>
+
+    <text x="430" y="70" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="28" text-anchor="middle">&#x2260;</text>
+  </svg>
 
   <div data-phase="1" style="margin-top:32px">
     <br/>
