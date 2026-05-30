@@ -996,7 +996,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
 
 <!-- SLIDE 13: Memory tiers -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s30" data-build-phases="1">
+<section class="slide" id="s27" data-build-phases="1">
   <span class="slide-num">14 / 30</span>
   <span class="section-tag" style="margin-top:-20px">EXTENDING KV LIFETIME</span>
   <h2 style="margin-top:-4px">Tiered &amp; Remote Caching</h2>
@@ -1021,7 +1021,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE: Cache-Aware Routing -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s24" data-build-phases="2">
+<section class="slide" id="s30" data-build-phases="2">
   <span class="slide-num">15 / 30</span>
   <span class="section-tag">Optimizing Hit Rates</span>
   <h2 style="margin-bottom:16px"><a href="https://docs.nvidia.com/dynamo/latest/user-guides/kv-cache-aware-routing" target="_blank" rel="noopener" style="color:var(--text);text-decoration:none">Cache-aware routing in Dynamo</a></h2>
@@ -1111,7 +1111,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE: Load Leveling -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s27" data-build-phases="1">
+<section class="slide" id="s24" data-build-phases="1">
   <span class="slide-num">16 / 30</span>
   <span class="section-tag">Optimizing Hit Rates</span>
   <h2>Load Imbalance Creates Hot Spots</h2>
@@ -1305,10 +1305,73 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
+<!-- SLIDE A: LMCache sizing -->
+<!-- ════════════════════════════════════════════════════════ -->
+<section class="slide" id="s26" data-build-phases="1">
+  <span class="slide-num">21 / 30</span>
+  <span class="section-tag">EXTENDING KV LIFETIME</span>
+  <h2 style="font-size:32px;letter-spacing:-0.02em">CPU KV offload helps only when sized to the working set</h2>
+
+  <p style="font-size:14px;color:var(--text-muted);margin-bottom:12px">Qwen3-4B FP8, vLLM 0.20.2, LMCache 0.4.5, g6.4xlarge L4, 10K shared prompt + 12-turn agentic workload</p>
+
+  <table style="font-size:16px">
+    <thead><tr><th>Configuration</th><th style="text-align:right">shape knee</th><th style="text-align:right">2s SLA limit</th><th>vs fp8 baseline</th></tr></thead>
+    <tbody>
+      <tr style="opacity:0.5"><td>Best case, session always cached</td><td class="r">&gt;48c</td><td class="r">&gt;48c</td><td>upper bound</td></tr>
+      <tr style="border-left:3px solid var(--cyan)"><td><strong>fp8 KV, no LMCache</strong></td><td class="r">14c</td><td class="r">~6c</td><td><strong>baseline</strong></td></tr>
+      <tr><td>fp16 KV, no LMCache</td><td class="r">8c</td><td class="r">~4c</td><td>worse</td></tr>
+      <tr><td>0 GB LMCache</td><td class="r">14c</td><td class="r">~6c</td><td>matches baseline</td></tr>
+      <tr><td>8 GB LMCache</td><td class="r">14c</td><td class="r">~6c</td><td style="color:var(--text-muted)">no benefit</td></tr>
+      <tr style="border-left:3px solid var(--yellow)"><td><strong>16 GB LMCache</strong></td><td class="r">18c</td><td class="r">~10c</td><td class="g">+4c shape, +4c SLA</td></tr>
+      <tr style="border-left:3px solid var(--green)"><td><strong>32 GB LMCache</strong></td><td class="r">28c</td><td class="r">~14c</td><td class="g">+14c shape, +8c SLA</td></tr>
+      <tr style="opacity:0.5"><td>Worst case, session always evicted</td><td class="r">1c</td><td class="r">0c</td><td>lower bound</td></tr>
+    </tbody>
+  </table>
+
+  <div data-phase="1">
+    <div class="callout" style="margin-top:16px;font-size:18px">
+      32 GB LMCache roughly doubles the 2s SLA limit: <strong>~6 concurrent sessions → ~14</strong>. 8 GB provides no measurable benefit because it is smaller than the eviction churn.
+    </div>
+  </div>
+  <div class="presenter-notes">LMCache gives us a CPU DRAM tier for evicted KV blocks. That sounds straightforward: instead of throwing KV away and paying full re-prefill, reload it over PCIe. But the key systems question is not 'does offload exist?' It is 'is the spill tier large enough to survive eviction churn until the session returns?' In this workload, 8 GB does nothing, 16 GB moves the knee a little, and 32 GB moves it materially.</div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- SLIDE C: Offload changes the failure mode -->
+<!-- ════════════════════════════════════════════════════════ -->
+<section class="slide" id="s22" data-build-phases="1">
+  <span class="slide-num">22 / 30</span>
+  <span class="section-tag">EXTENDING KV LIFETIME</span>
+  <h2 style="font-size:34px;letter-spacing:-0.02em">Offload changes the failure mode</h2>
+
+  <p style="font-size:18px;color:var(--text-muted);margin-bottom:12px">Without enough spill capacity: bimodal (lucky = warm KV, unlucky = full re-prefill).<br/>With 32 GB: p99 improves, but median rises at high concurrency from reload and queueing overhead.</p>
+
+  <table style="font-size:15px">
+    <thead><tr><th>Config</th><th style="text-align:right">14c p50/p99</th><th style="text-align:right">32c p50/p99</th><th style="text-align:right">48c p50/p99</th></tr></thead>
+    <tbody>
+      <tr style="opacity:0.5"><td>Best (fully cached)</td><td class="r">138ms / 321ms</td><td class="r">495ms / 881ms</td><td class="r">417ms / 1.0s</td></tr>
+      <tr style="border-left:3px solid var(--cyan)"><td><strong>fp8, no LMCache</strong></td><td class="r">1.3s / <span style="color:var(--red)">38.9s</span></td><td class="r">2.6s / <span style="color:var(--red)">49.7s</span></td><td class="r">5.7s / <span style="color:var(--red)">43.2s</span></td></tr>
+      <tr style="border-left:3px solid var(--green)"><td><strong>fp8 + 32 GB LMCache</strong></td><td class="r">1.4s / <span style="color:var(--green)">7.5s</span></td><td class="r">7.4s / <span style="color:var(--yellow)">23.5s</span></td><td class="r">11.8s / <span style="color:var(--yellow)">30.9s</span></td></tr>
+      <tr><td>fp16, no LMCache</td><td class="r">3.7s / 36.2s</td><td class="r">18.1s / 50.7s</td><td class="r">18.8s / 65.8s</td></tr>
+      <tr style="opacity:0.5"><td>Worst (always re-prefill)</td><td class="r">6.2s / 38.1s</td><td class="r">57.4s / 89.1s</td><td class="r">102s / 134s</td></tr>
+    </tbody>
+  </table>
+
+  <div data-phase="1">
+    <div class="callout" style="margin-top:16px;font-size:17px">
+      At 14c: p99 drops from <strong style="color:var(--red)">38.9s</strong> to <strong style="color:var(--green)">7.5s</strong> with 32 GB LMCache. The tradeoff: p50 rises slightly (1.3s → 1.4s) from reload overhead.
+    </div>
+  </div>
+  <div class="presenter-notes">Without a large enough spill tier, the system is bimodal. Some users hit warm cache and look fine. Others miss and pay full re-prefill, so p99 explodes. With 32 GB, more sessions pay a bounded reload cost instead of catastrophic re-prefill. That improves p99, but at high concurrency the median rises because reload overhead and connector queueing become shared pain. This is not free capacity. It is a different point in the latency/cost/capacity tradeoff. PCIe bandwidth was not saturated; the bottleneck became connector/queueing/reload overhead at high concurrency.</div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 15: Predict the KV footprint knee -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s18" data-build-phases="2">
-  <span class="slide-num">21 / 30</span>
+  <span class="slide-num">23 / 30</span>
   <span class="section-tag">The systems lesson</span>
   <h2>Predict the KV budget</h2>
 
@@ -1338,7 +1401,7 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
 <!-- SLIDE 19: Quantization Moves the Knee -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s19" data-build-phases="2">
-  <span class="slide-num">22 / 30</span>
+  <span class="slide-num">24 / 30</span>
   <span class="section-tag">The systems lesson</span>
   <h2>One flag, 75% more headroom</h2>
   <p style="font-size:17px;color:var(--text-muted);margin-bottom:4px"><strong>Qwen3-4B</strong> on <strong>1x NVIDIA L4 (24 GB)</strong>, vLLM 0.20.2</p>
@@ -1399,7 +1462,7 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
 <!-- SLIDE 20: Best/Worst/Realistic -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s20" data-build-phases="2">
-  <span class="slide-num">23 / 30</span>
+  <span class="slide-num">25 / 30</span>
   <span class="section-tag">The systems lesson</span>
   <h2>The cost of cache misses</h2>
   <p style="font-size:17px;color:var(--text-muted);margin-bottom:8px"><strong>Qwen3-4B FP8</strong> on <strong>1x NVIDIA L4 (24 GB)</strong>, vLLM 0.20.2, APC enabled</p>
@@ -1430,7 +1493,7 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
 <!-- SLIDE 21: Same GPU Different Workloads -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s21" data-build-phases="1">
-  <span class="slide-num">24 / 30</span>
+  <span class="slide-num">26 / 30</span>
   <span class="section-tag">The systems lesson</span>
   <h2>KV budget is workload-specific</h2>
   <p style="font-size:17px;color:var(--text-muted);margin-bottom:8px"><strong>Qwen3-4B FP8</strong> on <strong>1x NVIDIA L4 (24 GB)</strong>, formula: <code>(kv_capacity - shared_prefix) / per_session_unique</code></p>
@@ -1460,7 +1523,7 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
 <!-- SLIDE: Why Disaggregate? -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s25" data-build-phases="1">
-  <span class="slide-num">25 / 30</span>
+  <span class="slide-num">27 / 30</span>
   <span class="section-tag">Motivation</span>
   <h2>Disaggregated Prefill - Decode</h2>
 
@@ -1493,67 +1556,7 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
   <div class="presenter-notes">Prefill is compute-heavy and benefits from batching long prompts, while decode is memory-bandwidth and latency sensitive. Splitting them lets you size, schedule, and tune each pool independently. NVIDIA Dynamo frames this as balancing throughput and latency. The tradeoff: KV transfer becomes a real system cost. The win is largest for long-context, bursty, or SLO-constrained workloads.</div>
 </section>
 
-<!-- ════════════════════════════════════════════════════════ -->
-<!-- SLIDE A: LMCache sizing -->
-<!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s26" data-build-phases="1">
-  <span class="slide-num">26 / 30</span>
-  <span class="section-tag">EXTENDING KV LIFETIME</span>
-  <h2 style="font-size:32px;letter-spacing:-0.02em">CPU KV offload helps only when sized to the working set</h2>
 
-  <p style="font-size:14px;color:var(--text-muted);margin-bottom:12px">Qwen3-4B FP8, vLLM 0.20.2, LMCache 0.4.5, g6.4xlarge L4, 10K shared prompt + 12-turn agentic workload</p>
-
-  <table style="font-size:16px">
-    <thead><tr><th>Configuration</th><th style="text-align:right">shape knee</th><th style="text-align:right">2s SLA limit</th><th>vs fp8 baseline</th></tr></thead>
-    <tbody>
-      <tr style="opacity:0.5"><td>Best case, session always cached</td><td class="r">&gt;48c</td><td class="r">&gt;48c</td><td>upper bound</td></tr>
-      <tr style="border-left:3px solid var(--cyan)"><td><strong>fp8 KV, no LMCache</strong></td><td class="r">14c</td><td class="r">~6c</td><td><strong>baseline</strong></td></tr>
-      <tr><td>fp16 KV, no LMCache</td><td class="r">8c</td><td class="r">~4c</td><td>worse</td></tr>
-      <tr><td>0 GB LMCache</td><td class="r">14c</td><td class="r">~6c</td><td>matches baseline</td></tr>
-      <tr><td>8 GB LMCache</td><td class="r">14c</td><td class="r">~6c</td><td style="color:var(--text-muted)">no benefit</td></tr>
-      <tr style="border-left:3px solid var(--yellow)"><td><strong>16 GB LMCache</strong></td><td class="r">18c</td><td class="r">~10c</td><td class="g">+4c shape, +4c SLA</td></tr>
-      <tr style="border-left:3px solid var(--green)"><td><strong>32 GB LMCache</strong></td><td class="r">28c</td><td class="r">~14c</td><td class="g">+14c shape, +8c SLA</td></tr>
-      <tr style="opacity:0.5"><td>Worst case, session always evicted</td><td class="r">1c</td><td class="r">0c</td><td>lower bound</td></tr>
-    </tbody>
-  </table>
-
-  <div data-phase="1">
-    <div class="callout" style="margin-top:16px;font-size:18px">
-      32 GB LMCache roughly doubles the 2s SLA limit: <strong>~6 concurrent sessions → ~14</strong>. 8 GB provides no measurable benefit because it is smaller than the eviction churn.
-    </div>
-  </div>
-  <div class="presenter-notes">LMCache gives us a CPU DRAM tier for evicted KV blocks. That sounds straightforward: instead of throwing KV away and paying full re-prefill, reload it over PCIe. But the key systems question is not 'does offload exist?' It is 'is the spill tier large enough to survive eviction churn until the session returns?' In this workload, 8 GB does nothing, 16 GB moves the knee a little, and 32 GB moves it materially.</div>
-</section>
-
-
-<!-- ════════════════════════════════════════════════════════ -->
-<!-- SLIDE C: Offload changes the failure mode -->
-<!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s22" data-build-phases="1">
-  <span class="slide-num">27 / 30</span>
-  <span class="section-tag">EXTENDING KV LIFETIME</span>
-  <h2 style="font-size:34px;letter-spacing:-0.02em">Offload changes the failure mode</h2>
-
-  <p style="font-size:18px;color:var(--text-muted);margin-bottom:12px">Without enough spill capacity: bimodal (lucky = warm KV, unlucky = full re-prefill).<br/>With 32 GB: p99 improves, but median rises at high concurrency from reload and queueing overhead.</p>
-
-  <table style="font-size:15px">
-    <thead><tr><th>Config</th><th style="text-align:right">14c p50/p99</th><th style="text-align:right">32c p50/p99</th><th style="text-align:right">48c p50/p99</th></tr></thead>
-    <tbody>
-      <tr style="opacity:0.5"><td>Best (fully cached)</td><td class="r">138ms / 321ms</td><td class="r">495ms / 881ms</td><td class="r">417ms / 1.0s</td></tr>
-      <tr style="border-left:3px solid var(--cyan)"><td><strong>fp8, no LMCache</strong></td><td class="r">1.3s / <span style="color:var(--red)">38.9s</span></td><td class="r">2.6s / <span style="color:var(--red)">49.7s</span></td><td class="r">5.7s / <span style="color:var(--red)">43.2s</span></td></tr>
-      <tr style="border-left:3px solid var(--green)"><td><strong>fp8 + 32 GB LMCache</strong></td><td class="r">1.4s / <span style="color:var(--green)">7.5s</span></td><td class="r">7.4s / <span style="color:var(--yellow)">23.5s</span></td><td class="r">11.8s / <span style="color:var(--yellow)">30.9s</span></td></tr>
-      <tr><td>fp16, no LMCache</td><td class="r">3.7s / 36.2s</td><td class="r">18.1s / 50.7s</td><td class="r">18.8s / 65.8s</td></tr>
-      <tr style="opacity:0.5"><td>Worst (always re-prefill)</td><td class="r">6.2s / 38.1s</td><td class="r">57.4s / 89.1s</td><td class="r">102s / 134s</td></tr>
-    </tbody>
-  </table>
-
-  <div data-phase="1">
-    <div class="callout" style="margin-top:16px;font-size:17px">
-      At 14c: p99 drops from <strong style="color:var(--red)">38.9s</strong> to <strong style="color:var(--green)">7.5s</strong> with 32 GB LMCache. The tradeoff: p50 rises slightly (1.3s → 1.4s) from reload overhead.
-    </div>
-  </div>
-  <div class="presenter-notes">Without a large enough spill tier, the system is bimodal. Some users hit warm cache and look fine. Others miss and pay full re-prefill, so p99 explodes. With 32 GB, more sessions pay a bounded reload cost instead of catastrophic re-prefill. That improves p99, but at high concurrency the median rises because reload overhead and connector queueing become shared pain. This is not free capacity. It is a different point in the latency/cost/capacity tradeoff. PCIe bandwidth was not saturated; the bottleneck became connector/queueing/reload overhead at high concurrency.</div>
-</section>
 
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 12: Disaggregation -->
