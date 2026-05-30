@@ -218,7 +218,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
 <!-- SLIDE 1: Title -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s1">
-  <span class="slide-num">1 / 31</span>
+  <span class="slide-num">1 / 33</span>
   <h1>KV Cache, Disaggregation,<br/>and Inference Utilization</h1>
   <p class="subtitle">A systems engineer's journey into LLM inference.<br/>Routing, scheduling, placement, memory movement, tail latency.</p>
   <div class="presenter-notes">Open by framing the talk: this is a story about discovery. I came from distributed systems, was intimidated by the ML side of inference, and realized the hard problems at scale are the ones I already knew how to think about. The audience should leave with a concrete mental model for why inference at scale is really a distributed systems problem, and KV cache is the object at the center of it.</div>
@@ -230,7 +230,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
 <!-- SLIDE 2: I was intimidated / Wait I know these -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s2" data-build-phases="2">
-  <span class="slide-num">2 / 31</span>
+  <span class="slide-num">2 / 33</span>
   <span class="section-tag">Perspective of a distributed systems engineer</span>
   <h2>Inference seems intimidating at first</h2>
 
@@ -257,7 +257,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
 <!-- SLIDE 3: Utilization -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s3">
-  <span class="slide-num">3 / 31</span>
+  <span class="slide-num">3 / 33</span>
   <span class="section-tag">Agenda</span>
   <h2 style="font-size:48px;letter-spacing:-0.03em">Utilization</h2>
 
@@ -272,7 +272,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
 
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s4" data-build-phases="2">
-  <span class="slide-num">4 / 31</span>
+  <span class="slide-num">4 / 33</span>
   <h2 style="margin-top:-10px">Two stages of inference</h2>
   <p style="font-size:17px;color:var(--text-muted);margin-bottom:4px"><strong>Qwen3-4B FP8</strong> on <strong>1x NVIDIA L4 (24 GB)</strong></p>
 
@@ -339,7 +339,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
 <!-- SLIDE 5: Journey of a Prompt -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s5" data-build-phases="7">
-  <span class="slide-num">5 / 31</span>
+  <span class="slide-num">5 / 33</span>
   <span class="section-tag">Steps in inference</span>
   <h2>Journey of a prompt</h2>
 
@@ -438,7 +438,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
 <!-- SLIDE 5: Dynamo Disaggregated Lifecycle -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s6" data-build-phases="3">
-  <span class="slide-num">6 / 31</span>
+  <span class="slide-num">6 / 33</span>
   <span class="section-tag">Journey of a prompt</span>
   <h2>Request Lifecycle</h2>
 
@@ -527,7 +527,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
 <!-- SLIDE 7: What is KV Cache -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s7">
-  <span class="slide-num">7 / 31</span>
+  <span class="slide-num">7 / 33</span>
   <h2>What is KV cache?</h2>
 
   <svg viewBox="0 0 860 310" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagram showing how input tokens produce Query, Key, and Value vectors through attention layers, with K and V saved into the KV cache across 36 layers" style="width:100%;max-width:1100px;height:auto;display:block;margin:16px auto 0">
@@ -630,7 +630,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
 <!-- SLIDE 7: KV Cache Scale -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s8" data-build-phases="1">
-  <span class="slide-num">8 / 31</span>
+  <span class="slide-num">8 / 33</span>
   <span class="section-tag">Qwen3-4B (FP8)</span>
   <h2>Sizing KV for a single session</h2>
 
@@ -683,7 +683,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
 <!-- SLIDE 10: What makes KV caching hard -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s9">
-  <span class="slide-num">9 / 31</span>
+  <span class="slide-num">9 / 33</span>
   <h2>What makes KV caching hard</h2>
 
   <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:40px;margin-top:40px;max-width:900px">
@@ -705,7 +705,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
 <!-- SLIDE: Why prefix matching -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s10" data-build-phases="1">
-  <span class="slide-num">10 / 31</span>
+  <span class="slide-num">10 / 33</span>
   <h2 style="margin-top:-10px">Why only prefix matching works</h2>
 
   <div class="two-col" style="gap:60px;align-items:start">
@@ -774,8 +774,8 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE: Prefix Caching -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s29" data-build-phases="1">
-  <span class="slide-num">11 / 31</span>
+<section class="slide" id="s31" data-build-phases="1">
+  <span class="slide-num">11 / 33</span>
   <span class="section-tag">Prompt Anatomy</span>
   <h2>Prefix caching</h2>
 
@@ -815,7 +815,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
 <!-- SLIDE 11: Prefix caching internals — vLLM vs SGLang -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s11">
-  <span class="slide-num">12 / 31</span>
+  <span class="slide-num">12 / 33</span>
   <span class="section-tag">Prefix caching internals</span>
   <h2 style="font-size:36px;letter-spacing:-0.02em">vLLM caches blocks. SGLang caches prefixes.</h2>
 
@@ -934,8 +934,8 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
 
 <!-- SLIDE 12: vLLM vs SGLang tradeoffs -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s30">
-  <span class="slide-num">13 / 31</span>
+<section class="slide" id="s32">
+  <span class="slide-num">13 / 33</span>
   <span class="section-tag">Prefix caching internals</span>
   <h2 style="font-size:36px;letter-spacing:-0.02em">vLLM vs SGLang: prefix approach tradeoffs</h2>
 
@@ -995,8 +995,8 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
 
 <!-- SLIDE 13: Memory tiers -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s26" data-build-phases="1">
-  <span class="slide-num">14 / 31</span>
+<section class="slide" id="s22" data-build-phases="1">
+  <span class="slide-num">14 / 33</span>
   <span class="section-tag" style="margin-top:-20px">EXTENDING KV LIFETIME</span>
   <h2 style="margin-top:-4px">Tiered &amp; Remote Caching</h2>
 
@@ -1020,8 +1020,8 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE A: LMCache sizing -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s27" data-build-phases="1">
-  <span class="slide-num">15 / 31</span>
+<section class="slide" id="s33" data-build-phases="1">
+  <span class="slide-num">15 / 33</span>
   <span class="section-tag">EXTENDING KV LIFETIME</span>
   <h2 style="font-size:32px;letter-spacing:-0.02em">CPU KV offload helps only when sized to the working set</h2>
 
@@ -1052,40 +1052,58 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE B: Churn vs cache -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s22">
-  <span class="slide-num">16 / 31</span>
+<section class="slide" id="s24">
+  <span class="slide-num">16 / 33</span>
   <span class="section-tag">EXTENDING KV LIFETIME</span>
-  <h2 style="font-size:36px;letter-spacing:-0.02em">8 GB offload is churn, not cache</h2>
+  <h2 style="font-size:36px;letter-spacing:-0.02em">8 GB CPU cache is too small to help</h2>
 
-  <p style="font-size:20px;color:var(--text-muted);margin-bottom:24px">Offload traffic alone does not prove the cache is working. <strong>Reload traffic proves reuse.</strong></p>
+  <p style="font-size:20px;color:var(--text-muted);margin-bottom:28px">Blocks leave the GPU, but they are evicted from CPU RAM before they are reused.</p>
 
-  <svg viewBox="0 0 900 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:900px;height:auto;display:block;margin:0 auto" role="img" aria-label="8 GB LMCache shows high GPU to CPU offload but near-zero CPU to GPU reload">
-    <!-- Left: GPU -> CPU TX -->
-    <rect x="20" y="10" width="400" height="110" rx="8" fill="rgba(248,113,113,0.08)" stroke="var(--red)" stroke-width="1.5"/>
-    <text x="220" y="38" fill="var(--red)" font-family="var(--mono)" font-size="16" text-anchor="middle" font-weight="700">GPU → CPU offload (TX)</text>
-    <text x="220" y="65" fill="var(--text)" font-family="var(--mono)" font-size="28" text-anchor="middle" font-weight="700">340-425 MB/s</text>
-    <text x="220" y="90" fill="var(--text-muted)" font-family="var(--font)" font-size="14" text-anchor="middle">Blocks leaving GPU memory constantly</text>
-    <text x="220" y="110" fill="var(--red)" font-family="var(--mono)" font-size="12" text-anchor="middle" font-weight="600" opacity="0.7">HIGH TRAFFIC</text>
+  <svg viewBox="0 0 900 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:900px;height:auto;display:block;margin:0 auto" role="img" aria-label="GPU KV cache offloads to 8 GB CPU cache but blocks are evicted before reuse">
+    <!-- GPU KV Cache box -->
+    <rect x="20" y="30" width="220" height="90" rx="10" fill="rgba(34,211,238,0.10)" stroke="var(--cyan)" stroke-width="2"/>
+    <text x="130" y="65" fill="var(--cyan)" font-family="var(--mono)" font-size="16" text-anchor="middle" font-weight="700">GPU KV Cache</text>
+    <text x="130" y="90" fill="var(--text-muted)" font-family="var(--font)" font-size="13" text-anchor="middle">evicts under pressure</text>
 
-    <!-- Right: CPU -> GPU RX -->
-    <rect x="480" y="10" width="400" height="110" rx="8" fill="rgba(74,222,128,0.06)" stroke="var(--green)" stroke-width="1.5" stroke-dasharray="6,3"/>
-    <text x="680" y="38" fill="var(--green)" font-family="var(--mono)" font-size="16" text-anchor="middle" font-weight="700">CPU → GPU reload (RX)</text>
-    <text x="680" y="65" fill="var(--text)" font-family="var(--mono)" font-size="28" text-anchor="middle" font-weight="700">2.7-6.2 MB/s</text>
-    <text x="680" y="90" fill="var(--text-muted)" font-family="var(--font)" font-size="14" text-anchor="middle">Almost nothing reloaded before eviction</text>
-    <text x="680" y="110" fill="var(--text-muted)" font-family="var(--mono)" font-size="12" text-anchor="middle" font-weight="600" opacity="0.7">~ZERO REUSE</text>
+    <!-- Arrow: GPU -> CPU -->
+    <line x1="240" y1="60" x2="340" y2="60" stroke="var(--red)" stroke-width="2.5" marker-end="url(#arrowRed)"/>
+    <text x="290" y="50" fill="var(--red)" font-family="var(--mono)" font-size="13" text-anchor="middle" font-weight="600">TX</text>
+    <text x="290" y="95" fill="var(--red)" font-family="var(--mono)" font-size="12" text-anchor="middle">340-425 MB/s</text>
+
+    <!-- 8 GB CPU Cache box -->
+    <rect x="340" y="30" width="220" height="90" rx="10" fill="rgba(248,113,113,0.08)" stroke="var(--red)" stroke-width="2" stroke-dasharray="6,3"/>
+    <text x="450" y="60" fill="var(--red)" font-family="var(--mono)" font-size="16" text-anchor="middle" font-weight="700">8 GB CPU Cache</text>
+    <text x="450" y="82" fill="var(--text-muted)" font-family="var(--font)" font-size="13" text-anchor="middle">too small — blocks evicted</text>
+    <text x="450" y="100" fill="var(--text-muted)" font-family="var(--font)" font-size="13" text-anchor="middle">before sessions return</text>
+
+    <!-- Arrow: CPU -> evicted -->
+    <line x1="560" y1="60" x2="660" y2="60" stroke="var(--text-muted)" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrowMuted)"/>
+    <text x="610" y="50" fill="var(--text-muted)" font-family="var(--mono)" font-size="13" text-anchor="middle">evicted</text>
+
+    <!-- Evicted box -->
+    <rect x="660" y="30" width="220" height="90" rx="10" fill="rgba(255,255,255,0.03)" stroke="var(--border)" stroke-width="1.5"/>
+    <text x="770" y="60" fill="var(--text-muted)" font-family="var(--mono)" font-size="15" text-anchor="middle" font-weight="600">Evicted before reuse</text>
+    <text x="770" y="85" fill="var(--text-muted)" font-family="var(--font)" font-size="13" text-anchor="middle">RX reload: ~0 MB/s</text>
+    <text x="770" y="105" fill="var(--text-muted)" font-family="var(--font)" font-size="12" text-anchor="middle">(2.7-6.2 MB/s measured)</text>
+
+    <!-- Arrow markers -->
+    <defs>
+      <marker id="arrowRed" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="none" stroke="var(--red)" stroke-width="1.5"/></marker>
+      <marker id="arrowMuted" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/></marker>
+    </defs>
 
     <!-- Bottom callout -->
-    <text x="450" y="155" fill="var(--yellow)" font-family="var(--mono)" font-size="16" text-anchor="middle" font-weight="700">Offloaded ≠ reusable</text>
-    <text x="450" y="175" fill="var(--text-muted)" font-family="var(--font)" font-size="13" text-anchor="middle">Blocks are churned out of 8 GB CPU tier before sessions need them again</text>
+    <text x="450" y="165" fill="var(--yellow)" font-family="var(--mono)" font-size="18" text-anchor="middle" font-weight="700">Offload without reload is just churn.</text>
+    <text x="450" y="190" fill="var(--text-muted)" font-family="var(--font)" font-size="14" text-anchor="middle">340-425 MB/s out, ~0 MB/s back</text>
   </svg>
-  <div class="presenter-notes">8 GB LMCache shows high TX/offload (340-425 MB/s GPU→CPU at 12-14c) but near-zero RX/reload (2.7-6.2 MB/s CPU→GPU). Blocks leave GPU memory but are evicted from the 8 GB CPU tier before sessions reload them. The cache is busy but not useful. You need to size the offload tier to hold the eviction working set, not just provide some extra capacity.</div>
+  <div class="presenter-notes">8 GB LMCache shows 340-425 MB/s TX offload GPU→CPU at 12-14c, but only 2.7-6.2 MB/s RX reload CPU→GPU. Blocks leave the GPU but are evicted from the 8 GB CPU tier before any session needs them again. The cache is busy but not useful. To get reuse, you need to size the offload tier to hold the eviction working set — 8 GB is not enough for this workload.</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE C: Offload changes the failure mode -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s31" data-build-phases="1">
-  <span class="slide-num">17 / 31</span>
+<section class="slide" id="s30" data-build-phases="1">
+  <span class="slide-num">17 / 33</span>
   <span class="section-tag">EXTENDING KV LIFETIME</span>
   <h2 style="font-size:34px;letter-spacing:-0.02em">Offload changes the failure mode</h2>
 
@@ -1111,10 +1129,34 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
+<!-- SLIDE: TTFT Summary Chart -->
+<!-- ════════════════════════════════════════════════════════ -->
+<section class="slide" id="s26">
+  <span class="slide-num">18 / 33</span>
+  <span class="section-tag">EXTENDING KV LIFETIME</span>
+  <h2 style="font-size:34px;letter-spacing:-0.02em">TTFT across offload tiers</h2>
+  <p style="font-size:17px;color:var(--text-muted);margin-bottom:16px">Qwen3-4B FP8, vLLM 0.20.2, LMCache 0.4.5 &mdash; p50 and p99 TTFT vs concurrent sessions</p>
+  <img src="site/assets/charts/lmcache-ttft-summary.svg" alt="TTFT p50 and p99 vs concurrent sessions for 0, 8, 16, and 32 GB LMCache tiers" style="width:100%;max-width:960px;display:block;margin:0 auto"/>
+  <div class="presenter-notes">The full TTFT picture across all four LMCache tiers. Left panel is p50, right is p99. The 2s target line shows where SLA compliance breaks. Key takeaway: 8 GB provides no benefit over baseline; 16 GB shifts the knee modestly; 32 GB roughly doubles the SLA ceiling.</div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- SLIDE: PCIe Traffic Chart -->
+<!-- ════════════════════════════════════════════════════════ -->
+<section class="slide" id="s27">
+  <span class="slide-num">19 / 33</span>
+  <span class="section-tag">EXTENDING KV LIFETIME</span>
+  <h2 style="font-size:34px;letter-spacing:-0.02em">PCIe traffic: offload vs reload</h2>
+  <p style="font-size:17px;color:var(--text-muted);margin-bottom:16px">TX (GPU&rarr;CPU offload) and RX (CPU&rarr;GPU reload) across LMCache tiers</p>
+  <img src="site/assets/charts/lmcache-pcie-summary.svg" alt="PCIe TX offload and RX reload traffic across 0, 8, 16, and 32 GB LMCache tiers" style="width:100%;max-width:960px;display:block;margin:0 auto"/>
+  <div class="presenter-notes">Left panel: TX offload traffic. All tiers show similar offload rates at the same concurrency — blocks are pushed to CPU regardless of tier size. Right panel: RX reload traffic. 8 GB shows near-zero RX (churn). 16 GB and 32 GB show increasing RX, proving blocks survive long enough to be reloaded. The gap between TX and RX is wasted work.</div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE: Cache-Aware Routing -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s24" data-build-phases="2">
-  <span class="slide-num">18 / 31</span>
+<section class="slide" id="s28" data-build-phases="2">
+  <span class="slide-num">20 / 33</span>
   <span class="section-tag">Optimizing Hit Rates</span>
   <h2 style="margin-bottom:16px"><a href="https://docs.nvidia.com/dynamo/latest/user-guides/kv-cache-aware-routing" target="_blank" rel="noopener" style="color:var(--text);text-decoration:none">Cache-aware routing in Dynamo</a></h2>
 
@@ -1203,8 +1245,8 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE: Load Leveling -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s28" data-build-phases="1">
-  <span class="slide-num">19 / 31</span>
+<section class="slide" id="s29" data-build-phases="1">
+  <span class="slide-num">21 / 33</span>
   <span class="section-tag">Optimizing Hit Rates</span>
   <h2>Load Imbalance Creates Hot Spots</h2>
 
@@ -1238,7 +1280,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
 <!-- SLIDE 13: The Experiment -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s14">
-  <span class="slide-num">20 / 31</span>
+  <span class="slide-num">22 / 33</span>
   <span class="section-tag">The experiment</span>
   <h2>Benchmark setup</h2>
 
@@ -1277,7 +1319,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
 <!-- SLIDE 14: Before the cliff -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s15">
-  <span class="slide-num">21 / 31</span>
+  <span class="slide-num">23 / 33</span>
   <span class="section-tag">The experiment</span>
   <h2>At 12 sessions, it still looks fine</h2>
 
@@ -1306,7 +1348,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
 <!-- SLIDE 15: p50 vs p99 contrast -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s16">
-  <span class="slide-num">22 / 31</span>
+  <span class="slide-num">24 / 33</span>
   <span class="section-tag">The experiment</span>
   <h2>Now add two more sessions</h2>
 
@@ -1335,7 +1377,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
 <!-- SLIDE 16: The Cliff Chart -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s17">
-  <span class="slide-num">23 / 31</span>
+  <span class="slide-num">25 / 33</span>
   <span class="section-tag">The experiment</span>
   <h2>The KV budget cliff</h2>
   <p style="font-size:17px;color:var(--text-muted);margin-bottom:4px"><strong>Qwen3-4B FP8</strong> on <strong>1x NVIDIA L4 (24 GB)</strong>, vLLM 0.20.2, APC enabled</p>
@@ -1400,7 +1442,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
 <!-- SLIDE 15: Predict the concurrency knee -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s18" data-build-phases="2">
-  <span class="slide-num">24 / 31</span>
+  <span class="slide-num">26 / 33</span>
   <span class="section-tag">The systems lesson</span>
   <h2>Predict the KV budget</h2>
 
@@ -1427,7 +1469,7 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
 <!-- SLIDE 19: Quantization Moves the Knee -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s19" data-build-phases="2">
-  <span class="slide-num">25 / 31</span>
+  <span class="slide-num">27 / 33</span>
   <span class="section-tag">The systems lesson</span>
   <h2>One flag, 75% more headroom</h2>
   <p style="font-size:17px;color:var(--text-muted);margin-bottom:4px"><strong>Qwen3-4B</strong> on <strong>1x NVIDIA L4 (24 GB)</strong>, vLLM 0.20.2</p>
@@ -1488,7 +1530,7 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
 <!-- SLIDE 20: Best/Worst/Realistic -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s20" data-build-phases="2">
-  <span class="slide-num">26 / 31</span>
+  <span class="slide-num">28 / 33</span>
   <span class="section-tag">The systems lesson</span>
   <h2>The cost of cache misses</h2>
   <p style="font-size:17px;color:var(--text-muted);margin-bottom:8px"><strong>Qwen3-4B FP8</strong> on <strong>1x NVIDIA L4 (24 GB)</strong>, vLLM 0.20.2, APC enabled</p>
@@ -1519,7 +1561,7 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
 <!-- SLIDE 21: Same GPU Different Workloads -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s21" data-build-phases="1">
-  <span class="slide-num">27 / 31</span>
+  <span class="slide-num">29 / 33</span>
   <span class="section-tag">The systems lesson</span>
   <h2>KV budget is workload-specific</h2>
   <p style="font-size:17px;color:var(--text-muted);margin-bottom:8px"><strong>Qwen3-4B FP8</strong> on <strong>1x NVIDIA L4 (24 GB)</strong>, formula: <code>(kv_capacity - shared_prefix) / per_session_unique</code></p>
@@ -1549,7 +1591,7 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
 <!-- SLIDE: Why Disaggregate? -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s25" data-build-phases="1">
-  <span class="slide-num">28 / 31</span>
+  <span class="slide-num">30 / 33</span>
   <span class="section-tag">Motivation</span>
   <h2>Disaggregated Prefill - Decode</h2>
 
@@ -1586,7 +1628,7 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
 <!-- SLIDE 12: Disaggregation -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s12" data-build-phases="2">
-  <span class="slide-num">29 / 31</span>
+  <span class="slide-num">31 / 33</span>
   <span class="section-tag">Disaggregation</span>
   <h2 style="font-size:38px;letter-spacing:-0.02em">Decouple prefill from decode</h2>
 
@@ -1633,7 +1675,7 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
 <!-- SLIDE 11: Disaggregation: Benchmarks -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s13" data-build-phases="2">
-  <span class="slide-num">30 / 31</span>
+  <span class="slide-num">32 / 33</span>
   <h2 style="margin-top:-10px">Disaggregation: Benchmarks</h2>
   <p style="font-size:17px;color:var(--text-muted);margin-bottom:8px">Prefill is compute-bound (90-95% GPU utilization). Decode is memory-bound (20-40%). Running both on the same GPU wastes whichever resource isn't the bottleneck.</p>
 
@@ -1668,7 +1710,7 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
 <!-- SLIDE 25: Closing -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s23">
-  <span class="slide-num">31 / 31</span>
+  <span class="slide-num">33 / 33</span>
   <span class="section-tag">Conclusion</span>
   <h2 style="font-size:56px;letter-spacing:-0.03em">Utilization</h2>
 
@@ -1691,7 +1733,7 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
 <!-- ════════════════════════════════════════════════════════ -->
 <div id="nav">
   <button id="prevBtn" aria-label="Previous slide">Prev</button>
-  <span id="counter">1 / 31</span>
+  <span id="counter">1 / 33</span>
   <button id="nextBtn" aria-label="Next slide">Next</button>
 </div>
 <div id="notes-indicator">P: notes off</div>

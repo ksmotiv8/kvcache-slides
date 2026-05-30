@@ -1,0 +1,220 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 460" style="width:100%;height:auto">
+<style>
+  .t{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+  .m{font-family:'SF Mono',Consolas,monospace}
+  .title{font-size:18px;font-weight:700}
+  .sub{font-size:12px}
+  .pt{font-size:15px;font-weight:700}
+  .al{font-size:11px}
+  .at{font-size:11px}
+  .lg{font-size:11px}
+  .an{font-size:10px;font-weight:600}
+  .gr{stroke-width:1}
+  .tl{stroke-width:1.5;stroke-dasharray:8,4}
+  .sr{fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .title,.pt{fill:#f0f0f4}
+  .sub,.al,.at,.lg{fill:rgba(240,240,244,0.6)}
+  .an{fill:rgba(240,240,244,0.8)}
+  .gr{stroke:rgba(240,240,244,0.06)}
+  .ax{stroke:rgba(240,240,244,0.15)}
+  @media(prefers-color-scheme:light){
+    .title,.pt{fill:#1a1a2e}
+    .sub,.al,.at,.lg{fill:rgba(26,26,46,0.6)}
+    .an{fill:rgba(26,26,46,0.8)}
+    .gr{stroke:rgba(26,26,46,0.08)}
+    .ax{stroke:rgba(26,26,46,0.2)}
+  }
+</style>
+<rect width="1200" height="460" fill="transparent"/>
+<text x="600" y="22" class="t title" text-anchor="middle">Offload traffic is not enough; reload traffic proves reuse</text>
+<text x="600" y="42" class="t sub" text-anchor="middle">TX = KV blocks left GPU memory. RX = they came back instead of being recomputed.</text>
+<text x="320" y="65" class="t pt" text-anchor="middle">GPU → CPU offload (TX) MB/s</text>
+<text x="900" y="65" class="t pt" text-anchor="middle">CPU → GPU reload (RX) MB/s</text>
+<line x1="80" y1="370.0" x2="560" y2="370.0" class="gr"/>
+<text x="74" y="374.0" class="m al" text-anchor="end">0</text>
+<line x1="80" y1="304.4" x2="560" y2="304.4" class="gr"/>
+<text x="74" y="308.4" class="m al" text-anchor="end">100</text>
+<line x1="80" y1="238.9" x2="560" y2="238.9" class="gr"/>
+<text x="74" y="242.9" class="m al" text-anchor="end">200</text>
+<line x1="80" y1="173.3" x2="560" y2="173.3" class="gr"/>
+<text x="74" y="177.3" class="m al" text-anchor="end">300</text>
+<line x1="80" y1="107.8" x2="560" y2="107.8" class="gr"/>
+<text x="74" y="111.8" class="m al" text-anchor="end">400</text>
+<line x1="80" y1="370" x2="560" y2="370" class="ax"/>
+<text x="80.0" y="386" class="m al" text-anchor="middle">1</text>
+<text x="151.5" y="386" class="m al" text-anchor="middle">8</text>
+<text x="212.8" y="386" class="m al" text-anchor="middle">14</text>
+<text x="274.0" y="386" class="m al" text-anchor="middle">20</text>
+<text x="355.7" y="386" class="m al" text-anchor="middle">28</text>
+<text x="478.3" y="386" class="m al" text-anchor="middle">40</text>
+<text x="560.0" y="386" class="m al" text-anchor="middle">48</text>
+<text x="320.0" y="402" class="t at" text-anchor="middle">Concurrent sessions</text>
+<line x1="660" y1="370.0" x2="1140" y2="370.0" class="gr"/>
+<text x="654" y="374.0" class="m al" text-anchor="end">0</text>
+<line x1="660" y1="313.3" x2="1140" y2="313.3" class="gr"/>
+<text x="654" y="317.3" class="m al" text-anchor="end">50</text>
+<line x1="660" y1="256.5" x2="1140" y2="256.5" class="gr"/>
+<text x="654" y="260.5" class="m al" text-anchor="end">100</text>
+<line x1="660" y1="199.8" x2="1140" y2="199.8" class="gr"/>
+<text x="654" y="203.8" class="m al" text-anchor="end">150</text>
+<line x1="660" y1="143.1" x2="1140" y2="143.1" class="gr"/>
+<text x="654" y="147.1" class="m al" text-anchor="end">200</text>
+<line x1="660" y1="86.3" x2="1140" y2="86.3" class="gr"/>
+<text x="654" y="90.3" class="m al" text-anchor="end">250</text>
+<line x1="660" y1="370" x2="1140" y2="370" class="ax"/>
+<text x="660.0" y="386" class="m al" text-anchor="middle">1</text>
+<text x="731.5" y="386" class="m al" text-anchor="middle">8</text>
+<text x="792.8" y="386" class="m al" text-anchor="middle">14</text>
+<text x="854.0" y="386" class="m al" text-anchor="middle">20</text>
+<text x="935.7" y="386" class="m al" text-anchor="middle">28</text>
+<text x="1058.3" y="386" class="m al" text-anchor="middle">40</text>
+<text x="1140.0" y="386" class="m al" text-anchor="middle">48</text>
+<text x="900.0" y="402" class="t at" text-anchor="middle">Concurrent sessions</text>
+<polyline points="80.0,368.4 90.2,368.2 110.6,368.6 131.1,368.6 151.5,368.8 171.9,368.8 192.3,368.8 212.8,369.0 233.2,369.0 253.6,369.1 274.0,369.1 314.9,369.1 355.7,369.1 396.6,369.1 478.3,369.1 560.0,369.0" stroke="#0891b2" class="sr"/>
+<polyline points="660.0,364.0 670.2,363.1 690.6,364.3 711.1,364.6 731.5,365.0 751.9,365.1 772.3,365.0 792.8,365.7 813.2,366.5 833.6,366.5 854.0,366.7 894.9,366.8 935.7,366.8 976.6,366.7 1058.3,366.6 1140.0,366.4" stroke="#0891b2" class="sr"/>
+<circle cx="80.0" cy="368.4" r="2" fill="#0891b2"/>
+<circle cx="90.2" cy="368.2" r="2" fill="#0891b2"/>
+<circle cx="110.6" cy="368.6" r="2" fill="#0891b2"/>
+<circle cx="131.1" cy="368.6" r="2" fill="#0891b2"/>
+<circle cx="151.5" cy="368.8" r="2" fill="#0891b2"/>
+<circle cx="171.9" cy="368.8" r="2" fill="#0891b2"/>
+<circle cx="192.3" cy="368.8" r="2" fill="#0891b2"/>
+<circle cx="212.8" cy="369.0" r="2" fill="#0891b2"/>
+<circle cx="233.2" cy="369.0" r="2" fill="#0891b2"/>
+<circle cx="253.6" cy="369.1" r="2" fill="#0891b2"/>
+<circle cx="274.0" cy="369.1" r="2" fill="#0891b2"/>
+<circle cx="314.9" cy="369.1" r="2" fill="#0891b2"/>
+<circle cx="355.7" cy="369.1" r="2" fill="#0891b2"/>
+<circle cx="396.6" cy="369.1" r="2" fill="#0891b2"/>
+<circle cx="478.3" cy="369.1" r="2" fill="#0891b2"/>
+<circle cx="560.0" cy="369.0" r="2" fill="#0891b2"/>
+<circle cx="660.0" cy="364.0" r="2" fill="#0891b2"/>
+<circle cx="670.2" cy="363.1" r="2" fill="#0891b2"/>
+<circle cx="690.6" cy="364.3" r="2" fill="#0891b2"/>
+<circle cx="711.1" cy="364.6" r="2" fill="#0891b2"/>
+<circle cx="731.5" cy="365.0" r="2" fill="#0891b2"/>
+<circle cx="751.9" cy="365.1" r="2" fill="#0891b2"/>
+<circle cx="772.3" cy="365.0" r="2" fill="#0891b2"/>
+<circle cx="792.8" cy="365.7" r="2" fill="#0891b2"/>
+<circle cx="813.2" cy="366.5" r="2" fill="#0891b2"/>
+<circle cx="833.6" cy="366.5" r="2" fill="#0891b2"/>
+<circle cx="854.0" cy="366.7" r="2" fill="#0891b2"/>
+<circle cx="894.9" cy="366.8" r="2" fill="#0891b2"/>
+<circle cx="935.7" cy="366.8" r="2" fill="#0891b2"/>
+<circle cx="976.6" cy="366.7" r="2" fill="#0891b2"/>
+<circle cx="1058.3" cy="366.6" r="2" fill="#0891b2"/>
+<circle cx="1140.0" cy="366.4" r="2" fill="#0891b2"/>
+<polyline points="80.0,337.9 90.2,318.4 110.6,279.7 131.1,314.3 151.5,300.8 171.9,242.4 192.3,147.0 212.8,91.7 233.2,221.5 253.6,180.4 274.0,245.6 314.9,272.1 355.7,199.9 396.6,232.6 478.3,170.1 560.0,278.1" stroke="#dc2626" class="sr"/>
+<polyline points="660.0,364.6 670.2,363.0 690.6,364.2 711.1,364.4 731.5,364.8 751.9,365.2 772.3,365.1 792.8,365.5 813.2,366.3 833.6,366.9 854.0,366.6 894.9,366.6 935.7,366.7 976.6,366.5 1058.3,366.6 1140.0,366.4" stroke="#dc2626" class="sr"/>
+<circle cx="80.0" cy="337.9" r="2" fill="#dc2626"/>
+<circle cx="90.2" cy="318.4" r="2" fill="#dc2626"/>
+<circle cx="110.6" cy="279.7" r="2" fill="#dc2626"/>
+<circle cx="131.1" cy="314.3" r="2" fill="#dc2626"/>
+<circle cx="151.5" cy="300.8" r="2" fill="#dc2626"/>
+<circle cx="171.9" cy="242.4" r="2" fill="#dc2626"/>
+<circle cx="192.3" cy="147.0" r="2" fill="#dc2626"/>
+<circle cx="212.8" cy="91.7" r="2" fill="#dc2626"/>
+<circle cx="233.2" cy="221.5" r="2" fill="#dc2626"/>
+<circle cx="253.6" cy="180.4" r="2" fill="#dc2626"/>
+<circle cx="274.0" cy="245.6" r="2" fill="#dc2626"/>
+<circle cx="314.9" cy="272.1" r="2" fill="#dc2626"/>
+<circle cx="355.7" cy="199.9" r="2" fill="#dc2626"/>
+<circle cx="396.6" cy="232.6" r="2" fill="#dc2626"/>
+<circle cx="478.3" cy="170.1" r="2" fill="#dc2626"/>
+<circle cx="560.0" cy="278.1" r="2" fill="#dc2626"/>
+<circle cx="660.0" cy="364.6" r="2" fill="#dc2626"/>
+<circle cx="670.2" cy="363.0" r="2" fill="#dc2626"/>
+<circle cx="690.6" cy="364.2" r="2" fill="#dc2626"/>
+<circle cx="711.1" cy="364.4" r="2" fill="#dc2626"/>
+<circle cx="731.5" cy="364.8" r="2" fill="#dc2626"/>
+<circle cx="751.9" cy="365.2" r="2" fill="#dc2626"/>
+<circle cx="772.3" cy="365.1" r="2" fill="#dc2626"/>
+<circle cx="792.8" cy="365.5" r="2" fill="#dc2626"/>
+<circle cx="813.2" cy="366.3" r="2" fill="#dc2626"/>
+<circle cx="833.6" cy="366.9" r="2" fill="#dc2626"/>
+<circle cx="854.0" cy="366.6" r="2" fill="#dc2626"/>
+<circle cx="894.9" cy="366.6" r="2" fill="#dc2626"/>
+<circle cx="935.7" cy="366.7" r="2" fill="#dc2626"/>
+<circle cx="976.6" cy="366.5" r="2" fill="#dc2626"/>
+<circle cx="1058.3" cy="366.6" r="2" fill="#dc2626"/>
+<circle cx="1140.0" cy="366.4" r="2" fill="#dc2626"/>
+<polyline points="80.0,354.6 90.2,349.7 110.6,316.2 131.1,327.8 151.5,331.2 171.9,314.6 192.3,297.9 212.8,319.8 233.2,300.0 253.6,285.6 274.0,263.3 314.9,258.7 355.7,274.2 396.6,293.6 478.3,267.4 560.0,236.4" stroke="#d97706" class="sr" stroke-dasharray="8,4"/>
+<polyline points="660.0,364.2 670.2,363.2 690.6,363.4 711.1,363.8 731.5,364.9 751.9,365.1 772.3,365.1 792.8,365.3 813.2,193.9 833.6,365.5 854.0,316.0 894.9,290.9 935.7,302.9 976.6,326.7 1058.3,366.6 1140.0,335.8" stroke="#d97706" class="sr" stroke-dasharray="8,4"/>
+<circle cx="80.0" cy="354.6" r="2" fill="#d97706"/>
+<circle cx="90.2" cy="349.7" r="2" fill="#d97706"/>
+<circle cx="110.6" cy="316.2" r="2" fill="#d97706"/>
+<circle cx="131.1" cy="327.8" r="2" fill="#d97706"/>
+<circle cx="151.5" cy="331.2" r="2" fill="#d97706"/>
+<circle cx="171.9" cy="314.6" r="2" fill="#d97706"/>
+<circle cx="192.3" cy="297.9" r="2" fill="#d97706"/>
+<circle cx="212.8" cy="319.8" r="2" fill="#d97706"/>
+<circle cx="233.2" cy="300.0" r="2" fill="#d97706"/>
+<circle cx="253.6" cy="285.6" r="2" fill="#d97706"/>
+<circle cx="274.0" cy="263.3" r="2" fill="#d97706"/>
+<circle cx="314.9" cy="258.7" r="2" fill="#d97706"/>
+<circle cx="355.7" cy="274.2" r="2" fill="#d97706"/>
+<circle cx="396.6" cy="293.6" r="2" fill="#d97706"/>
+<circle cx="478.3" cy="267.4" r="2" fill="#d97706"/>
+<circle cx="560.0" cy="236.4" r="2" fill="#d97706"/>
+<circle cx="660.0" cy="364.2" r="2" fill="#d97706"/>
+<circle cx="670.2" cy="363.2" r="2" fill="#d97706"/>
+<circle cx="690.6" cy="363.4" r="2" fill="#d97706"/>
+<circle cx="711.1" cy="363.8" r="2" fill="#d97706"/>
+<circle cx="731.5" cy="364.9" r="2" fill="#d97706"/>
+<circle cx="751.9" cy="365.1" r="2" fill="#d97706"/>
+<circle cx="772.3" cy="365.1" r="2" fill="#d97706"/>
+<circle cx="792.8" cy="365.3" r="2" fill="#d97706"/>
+<circle cx="813.2" cy="193.9" r="2" fill="#d97706"/>
+<circle cx="833.6" cy="365.5" r="2" fill="#d97706"/>
+<circle cx="854.0" cy="316.0" r="2" fill="#d97706"/>
+<circle cx="894.9" cy="290.9" r="2" fill="#d97706"/>
+<circle cx="935.7" cy="302.9" r="2" fill="#d97706"/>
+<circle cx="976.6" cy="326.7" r="2" fill="#d97706"/>
+<circle cx="1058.3" cy="366.6" r="2" fill="#d97706"/>
+<circle cx="1140.0" cy="335.8" r="2" fill="#d97706"/>
+<polyline points="80.0,348.6 90.2,309.5 110.6,316.7 131.1,319.5 151.5,322.7 171.9,285.9 192.3,311.4 212.8,294.1 233.2,313.4 253.6,275.5 274.0,307.7 314.9,286.6 355.7,287.0 396.6,265.0 478.3,297.2 560.0,281.2" stroke="#16a34a" class="sr" stroke-dasharray="4,2"/>
+<polyline points="660.0,363.1 670.2,364.7 690.6,363.4 711.1,364.4 731.5,364.8 751.9,365.2 772.3,365.0 792.8,282.9 813.2,350.1 833.6,285.8 854.0,319.3 894.9,199.8 935.7,205.6 976.6,164.3 1058.3,243.3 1140.0,96.6" stroke="#16a34a" class="sr" stroke-dasharray="4,2"/>
+<circle cx="80.0" cy="348.6" r="2" fill="#16a34a"/>
+<circle cx="90.2" cy="309.5" r="2" fill="#16a34a"/>
+<circle cx="110.6" cy="316.7" r="2" fill="#16a34a"/>
+<circle cx="131.1" cy="319.5" r="2" fill="#16a34a"/>
+<circle cx="151.5" cy="322.7" r="2" fill="#16a34a"/>
+<circle cx="171.9" cy="285.9" r="2" fill="#16a34a"/>
+<circle cx="192.3" cy="311.4" r="2" fill="#16a34a"/>
+<circle cx="212.8" cy="294.1" r="2" fill="#16a34a"/>
+<circle cx="233.2" cy="313.4" r="2" fill="#16a34a"/>
+<circle cx="253.6" cy="275.5" r="2" fill="#16a34a"/>
+<circle cx="274.0" cy="307.7" r="2" fill="#16a34a"/>
+<circle cx="314.9" cy="286.6" r="2" fill="#16a34a"/>
+<circle cx="355.7" cy="287.0" r="2" fill="#16a34a"/>
+<circle cx="396.6" cy="265.0" r="2" fill="#16a34a"/>
+<circle cx="478.3" cy="297.2" r="2" fill="#16a34a"/>
+<circle cx="560.0" cy="281.2" r="2" fill="#16a34a"/>
+<circle cx="660.0" cy="363.1" r="2" fill="#16a34a"/>
+<circle cx="670.2" cy="364.7" r="2" fill="#16a34a"/>
+<circle cx="690.6" cy="363.4" r="2" fill="#16a34a"/>
+<circle cx="711.1" cy="364.4" r="2" fill="#16a34a"/>
+<circle cx="731.5" cy="364.8" r="2" fill="#16a34a"/>
+<circle cx="751.9" cy="365.2" r="2" fill="#16a34a"/>
+<circle cx="772.3" cy="365.0" r="2" fill="#16a34a"/>
+<circle cx="792.8" cy="282.9" r="2" fill="#16a34a"/>
+<circle cx="813.2" cy="350.1" r="2" fill="#16a34a"/>
+<circle cx="833.6" cy="285.8" r="2" fill="#16a34a"/>
+<circle cx="854.0" cy="319.3" r="2" fill="#16a34a"/>
+<circle cx="894.9" cy="199.8" r="2" fill="#16a34a"/>
+<circle cx="935.7" cy="205.6" r="2" fill="#16a34a"/>
+<circle cx="976.6" cy="164.3" r="2" fill="#16a34a"/>
+<circle cx="1058.3" cy="243.3" r="2" fill="#16a34a"/>
+<circle cx="1140.0" cy="96.6" r="2" fill="#16a34a"/>
+<text x="220.8" y="85.7" fill="#dc2626" class="m an">8 GB: high TX, near-zero RX = churn</text>
+<text x="1134.0" y="84.6" fill="#16a34a" class="m an" text-anchor="end">Peak 241 MB/s</text>
+<text x="1134.0" y="96.6" fill="#16a34a" class="m an" text-anchor="end" font-size="9">~1.5% PCIe Gen4 x8</text>
+<line x1="380" y1="430" x2="400" y2="430" stroke="#0891b2" stroke-width="2.5"/>
+<text x="406" y="434" class="m lg" fill="#0891b2">0 GB</text>
+<line x1="500" y1="430" x2="520" y2="430" stroke="#dc2626" stroke-width="2.5"/>
+<text x="526" y="434" class="m lg" fill="#dc2626">8 GB</text>
+<line x1="620" y1="430" x2="640" y2="430" stroke="#d97706" stroke-width="2.5" stroke-dasharray="8,4"/>
+<text x="646" y="434" class="m lg" fill="#d97706">16 GB</text>
+<line x1="740" y1="430" x2="760" y2="430" stroke="#16a34a" stroke-width="2.5" stroke-dasharray="4,2"/>
+<text x="766" y="434" class="m lg" fill="#16a34a">32 GB</text>
+</svg>
