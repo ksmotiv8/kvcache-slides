@@ -724,46 +724,46 @@ body.notes-on .slide.current .presenter-notes {
 
     <!-- vLLM side -->
     <div>
-      <p style="font-size:20px;font-weight:700;color:var(--accent);margin-bottom:12px">vLLM: Hash Chain</p>
+      <p style="font-size:24px;font-weight:700;color:var(--accent);margin-bottom:12px">vLLM: Hash Chain</p>
       <svg viewBox="0 0 380 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;margin-bottom:12px">
         <!-- Block chain -->
         <rect x="10" y="60" width="80" height="44" rx="6" fill="rgba(130,140,248,0.15)" stroke="var(--accent)" stroke-width="1.5"/>
-        <text x="50" y="78" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle" font-weight="600">Block 0</text>
-        <text x="50" y="94" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="9" text-anchor="middle">16 tokens</text>
+        <text x="50" y="78" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle" font-weight="600">Block 0</text>
+        <text x="50" y="94" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle">16 tokens</text>
 
         <line x1="96" y1="82" x2="120" y2="82" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#avl)"/>
 
         <rect x="126" y="60" width="80" height="44" rx="6" fill="rgba(130,140,248,0.15)" stroke="var(--accent)" stroke-width="1.5"/>
-        <text x="166" y="78" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle" font-weight="600">Block 1</text>
-        <text x="166" y="94" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="9" text-anchor="middle">16 tokens</text>
+        <text x="166" y="78" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle" font-weight="600">Block 1</text>
+        <text x="166" y="94" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle">16 tokens</text>
 
         <line x1="212" y1="82" x2="236" y2="82" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#avl)"/>
 
         <rect x="242" y="60" width="80" height="44" rx="6" fill="rgba(130,140,248,0.15)" stroke="var(--accent)" stroke-width="1.5"/>
-        <text x="282" y="78" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle" font-weight="600">Block 2</text>
-        <text x="282" y="94" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="9" text-anchor="middle">16 tokens</text>
+        <text x="282" y="78" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle" font-weight="600">Block 2</text>
+        <text x="282" y="94" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle">16 tokens</text>
 
         <!-- Hash labels -->
-        <text x="50" y="42" fill="var(--text-dim)" font-family="'JetBrains Mono',monospace" font-size="9" text-anchor="middle">SHA-256</text>
-        <text x="166" y="42" fill="var(--text-dim)" font-family="'JetBrains Mono',monospace" font-size="9" text-anchor="middle">SHA-256</text>
-        <text x="282" y="42" fill="var(--text-dim)" font-family="'JetBrains Mono',monospace" font-size="9" text-anchor="middle">SHA-256</text>
+        <text x="50" y="42" fill="var(--text-dim)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">SHA-256</text>
+        <text x="166" y="42" fill="var(--text-dim)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">SHA-256</text>
+        <text x="282" y="42" fill="var(--text-dim)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">SHA-256</text>
         <line x1="50" y1="46" x2="50" y2="58" stroke="var(--text-dim)" stroke-width="1"/>
         <line x1="166" y1="46" x2="166" y2="58" stroke="var(--text-dim)" stroke-width="1"/>
         <line x1="282" y1="46" x2="282" y2="58" stroke="var(--text-dim)" stroke-width="1"/>
 
         <!-- Hash chain note -->
-        <text x="50" y="22" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="10" text-anchor="middle">each hash includes parent hash</text>
+        <text x="166" y="18" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle">each hash includes parent hash</text>
         <line x1="50" y1="26" x2="282" y2="26" stroke="var(--text-dim)" stroke-width="0.5" stroke-dasharray="3 2"/>
 
         <!-- Hash table -->
-        <rect x="10" y="120" width="312" height="36" rx="6" fill="rgba(255,255,255,0.03)" stroke="var(--border)" stroke-width="1"/>
-        <text x="166" y="143" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle">flat hash table → O(1) lookup per block</text>
+        <rect x="10" y="120" width="312" height="40" rx="6" fill="rgba(255,255,255,0.03)" stroke="var(--border)" stroke-width="1"/>
+        <text x="166" y="145" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">flat hash table → O(1) lookup</text>
 
         <defs>
           <marker id="avl" markerWidth="6" markerHeight="5" refX="6" refY="2.5" orient="auto"><path d="M0,0 L6,2.5 L0,5" fill="var(--accent)"/></marker>
         </defs>
       </svg>
-      <ul style="font-size:14px;line-height:1.6">
+      <ul style="font-size:17px;line-height:1.7">
         <li>Fixed <strong>16-token blocks</strong></li>
         <li>Block-aligned matching only</li>
         <li>LRU eviction, O(1) ops</li>
@@ -773,42 +773,42 @@ body.notes-on .slide.current .presenter-notes {
 
     <!-- SGLang side -->
     <div>
-      <p style="font-size:20px;font-weight:700;color:var(--green);margin-bottom:12px">SGLang: Radix Tree</p>
+      <p style="font-size:24px;font-weight:700;color:var(--green);margin-bottom:12px">SGLang: Radix Tree</p>
       <svg viewBox="0 0 380 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;margin-bottom:12px">
         <!-- Root -->
-        <circle cx="190" cy="24" r="14" fill="rgba(74,222,128,0.15)" stroke="var(--green)" stroke-width="1.5"/>
-        <text x="190" y="28" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="9" text-anchor="middle" font-weight="600">root</text>
+        <circle cx="190" cy="24" r="16" fill="rgba(74,222,128,0.15)" stroke="var(--green)" stroke-width="1.5"/>
+        <text x="190" y="28" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle" font-weight="600">root</text>
 
         <!-- Branch left: system prompt -->
-        <line x1="178" y1="36" x2="100" y2="66" stroke="var(--green)" stroke-width="1.5"/>
-        <rect x="50" y="60" width="100" height="36" rx="6" fill="rgba(74,222,128,0.12)" stroke="var(--green)" stroke-width="1.5"/>
-        <text x="100" y="76" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="9" text-anchor="middle" font-weight="600">system prompt</text>
-        <text x="100" y="90" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="8" text-anchor="middle">2,048 tokens</text>
+        <line x1="176" y1="38" x2="100" y2="66" stroke="var(--green)" stroke-width="1.5"/>
+        <rect x="40" y="60" width="120" height="40" rx="6" fill="rgba(74,222,128,0.12)" stroke="var(--green)" stroke-width="1.5"/>
+        <text x="100" y="78" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" font-weight="600">system prompt</text>
+        <text x="100" y="93" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle">2,048 tokens</text>
 
         <!-- Branch right: different prefix -->
-        <line x1="202" y1="36" x2="280" y2="66" stroke="var(--green)" stroke-width="1.5"/>
-        <rect x="230" y="60" width="100" height="36" rx="6" fill="rgba(74,222,128,0.08)" stroke="var(--green)" stroke-width="1"/>
-        <text x="280" y="76" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="9" text-anchor="middle">other prefix</text>
-        <text x="280" y="90" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="8" text-anchor="middle">variable len</text>
+        <line x1="204" y1="38" x2="280" y2="66" stroke="var(--green)" stroke-width="1.5"/>
+        <rect x="220" y="60" width="120" height="40" rx="6" fill="rgba(74,222,128,0.08)" stroke="var(--green)" stroke-width="1"/>
+        <text x="280" y="78" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">other prefix</text>
+        <text x="280" y="93" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle">variable len</text>
 
         <!-- Children of system prompt -->
-        <line x1="75" y1="98" x2="50" y2="124" stroke="var(--green)" stroke-width="1"/>
-        <line x1="100" y1="98" x2="100" y2="124" stroke="var(--green)" stroke-width="1"/>
-        <line x1="125" y1="98" x2="150" y2="124" stroke="var(--green)" stroke-width="1"/>
+        <line x1="72" y1="102" x2="50" y2="124" stroke="var(--green)" stroke-width="1"/>
+        <line x1="100" y1="102" x2="100" y2="124" stroke="var(--green)" stroke-width="1"/>
+        <line x1="128" y1="102" x2="150" y2="124" stroke="var(--green)" stroke-width="1"/>
 
-        <rect x="20" y="120" width="60" height="30" rx="4" fill="rgba(74,222,128,0.08)" stroke="var(--green)" stroke-width="1"/>
-        <text x="50" y="138" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="8" text-anchor="middle">user A</text>
+        <rect x="18" y="122" width="64" height="32" rx="4" fill="rgba(74,222,128,0.08)" stroke="var(--green)" stroke-width="1"/>
+        <text x="50" y="142" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle">user A</text>
 
-        <rect x="70" y="120" width="60" height="30" rx="4" fill="rgba(74,222,128,0.08)" stroke="var(--green)" stroke-width="1"/>
-        <text x="100" y="138" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="8" text-anchor="middle">user B</text>
+        <rect x="68" y="122" width="64" height="32" rx="4" fill="rgba(74,222,128,0.08)" stroke="var(--green)" stroke-width="1"/>
+        <text x="100" y="142" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle">user B</text>
 
-        <rect x="120" y="120" width="60" height="30" rx="4" fill="rgba(74,222,128,0.08)" stroke="var(--green)" stroke-width="1"/>
-        <text x="150" y="138" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="8" text-anchor="middle">user C</text>
+        <rect x="118" y="122" width="64" height="32" rx="4" fill="rgba(74,222,128,0.08)" stroke="var(--green)" stroke-width="1"/>
+        <text x="150" y="142" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle">user C</text>
 
         <!-- Label -->
-        <text x="190" y="172" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="10" text-anchor="middle">O(prefix length) traversal</text>
+        <text x="190" y="174" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">O(prefix length) traversal</text>
       </svg>
-      <ul style="font-size:14px;line-height:1.6">
+      <ul style="font-size:17px;line-height:1.7">
         <li><strong>Token-level</strong> matching granularity</li>
         <li>Variable-length edges</li>
         <li>LRU leaf eviction, preserves shared prefixes</li>
@@ -817,7 +817,13 @@ body.notes-on .slide.current .presenter-notes {
     </div>
   </div>
 
-  <div class="presenter-notes">vLLM uses SHA-256 hash chains over fixed 16-token blocks with a flat hash table for O(1) lookup. Each block's hash incorporates all preceding block hashes. SGLang uses a compressed radix trie indexed by token sequences, with variable-length edges allowing prefix matching at arbitrary token boundaries. The radix tree naturally represents shared prefixes across sessions — evicting a leaf preserves parent nodes shared by other sessions. vLLM's hash approach is simpler and has lower CPU overhead, but can only match at block boundaries.</div>
+  <!-- QR code + blog link -->
+  <div style="position:absolute;bottom:40px;right:80px;text-align:center">
+    <img src="qr-prefix-caching.svg" alt="QR code to prefix caching internals blog post" style="width:100px;height:100px;filter:invert(1)"/>
+    <p style="font-size:11px;color:var(--text-dim);margin-top:4px">Deep dive blog post</p>
+  </div>
+
+  <div class="presenter-notes">vLLM uses SHA-256 hash chains over fixed 16-token blocks with a flat hash table for O(1) lookup. Each block's hash incorporates all preceding block hashes. SGLang uses a compressed radix trie indexed by token sequences, with variable-length edges allowing prefix matching at arbitrary token boundaries. The radix tree naturally represents shared prefixes across sessions — evicting a leaf preserves parent nodes shared by other sessions. vLLM's hash approach is simpler and has lower CPU overhead, but can only match at block boundaries. Full blog post: https://ksmotiv8.github.io/kvbenchdocs/kvcache/prefix-caching-internals/</div>
 </section>
 
 <!-- SLIDE 12: vLLM vs SGLang tradeoffs -->
@@ -825,7 +831,7 @@ body.notes-on .slide.current .presenter-notes {
 <section class="slide" id="s24">
   <span class="slide-num">12 / 25</span>
   <span class="section-tag">Prefix caching internals</span>
-  <h2 style="font-size:36px;letter-spacing:-0.02em">vLLM vs SGLang: tradeoffs</h2>
+  <h2 style="font-size:36px;letter-spacing:-0.02em">vLLM vs SGLang: prefix approach tradeoffs</h2>
 
   <table style="font-size:17px;width:100%;max-width:880px;margin-top:20px">
     <thead><tr>
