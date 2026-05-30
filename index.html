@@ -1023,20 +1023,20 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
 <section class="slide" id="s25" data-build-phases="2">
   <span class="slide-num">15 / 27</span>
   <span class="section-tag">Optimizing Hit Rates</span>
-  <h2><a href="https://docs.nvidia.com/dynamo/latest/user-guides/kv-cache-aware-routing" target="_blank" rel="noopener" style="color:var(--text);text-decoration:none">Cache-aware routing in Dynamo</a></h2>
+  <h2 style="margin-bottom:32px"><a href="https://docs.nvidia.com/dynamo/latest/user-guides/kv-cache-aware-routing" target="_blank" rel="noopener" style="color:var(--text);text-decoration:none">Cache-aware routing in Dynamo</a></h2>
 
   <div data-phase="1">
-    <ul style="font-size:20px">
+    <ul style="font-size:28px;line-height:1.8;margin-bottom:28px">
       <li>Global <strong>KVIndexer</strong> (radix tree) at the router hashes request tokens to find cached prefixes</li>
       <li>Each worker's <strong>KVPublisher</strong> emits cache events (insertions, evictions) to update the index</li>
     </ul>
-    <div class="callout" style="margin-top:16px;font-size:20px">
-      <code style="font-size:20px">cost = overlap_weight * prefill_blocks + decode_load</code>
+    <div class="callout" style="font-size:28px;padding:24px 32px">
+      <code style="font-size:28px">cost = overlap_weight * prefill_blocks + decode_load</code>
     </div>
   </div>
 
   <div data-phase="2">
-    <div class="callout" style="margin-top:16px;font-size:20px">
+    <div class="callout" style="margin-top:24px;font-size:26px;padding:24px 32px">
       <strong style="color:var(--cyan)">Result (<a href="https://www.baseten.co/blog/how-baseten-achieved-2x-faster-inference-with-nvidia-dynamo/" target="_blank" rel="noopener" style="color:var(--cyan)">Baseten</a>):</strong> 20x faster TTFT and 4x faster end-to-end latency vs. round-robin routing.
     </div>
   </div>
