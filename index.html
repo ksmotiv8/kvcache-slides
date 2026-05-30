@@ -902,7 +902,7 @@ body.notes-on .slide.current .presenter-notes {
   <h2>Remote cache extends KV lifetime</h2>
 
   <div data-phase="1">
-    <h3 style="color:var(--yellow)">Remote caching: decouple KV lifetime from GPU lifetime</h3>
+    <h3 style="color:var(--yellow)">Tiered &amp; remote caching: decouple KV lifetime from GPU lifetime</h3>
     <p>Push KV state to a networked cache (Redis, Valkey, or a managed service). KV data survives GPU restarts, enables cross-node sharing, and scales capacity independently from compute. Higher latency than local DRAM, but far cheaper than re-prefilling 12,800 tokens.</p>
   </div>
 
