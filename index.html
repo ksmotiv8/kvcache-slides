@@ -184,7 +184,7 @@ body.notes-on .slide.current .presenter-notes {
 <!-- SLIDE 1: Title -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s1">
-  <span class="slide-num">1 / 23</span>
+  <span class="slide-num">1 / 25</span>
   <h1>From Distributed Systems<br/>to GPU Inference</h1>
   <p class="subtitle">A systems engineer's journey into LLM inference.<br/>Routing, scheduling, placement, memory movement, tail latency.</p>
   <div class="presenter-notes">Open by framing the talk: this is a story about discovery. I came from distributed systems, was intimidated by the ML side of inference, and realized the hard problems at scale are the ones I already knew how to think about. The audience should leave with a concrete mental model for why inference at scale is really a distributed systems problem, and KV cache is the object at the center of it.</div>
@@ -196,7 +196,7 @@ body.notes-on .slide.current .presenter-notes {
 <!-- SLIDE 2: I was intimidated / Wait I know these -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s2" data-build-phases="2">
-  <span class="slide-num">2 / 23</span>
+  <span class="slide-num">2 / 25</span>
   <span class="section-tag">Perspective of a distributed systems engineer</span>
   <h2>Inference seems intimidating at first</h2>
 
@@ -223,7 +223,7 @@ body.notes-on .slide.current .presenter-notes {
 <!-- SLIDE 3: Utilization -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s3">
-  <span class="slide-num">3 / 23</span>
+  <span class="slide-num">3 / 25</span>
   <span class="section-tag">Agenda</span>
   <h2 style="font-size:48px;letter-spacing:-0.03em">Utilization</h2>
 
@@ -238,7 +238,7 @@ body.notes-on .slide.current .presenter-notes {
 
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s4" data-build-phases="2">
-  <span class="slide-num">4 / 23</span>
+  <span class="slide-num">4 / 25</span>
   <h2 style="margin-top:-10px">Two stages of inference</h2>
   <p style="font-size:17px;color:var(--text-muted);margin-bottom:4px"><strong>Qwen3-4B FP8</strong> on <strong>1x NVIDIA L4 (24 GB)</strong></p>
 
@@ -305,7 +305,7 @@ body.notes-on .slide.current .presenter-notes {
 <!-- SLIDE 5: Journey of a Prompt -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s5" data-build-phases="7">
-  <span class="slide-num">5 / 23</span>
+  <span class="slide-num">5 / 25</span>
   <span class="section-tag">Steps in inference</span>
   <h2>Journey of a prompt</h2>
 
@@ -404,7 +404,7 @@ body.notes-on .slide.current .presenter-notes {
 <!-- SLIDE 5: Dynamo Disaggregated Lifecycle -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s6" data-build-phases="3">
-  <span class="slide-num">6 / 23</span>
+  <span class="slide-num">6 / 25</span>
   <span class="section-tag">Journey of a prompt</span>
   <h2>Request Lifecycle</h2>
 
@@ -493,7 +493,7 @@ body.notes-on .slide.current .presenter-notes {
 <!-- SLIDE 7: What is KV Cache -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s7">
-  <span class="slide-num">7 / 23</span>
+  <span class="slide-num">7 / 25</span>
   <h2>What is KV cache?</h2>
 
   <svg viewBox="0 0 860 310" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagram showing how input tokens produce Query, Key, and Value vectors through attention layers, with K and V saved into the KV cache across 36 layers" style="width:100%;max-width:1100px;height:auto;display:block;margin:16px auto 0">
@@ -596,7 +596,7 @@ body.notes-on .slide.current .presenter-notes {
 <!-- SLIDE 7: KV Cache Scale -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s8" data-build-phases="1">
-  <span class="slide-num">8 / 23</span>
+  <span class="slide-num">8 / 25</span>
   <span class="section-tag">Qwen3-4B (FP8)</span>
   <h2>Sizing KV for a single session</h2>
 
@@ -649,7 +649,7 @@ body.notes-on .slide.current .presenter-notes {
 <!-- SLIDE 10: What makes KV caching hard -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s9">
-  <span class="slide-num">9 / 23</span>
+  <span class="slide-num">9 / 25</span>
   <h2>What makes KV caching hard</h2>
 
   <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:40px;margin-top:40px;max-width:900px">
@@ -671,7 +671,7 @@ body.notes-on .slide.current .presenter-notes {
 <!-- SLIDE 12: Prefix Caching -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s10" data-build-phases="2">
-  <span class="slide-num">10 / 23</span>
+  <span class="slide-num">10 / 25</span>
   <span class="section-tag">The key constraint</span>
   <h2>Prefix caching</h2>
 
@@ -713,10 +713,178 @@ body.notes-on .slide.current .presenter-notes {
   <div class="presenter-notes">Two dimensions of caching. Cross-session: the system prompt is identical for every user. Within-session: each turn builds on the previous conversation. The critical limitation is prefix-only matching. This is why workload design matters: put the stable content first (system prompt), variable content last.</div>
 </section>
 
-<!-- SLIDE 11: Memory tiers -->
+<!-- SLIDE 11: Prefix caching internals — vLLM vs SGLang -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s11" data-build-phases="2">
-  <span class="slide-num">11 / 23</span>
+<section class="slide" id="s11">
+  <span class="slide-num">11 / 25</span>
+  <span class="section-tag">Prefix caching internals</span>
+  <h2 style="font-size:36px;letter-spacing:-0.02em">How vLLM and SGLang cache prefixes</h2>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;margin-top:16px;max-width:960px">
+
+    <!-- vLLM side -->
+    <div>
+      <p style="font-size:20px;font-weight:700;color:var(--accent);margin-bottom:12px">vLLM: Hash Chain</p>
+      <svg viewBox="0 0 380 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;margin-bottom:12px">
+        <!-- Block chain -->
+        <rect x="10" y="60" width="80" height="44" rx="6" fill="rgba(130,140,248,0.15)" stroke="var(--accent)" stroke-width="1.5"/>
+        <text x="50" y="78" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle" font-weight="600">Block 0</text>
+        <text x="50" y="94" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="9" text-anchor="middle">16 tokens</text>
+
+        <line x1="96" y1="82" x2="120" y2="82" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#avl)"/>
+
+        <rect x="126" y="60" width="80" height="44" rx="6" fill="rgba(130,140,248,0.15)" stroke="var(--accent)" stroke-width="1.5"/>
+        <text x="166" y="78" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle" font-weight="600">Block 1</text>
+        <text x="166" y="94" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="9" text-anchor="middle">16 tokens</text>
+
+        <line x1="212" y1="82" x2="236" y2="82" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#avl)"/>
+
+        <rect x="242" y="60" width="80" height="44" rx="6" fill="rgba(130,140,248,0.15)" stroke="var(--accent)" stroke-width="1.5"/>
+        <text x="282" y="78" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle" font-weight="600">Block 2</text>
+        <text x="282" y="94" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="9" text-anchor="middle">16 tokens</text>
+
+        <!-- Hash labels -->
+        <text x="50" y="42" fill="var(--text-dim)" font-family="'JetBrains Mono',monospace" font-size="9" text-anchor="middle">SHA-256</text>
+        <text x="166" y="42" fill="var(--text-dim)" font-family="'JetBrains Mono',monospace" font-size="9" text-anchor="middle">SHA-256</text>
+        <text x="282" y="42" fill="var(--text-dim)" font-family="'JetBrains Mono',monospace" font-size="9" text-anchor="middle">SHA-256</text>
+        <line x1="50" y1="46" x2="50" y2="58" stroke="var(--text-dim)" stroke-width="1"/>
+        <line x1="166" y1="46" x2="166" y2="58" stroke="var(--text-dim)" stroke-width="1"/>
+        <line x1="282" y1="46" x2="282" y2="58" stroke="var(--text-dim)" stroke-width="1"/>
+
+        <!-- Hash chain note -->
+        <text x="50" y="22" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="10" text-anchor="middle">each hash includes parent hash</text>
+        <line x1="50" y1="26" x2="282" y2="26" stroke="var(--text-dim)" stroke-width="0.5" stroke-dasharray="3 2"/>
+
+        <!-- Hash table -->
+        <rect x="10" y="120" width="312" height="36" rx="6" fill="rgba(255,255,255,0.03)" stroke="var(--border)" stroke-width="1"/>
+        <text x="166" y="143" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle">flat hash table → O(1) lookup per block</text>
+
+        <defs>
+          <marker id="avl" markerWidth="6" markerHeight="5" refX="6" refY="2.5" orient="auto"><path d="M0,0 L6,2.5 L0,5" fill="var(--accent)"/></marker>
+        </defs>
+      </svg>
+      <ul style="font-size:14px;line-height:1.6">
+        <li>Fixed <strong>16-token blocks</strong></li>
+        <li>Block-aligned matching only</li>
+        <li>LRU eviction, O(1) ops</li>
+        <li>Contiguous memory layout</li>
+      </ul>
+    </div>
+
+    <!-- SGLang side -->
+    <div>
+      <p style="font-size:20px;font-weight:700;color:var(--green);margin-bottom:12px">SGLang: Radix Tree</p>
+      <svg viewBox="0 0 380 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;margin-bottom:12px">
+        <!-- Root -->
+        <circle cx="190" cy="24" r="14" fill="rgba(74,222,128,0.15)" stroke="var(--green)" stroke-width="1.5"/>
+        <text x="190" y="28" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="9" text-anchor="middle" font-weight="600">root</text>
+
+        <!-- Branch left: system prompt -->
+        <line x1="178" y1="36" x2="100" y2="66" stroke="var(--green)" stroke-width="1.5"/>
+        <rect x="50" y="60" width="100" height="36" rx="6" fill="rgba(74,222,128,0.12)" stroke="var(--green)" stroke-width="1.5"/>
+        <text x="100" y="76" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="9" text-anchor="middle" font-weight="600">system prompt</text>
+        <text x="100" y="90" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="8" text-anchor="middle">2,048 tokens</text>
+
+        <!-- Branch right: different prefix -->
+        <line x1="202" y1="36" x2="280" y2="66" stroke="var(--green)" stroke-width="1.5"/>
+        <rect x="230" y="60" width="100" height="36" rx="6" fill="rgba(74,222,128,0.08)" stroke="var(--green)" stroke-width="1"/>
+        <text x="280" y="76" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="9" text-anchor="middle">other prefix</text>
+        <text x="280" y="90" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="8" text-anchor="middle">variable len</text>
+
+        <!-- Children of system prompt -->
+        <line x1="75" y1="98" x2="50" y2="124" stroke="var(--green)" stroke-width="1"/>
+        <line x1="100" y1="98" x2="100" y2="124" stroke="var(--green)" stroke-width="1"/>
+        <line x1="125" y1="98" x2="150" y2="124" stroke="var(--green)" stroke-width="1"/>
+
+        <rect x="20" y="120" width="60" height="30" rx="4" fill="rgba(74,222,128,0.08)" stroke="var(--green)" stroke-width="1"/>
+        <text x="50" y="138" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="8" text-anchor="middle">user A</text>
+
+        <rect x="70" y="120" width="60" height="30" rx="4" fill="rgba(74,222,128,0.08)" stroke="var(--green)" stroke-width="1"/>
+        <text x="100" y="138" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="8" text-anchor="middle">user B</text>
+
+        <rect x="120" y="120" width="60" height="30" rx="4" fill="rgba(74,222,128,0.08)" stroke="var(--green)" stroke-width="1"/>
+        <text x="150" y="138" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="8" text-anchor="middle">user C</text>
+
+        <!-- Label -->
+        <text x="190" y="172" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="10" text-anchor="middle">O(prefix length) traversal</text>
+      </svg>
+      <ul style="font-size:14px;line-height:1.6">
+        <li><strong>Token-level</strong> matching granularity</li>
+        <li>Variable-length edges</li>
+        <li>LRU leaf eviction, preserves shared prefixes</li>
+        <li>Pointer-heavy, dynamic allocation</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="presenter-notes">vLLM uses SHA-256 hash chains over fixed 16-token blocks with a flat hash table for O(1) lookup. Each block's hash incorporates all preceding block hashes. SGLang uses a compressed radix trie indexed by token sequences, with variable-length edges allowing prefix matching at arbitrary token boundaries. The radix tree naturally represents shared prefixes across sessions — evicting a leaf preserves parent nodes shared by other sessions. vLLM's hash approach is simpler and has lower CPU overhead, but can only match at block boundaries.</div>
+</section>
+
+<!-- SLIDE 12: vLLM vs SGLang tradeoffs -->
+<!-- ════════════════════════════════════════════════════════ -->
+<section class="slide" id="s24">
+  <span class="slide-num">12 / 25</span>
+  <span class="section-tag">Prefix caching internals</span>
+  <h2 style="font-size:36px;letter-spacing:-0.02em">vLLM vs SGLang: tradeoffs</h2>
+
+  <table style="font-size:17px;width:100%;max-width:880px;margin-top:20px">
+    <thead><tr>
+      <th style="font-size:17px;width:25%">Dimension</th>
+      <th style="font-size:17px;width:37%;color:var(--accent)">vLLM (hash chain)</th>
+      <th style="font-size:17px;width:37%;color:var(--green)">SGLang (radix tree)</th>
+    </tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Granularity</strong></td>
+        <td>16-token blocks</td>
+        <td style="color:var(--green)">Single token</td>
+      </tr>
+      <tr>
+        <td><strong>Lookup</strong></td>
+        <td style="color:var(--accent)">O(1) hash table</td>
+        <td>O(prefix length) traversal</td>
+      </tr>
+      <tr>
+        <td><strong>Memory layout</strong></td>
+        <td style="color:var(--accent)">Fixed, contiguous</td>
+        <td>Dynamic, pointer-heavy</td>
+      </tr>
+      <tr>
+        <td><strong>Multi-turn</strong></td>
+        <td>Hash chain captures history</td>
+        <td style="color:var(--green)">Radix tree extends naturally</td>
+      </tr>
+      <tr>
+        <td><strong>CPU overhead</strong></td>
+        <td style="color:var(--accent)">Lower</td>
+        <td>Higher (traversal + alloc)</td>
+      </tr>
+      <tr>
+        <td><strong>Boundary waste</strong></td>
+        <td>Up to 15 tokens/request</td>
+        <td style="color:var(--green)">Zero</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:24px;max-width:880px">
+    <div class="callout" style="margin:0;border-left-color:var(--accent)">
+      <strong style="color:var(--accent)">vLLM wins</strong> when prefixes align to block boundaries: templated workloads, consistent prompt structures, simpler capacity planning.
+    </div>
+    <div class="callout" style="margin:0;border-left-color:var(--green)">
+      <strong style="color:var(--green)">SGLang wins</strong> on multi-turn conversations with variable-length context and cache-aware request routing across nodes.
+    </div>
+  </div>
+
+  <p style="font-size:13px;color:var(--text-dim);margin-top:16px;font-style:italic">Both remain prefix-bound: any token divergence invalidates everything after it. At production scale, model support and deployment tooling usually dominate over caching strategy.</p>
+
+  <div class="presenter-notes">Key nuance: vLLM's 16-token block alignment means cache reuse only happens at block boundaries. For a 4K prefix this wastes less than 0.4%, but for short variable-length prefixes the waste compounds. SGLang's radix tree handles variable-length prefixes naturally and preserves shared parent nodes when evicting leaves — important for multi-tenant scenarios where many sessions share a system prompt but diverge on user content. RunPod benchmarks showed SGLang maintaining ~10% higher throughput under cache pressure on DeepSeek-R1-Distill-Llama-70B on 2xH100, though configuration differences make third-party benchmarks hard to generalize. SGLang also has HiRadix, a 3-tier variant (GPU/host/distributed) for hierarchical storage.</div>
+</section>
+
+<!-- SLIDE 13: Memory tiers -->
+<!-- ════════════════════════════════════════════════════════ -->
+<section class="slide" id="s25" data-build-phases="2">
+  <span class="slide-num">13 / 25</span>
   <span class="section-tag">GPU Memory is Limited</span>
   <h2>Remote cache extends KV lifetime</h2>
 
@@ -736,7 +904,7 @@ body.notes-on .slide.current .presenter-notes {
 <!-- SLIDE 12: Disaggregation -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s12" data-build-phases="2">
-  <span class="slide-num">12 / 23</span>
+  <span class="slide-num">14 / 25</span>
   <span class="section-tag">Disaggregation</span>
   <h2 style="font-size:38px;letter-spacing:-0.02em">Decouple prefill from decode</h2>
 
@@ -783,7 +951,7 @@ body.notes-on .slide.current .presenter-notes {
 <!-- SLIDE 11: Disaggregation: Benchmarks -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s13" data-build-phases="2">
-  <span class="slide-num">13 / 23</span>
+  <span class="slide-num">15 / 25</span>
   <span class="section-tag">The architecture</span>
   <h2>Disaggregation: Benchmarks</h2>
   <p style="font-size:17px;color:var(--text-muted);margin-bottom:8px">Prefill is compute-bound (90-95% GPU utilization). Decode is memory-bound (20-40%). Running both on the same GPU wastes whichever resource isn't the bottleneck.</p>
@@ -819,7 +987,7 @@ body.notes-on .slide.current .presenter-notes {
 <!-- SLIDE 13: The Experiment -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s14">
-  <span class="slide-num">14 / 23</span>
+  <span class="slide-num">16 / 25</span>
   <span class="section-tag">The experiment</span>
   <h2>Benchmark setup</h2>
 
@@ -858,7 +1026,7 @@ body.notes-on .slide.current .presenter-notes {
 <!-- SLIDE 14: Before the cliff -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s15">
-  <span class="slide-num">15 / 23</span>
+  <span class="slide-num">17 / 25</span>
   <span class="section-tag">The experiment</span>
   <h2>At 12 sessions, it still looks fine</h2>
 
@@ -887,7 +1055,7 @@ body.notes-on .slide.current .presenter-notes {
 <!-- SLIDE 15: p50 vs p99 contrast -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s16">
-  <span class="slide-num">16 / 23</span>
+  <span class="slide-num">18 / 25</span>
   <span class="section-tag">The experiment</span>
   <h2>Now add two more sessions</h2>
 
@@ -916,7 +1084,7 @@ body.notes-on .slide.current .presenter-notes {
 <!-- SLIDE 16: The Cliff Chart -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s17">
-  <span class="slide-num">17 / 23</span>
+  <span class="slide-num">19 / 25</span>
   <span class="section-tag">The experiment</span>
   <h2>The concurrency cliff</h2>
   <p style="font-size:17px;color:var(--text-muted);margin-bottom:4px"><strong>Qwen3-4B FP8</strong> on <strong>1x NVIDIA L4 (24 GB)</strong>, vLLM 0.20.2, APC enabled</p>
@@ -981,7 +1149,7 @@ body.notes-on .slide.current .presenter-notes {
 <!-- SLIDE 15: Predict the concurrency knee -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s18" data-build-phases="2">
-  <span class="slide-num">18 / 23</span>
+  <span class="slide-num">20 / 25</span>
   <span class="section-tag">The systems lesson</span>
   <h2>Predict the concurrency knee</h2>
 
@@ -1008,7 +1176,7 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
 <!-- SLIDE 19: Quantization Moves the Knee -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s19" data-build-phases="2">
-  <span class="slide-num">19 / 23</span>
+  <span class="slide-num">21 / 25</span>
   <span class="section-tag">The systems lesson</span>
   <h2>One flag, 75% more headroom</h2>
   <p style="font-size:17px;color:var(--text-muted);margin-bottom:4px"><strong>Qwen3-4B</strong> on <strong>1x NVIDIA L4 (24 GB)</strong>, vLLM 0.20.2</p>
@@ -1069,7 +1237,7 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
 <!-- SLIDE 20: Best/Worst/Realistic -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s20" data-build-phases="2">
-  <span class="slide-num">20 / 23</span>
+  <span class="slide-num">22 / 25</span>
   <span class="section-tag">The systems lesson</span>
   <h2>The cost of cache misses</h2>
   <p style="font-size:17px;color:var(--text-muted);margin-bottom:8px"><strong>Qwen3-4B FP8</strong> on <strong>1x NVIDIA L4 (24 GB)</strong>, vLLM 0.20.2, APC enabled</p>
@@ -1100,7 +1268,7 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
 <!-- SLIDE 21: Same GPU Different Workloads -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s21" data-build-phases="1">
-  <span class="slide-num">21 / 23</span>
+  <span class="slide-num">23 / 25</span>
   <span class="section-tag">The systems lesson</span>
   <h2>The knee is workload-specific</h2>
   <p style="font-size:17px;color:var(--text-muted);margin-bottom:8px"><strong>Qwen3-4B FP8</strong> on <strong>1x NVIDIA L4 (24 GB)</strong>, formula: <code>(kv_capacity - shared_prefix) / per_session_unique</code></p>
@@ -1127,7 +1295,7 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
 <!-- SLIDE 23: Cache-Aware Routing -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s22" data-build-phases="2">
-  <span class="slide-num">22 / 23</span>
+  <span class="slide-num">24 / 25</span>
   <span class="section-tag">The systems stack</span>
   <h2>Route to warm KV</h2>
 
@@ -1151,7 +1319,7 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
 <!-- SLIDE 25: Closing -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s23">
-  <span class="slide-num">23 / 23</span>
+  <span class="slide-num">25 / 25</span>
   <span class="section-tag">The conclusion</span>
   <h2 style="font-size:56px;letter-spacing:-0.03em">Utilization</h2>
 
@@ -1174,7 +1342,7 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
 <!-- ════════════════════════════════════════════════════════ -->
 <div id="nav">
   <button id="prevBtn" aria-label="Previous slide">Prev</button>
-  <span id="counter">1 / 23</span>
+  <span id="counter">1 / 25</span>
   <button id="nextBtn" aria-label="Next slide">Next</button>
 </div>
 <div id="notes-indicator">P: notes off</div>
