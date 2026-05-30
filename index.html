@@ -902,12 +902,12 @@ body.notes-on .slide.current .presenter-notes {
   <h2 style="margin-top:4px">Extending KV Lifetime with Tiered and Remote Caching</h2>
 
   <div data-phase="1">
-    <p style="font-size:20px">Push KV state to a networked cache (Redis, Valkey, or a managed service). KV data survives GPU restarts, enables cross-node sharing, and scales capacity independently from compute.</p>
+    <p style="font-size:25px">Push KV state to a networked cache (Redis, Valkey, or a managed service). KV data survives GPU restarts, enables cross-node sharing, and scales capacity independently from compute.</p>
   </div>
 
   <div data-phase="2">
-    <p style="font-size:22px;margin-top:16px"><strong style="color:var(--cyan)">GPU VRAM</strong> → <strong style="color:var(--green)">Host DRAM</strong> → <strong style="color:var(--yellow)">Remote cache</strong> → <strong style="color:var(--red)">Recompute</strong>.</p>
-    <p style="font-size:20px">Each tier trades latency for capacity.</p>
+    <p style="font-size:28px;margin-top:16px"><strong style="color:var(--cyan)">GPU VRAM</strong> → <strong style="color:var(--green)">Host DRAM</strong> → <strong style="color:var(--yellow)">Remote cache</strong> → <strong style="color:var(--red)">Recompute</strong>.</p>
+    <p style="font-size:25px">Each tier trades latency for capacity.</p>
   </div>
 
   <div class="presenter-notes">Remote caching is L3 in the memory hierarchy. A 12,800-token session's KV cache at fp8 is ~900 MB, well within what a networked cache handles at sub-millisecond latency. This decouples KV lifetime from GPU lifetime. Same pattern as session state in web applications, moving from in-process memory to memcached.</div>
