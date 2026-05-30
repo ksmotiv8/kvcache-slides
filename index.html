@@ -896,20 +896,14 @@ body.notes-on .slide.current .presenter-notes {
 
 <!-- SLIDE 13: Memory tiers -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s25" data-build-phases="2">
+<section class="slide" id="s25">
   <span class="slide-num">13 / 25</span>
   <span class="section-tag">GPU Memory is Limited</span>
   <h2>Extending KV Lifetime</h2>
 
-  <div data-phase="1">
-    <h3 style="color:var(--yellow)">Tiered &amp; remote caching: decouple KV lifetime from GPU lifetime</h3>
-    <p>Push KV state to a networked cache (Redis, Valkey, or a managed service). KV data survives GPU restarts, enables cross-node sharing, and scales capacity independently from compute. Higher latency than local DRAM, but far cheaper than re-prefilling 12,800 tokens.</p>
-  </div>
+  <h3 style="color:var(--yellow)">Tiered &amp; remote caching: decouple KV lifetime from GPU lifetime</h3>
+  <p>Push KV state to a networked cache (Redis, Valkey, or a managed service). KV data survives GPU restarts, enables cross-node sharing, and scales capacity independently from compute. Higher latency than local DRAM, but far cheaper than re-prefilling 12,800 tokens.</p>
 
-  <div data-phase="2">
-    <h3 style="color:var(--accent)">The full hierarchy</h3>
-    <p><strong style="color:var(--cyan)">GPU VRAM</strong> → <strong style="color:var(--green)">Host DRAM</strong> → <strong style="color:var(--yellow)">Remote cache</strong> → <strong style="color:var(--red)">Recompute</strong>. Each tier trades latency for capacity. Each boundary is a systems engineering decision: eviction policy, transfer protocol, consistency model.</p>
-  </div>
   <div class="presenter-notes">Remote caching is L3 in the memory hierarchy. A 12,800-token session's KV cache at fp8 is ~900 MB, well within what a networked cache handles at sub-millisecond latency. This decouples KV lifetime from GPU lifetime. Same pattern as session state in web applications, moving from in-process memory to memcached.</div>
 </section>
 
