@@ -222,7 +222,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
   <span class="slide-num">1 / 32</span>
   <h1>KV Cache, Disaggregation,<br/>and Inference Utilization</h1>
   <p class="subtitle">A systems engineer's journey into LLM inference.<br/>Routing, scheduling, placement, memory movement, tail latency.</p>
-  <div class="presenter-notes">Open by framing the talk: this is a story about discovery. I came from distributed systems, was intimidated by the ML side of inference, and realized the hard problems at scale are the ones I already knew how to think about. The audience should leave with a concrete mental model for why inference at scale is really a distributed systems problem, and KV cache is the object at the center of it.</div>
+  <div class="presenter-notes">The hard problems in LLM inference at scale are not ML problems. They are distributed systems problems: routing, scheduling, eviction, tail latency, capacity planning. The KV cache is the object at the center of all of them. It determines how many users you can serve, how fast each request completes, and how much you pay per token.</div>
 </section>
 
 
@@ -251,7 +251,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
       <strong>These are distributed systems problems.</strong>
     </div>
   </div>
-  <div class="presenter-notes">The ML vocabulary is dense, but the problems that break production at scale are routing, scheduling, eviction, tail latency — distributed systems 101. Let the two-column comparison land, then deliver the punchline: these are problems we already know how to think about.</div>
+  <div class="presenter-notes">Attention heads, KV projections, CUDA kernels, tensor parallelism, quantization formats. The ML vocabulary is dense. But the problems that break production at scale are routing, scheduling, eviction, tail latency, and capacity planning. These are distributed systems problems. If you have worked on databases, caches, or load balancers, you already have the mental models.</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
@@ -268,7 +268,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
     <strong>Running example:</strong> Qwen3-4B (FP8) on 1x NVIDIA L4 (24 GB). 10K system prompt, 12-turn conversation, ~22K tokens peak context.
   </div>
 
-  <div class="presenter-notes">Frame utilization as the central theme. GPU utilization isn't just about keeping the hardware busy — it directly determines how many users you can serve (availability), how fast each request completes (performance), and how much you pay per token (economics). Everything in this talk — KV cache management, disaggregation, prefix caching, tiered storage — is ultimately about improving utilization.</div>
+  <div class="presenter-notes">GPU utilization is the central metric. It directly determines availability (how many users you can serve), performance (how fast each request completes), and economics (cost per token). KV cache management, disaggregation, prefix caching, and tiered storage are all means to improve utilization. A GPU running at 30% utilization during decode is paying 3x more per token than one at 90%.</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
@@ -332,7 +332,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
       </div>
     </div>
   </div>
-  <div class="presenter-notes">Make this concrete. "When you send a prompt to an LLM, two very different things happen. First: prefill. The GPU processes your entire 22,000-token input in parallel. This is compute-heavy, and it's what you experience as the pause before the response starts. That pause is TTFT. Second: decode. The model generates output tokens one at a time. Each new token needs to read the entire KV cache. This is memory-bandwidth-bound." The key insight: these two phases have fundamentally different bottlenecks. Prefill is limited by compute. Decode is limited by memory bandwidth. Same GPU, different constraints.</div>
+  <div class="presenter-notes">When a prompt arrives, the GPU processes the entire input in parallel during prefill. This is compute-heavy and produces the KV cache. The time to complete prefill is TTFT (time to first token). Then decode begins: the model generates output tokens one at a time. Each new token reads the entire KV cache. Prefill is compute-bound (high arithmetic intensity, ~200-400 ops/byte). Decode is memory-bandwidth-bound (low arithmetic intensity, ~60-80 ops/byte). Same GPU, fundamentally different bottlenecks. This asymmetry is why disaggregation works.</div>
 </section>
 
 
@@ -432,7 +432,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
     </g>
   </svg>
 
-  <div class="presenter-notes">Build the diagram step by step. Phase 1: prompt arrives. Phase 2: tokenized into 22,800 tokens. Phase 3: engine checks cache — MISS means process everything from scratch. Phase 4: prefill runs, KV cache fills, first token appears (TTFT). Phase 5: decode loop generates tokens one at a time reading the full KV cache, response completes — engine tries to retain cache but eviction pressure can force re-prefill. Phase 6: reveal the HIT path — skip prefill entirely, go straight to cached KV state. This is the punchline: the best prefill optimization is avoiding prefill.</div>
+  <div class="presenter-notes">The inference lifecycle: prompt arrives, tokenized into ~22,800 tokens. The engine checks the prefix cache. On a MISS, full prefill runs: every token is processed, KV vectors are computed and stored, and the first output token appears (TTFT). Decode then generates tokens one at a time, each reading the full KV cache. When the response completes, the engine tries to retain the KV cache for future requests, but eviction pressure may force re-prefill later. On a HIT, prefill is skipped entirely. The engine loads cached KV vectors and jumps straight to decode. The best prefill optimization is avoiding prefill altogether.</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
@@ -518,7 +518,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
     </g>
   </svg>
 
-  <div class="presenter-notes">Walk through the Dynamo lifecycle. Phase 1: request arrives at the Router, which tokenizes the input and queries the KVIndexer (a radix tree tracking cached blocks per worker) to find the prefill node with the most KV cache overlap. Phase 2: the prefill node computes KV vectors and returns transfer metadata. The router selects a decode node and forwards the request. NIXL performs direct GPU-to-GPU KV transfer via RDMA or NVLink, zero-copy. Phase 3: the decode node generates tokens one at a time, streaming back through the router. The router is the brain, the KV cache is the shared state, and NIXL is the data plane.</div>
+  <div class="presenter-notes">NVIDIA Dynamo disaggregated inference lifecycle. Request arrives at the Router, which tokenizes the input and queries the KVIndexer (a radix tree tracking cached blocks per worker) to find the prefill node with the most KV cache overlap. The prefill node computes KV vectors and returns transfer metadata. The router selects a decode node based on load and memory availability. NIXL performs direct GPU-to-GPU KV transfer via RDMA or NVLink, zero-copy. The decode node generates tokens one at a time, streaming back through the router. The router is the scheduling brain, the KV cache is shared state, and NIXL is the high-performance data plane.</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
@@ -810,7 +810,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
       <li><strong>Shared prefixes</strong> allows reuse.</li>
     </ul>
   </div>
-  <div class="presenter-notes">Two dimensions of caching. Cross-session: the system prompt is identical for every user. Within-session: each turn builds on the previous conversation. The critical limitation is prefix-only matching. This is why workload design matters: put the stable content first (system prompt), variable content last.</div>
+  <div class="presenter-notes">Two dimensions of prefix caching. Cross-session: the system prompt is identical for every user, so those KV blocks are computed once and shared. Within-session: each turn extends the previous conversation, so prior turns' KV can be reused. The critical constraint is prefix-only matching: KV can be reused up to the first point of divergence, but nothing after it. This is why prompt structure matters. Put stable content (system prompt) first and variable content (user input) last to maximize the reusable prefix.</div>
 </section>
 
 <!-- SLIDE 11: Prefix caching internals — vLLM vs SGLang -->
@@ -1722,7 +1722,7 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
       Full blog series: <strong style="color:var(--cyan)">ksmotiv8.github.io/kvbenchdocs/kvcache/</strong>
     </p>
   </div>
-  <div class="presenter-notes">Concurrency is a derived proxy for a fixed workload. The real primitive is projected KV footprint. Everything in this talk serves one goal: utilization. Better utilization means better availability, performance, and cost. The six points are the practical takeaways. Thank you.</div>
+  <div class="presenter-notes">Concurrency is a derived proxy. For a fixed workload (fixed per-session token count, fixed model, fixed quantization), concurrency maps to KV footprint. But the real primitive is projected KV footprint: admitted_KV = shared_prefix_KV + sum(active_unique_tokens * bytes_per_token) + reserve. Admit while admitted_KV is below safe_KV_budget. Everything in this talk serves one goal: utilization. Better utilization means better availability, performance, and cost. Qwen3-4B FP8, vLLM 0.20.2, LMCache 0.4.5, g6.4xlarge L4, 10K shared prompt + 12-turn agentic workload. Results scale with token footprint and cache tier size.</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
