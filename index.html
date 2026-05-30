@@ -735,7 +735,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
   <div data-phase="1">
     <ul style="font-size:24px">
       <li><strong>Cross-session:</strong> the system prompt is identical for every user.</li>
-      <li><strong>Within-session:</strong> prior turns are already cached from earlier in the conversation.</li>
+      <li><strong>Within-session:</strong> prior turns may still be in cache.</li>
       <li>If two requests share the same token prefix, the engine skips the redundant compute.</li>
     </ul>
   </div>
