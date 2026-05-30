@@ -249,10 +249,11 @@ body.notes-on .slide.current .presenter-notes {
       <line x1="40" y1="130" x2="840" y2="130" stroke="var(--border)" stroke-width="1"/>
 
       <!-- PREFILL phase -->
-      <rect x="40" y="30" width="360" height="80" rx="10" fill="rgba(130,140,248,0.12)" stroke="var(--accent)" stroke-width="2"/>
+      <rect x="40" y="30" width="360" height="100" rx="10" fill="rgba(130,140,248,0.12)" stroke="var(--accent)" stroke-width="2"/>
       <text x="220" y="58" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="22" text-anchor="middle" font-weight="700">PREFILL</text>
       <text x="220" y="80" fill="var(--text)" font-family="'Inter',sans-serif" font-size="14" text-anchor="middle">Process ALL input tokens in parallel</text>
       <text x="220" y="98" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="13" text-anchor="middle">Fills KV cache. GPU ALUs saturated.</text>
+      <text x="220" y="120" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle" font-weight="600" opacity="0.7">COMPUTE-BOUND</text>
 
       <!-- TTFT marker -->
       <line x1="410" y1="20" x2="410" y2="245" stroke="var(--yellow)" stroke-width="2" stroke-dasharray="6 3"/>
@@ -261,10 +262,11 @@ body.notes-on .slide.current .presenter-notes {
       <text x="410" y="258" fill="var(--yellow)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">Time to First Token</text>
 
       <!-- DECODE phase -->
-      <rect x="440" y="30" width="390" height="80" rx="10" fill="rgba(74,222,128,0.10)" stroke="var(--green)" stroke-width="2"/>
+      <rect x="440" y="30" width="390" height="100" rx="10" fill="rgba(74,222,128,0.10)" stroke="var(--green)" stroke-width="2"/>
       <text x="635" y="58" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="22" text-anchor="middle" font-weight="700">DECODE</text>
       <text x="635" y="80" fill="var(--text)" font-family="'Inter',sans-serif" font-size="14" text-anchor="middle">Generate output tokens ONE at a time</text>
-      <text x="635" y="98" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="13" text-anchor="middle">Sequential. Memory-bound. Reads KV cache.</text>
+      <text x="635" y="98" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="13" text-anchor="middle">Reads KV cache every step.</text>
+      <text x="635" y="120" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle" font-weight="600" opacity="0.7">MEMORY-BANDWIDTH-BOUND</text>
 
       <!-- Bottom labels -->
       <text x="220" y="160" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle" font-weight="600">22,800 tokens in parallel</text>
