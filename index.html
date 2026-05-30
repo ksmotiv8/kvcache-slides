@@ -724,7 +724,7 @@ body.notes-on .slide.current .presenter-notes {
 
     <!-- vLLM side -->
     <div>
-      <p style="font-size:24px;font-weight:700;color:var(--accent);margin-bottom:12px">vLLM: Hash Chain</p>
+      <p style="font-size:26px;font-weight:700;color:var(--accent);margin-bottom:12px">vLLM: Hash Chain</p>
       <svg viewBox="0 0 380 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;margin-bottom:12px">
         <!-- Block chain -->
         <rect x="10" y="60" width="80" height="44" rx="6" fill="rgba(130,140,248,0.15)" stroke="var(--accent)" stroke-width="1.5"/>
@@ -763,7 +763,7 @@ body.notes-on .slide.current .presenter-notes {
           <marker id="avl" markerWidth="6" markerHeight="5" refX="6" refY="2.5" orient="auto"><path d="M0,0 L6,2.5 L0,5" fill="var(--accent)"/></marker>
         </defs>
       </svg>
-      <ul style="font-size:17px;line-height:1.7">
+      <ul style="font-size:19px;line-height:1.7">
         <li>Fixed <strong>16-token blocks</strong></li>
         <li>Block-aligned matching only</li>
         <li>LRU eviction, O(1) ops</li>
@@ -773,7 +773,7 @@ body.notes-on .slide.current .presenter-notes {
 
     <!-- SGLang side -->
     <div>
-      <p style="font-size:24px;font-weight:700;color:var(--green);margin-bottom:12px">SGLang: Radix Tree</p>
+      <p style="font-size:26px;font-weight:700;color:var(--green);margin-bottom:12px">SGLang: Radix Tree</p>
       <svg viewBox="0 0 400 210" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;margin-bottom:12px">
         <!-- Root node -->
         <circle cx="160" cy="20" r="16" fill="rgba(74,222,128,0.15)" stroke="var(--green)" stroke-width="2"/>
@@ -822,7 +822,7 @@ body.notes-on .slide.current .presenter-notes {
           <marker id="ayl" markerWidth="6" markerHeight="5" refX="0" refY="2.5" orient="auto"><path d="M6,0 L0,2.5 L6,5" fill="var(--yellow)"/></marker>
         </defs>
       </svg>
-      <ul style="font-size:17px;line-height:1.7">
+      <ul style="font-size:19px;line-height:1.7">
         <li><strong>Token-level</strong> matching granularity</li>
         <li>Variable-length edges</li>
         <li>LRU leaf eviction, preserves shared prefixes</li>
@@ -832,9 +832,9 @@ body.notes-on .slide.current .presenter-notes {
   </div>
 
   <!-- QR code + blog link -->
-  <div style="position:absolute;bottom:28px;right:60px;text-align:center">
-    <img src="qr-prefix-caching.svg" alt="QR code to prefix caching internals blog post" style="width:80px;height:80px;filter:invert(1)"/>
-    <p style="font-size:10px;color:var(--text-dim);margin-top:2px">Deep dive</p>
+  <div style="position:absolute;bottom:80px;right:60px;text-align:center">
+    <img src="qr-prefix-caching.svg" alt="QR code to prefix caching internals blog post" style="width:120px;height:120px;filter:invert(1)"/>
+    <p style="font-size:12px;color:var(--text-dim);margin-top:4px">Deep dive blog post</p>
   </div>
 
   <div class="presenter-notes">vLLM uses SHA-256 hash chains over fixed 16-token blocks with a flat hash table for O(1) lookup. Each block's hash incorporates all preceding block hashes. SGLang uses a compressed radix trie indexed by token sequences, with variable-length edges allowing prefix matching at arbitrary token boundaries. The radix tree naturally represents shared prefixes across sessions — evicting a leaf preserves parent nodes shared by other sessions. vLLM's hash approach is simpler and has lower CPU overhead, but can only match at block boundaries. Full blog post: https://ksmotiv8.github.io/kvbenchdocs/kvcache/prefix-caching-internals/</div>
