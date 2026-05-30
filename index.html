@@ -240,7 +240,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
   <div data-phase="1">
     <ul style="font-size:22px">
       <li><strong>Routing</strong> and <strong>scheduling</strong></li>
-      <li><strong>Backpressure</strong> and <strong>admission control</strong></li>
+      <li><strong>Backpressure</strong> and <strong>KV-budget admission control</strong></li>
       <li><strong>Tail latency</strong> and <strong>capacity planning</strong></li>
       <li><strong>Cache eviction</strong> and <strong>memory movement</strong></li>
     </ul>
@@ -676,7 +676,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
       </table>
     </div>
   </div>
-  <div class="presenter-notes">72 KB per token sounds small, but 22,800 tokens at 72 KB each is 1.6 GB. On a 24 GB L4, that is nearly 7% of total VRAM for a single session. The GPU table drives the point: more VRAM = more concurrent sessions, period. An H100 and A100 both have 80 GB, so they serve the same ~27 sessions despite the H100 having 64% more bandwidth. Bandwidth determines decode speed; VRAM determines concurrency. The H200's 141 GB nearly doubles the H100's session count. B200 at 192 GB pushes to 66. The bottleneck is memory capacity, not compute.</div>
+  <div class="presenter-notes">72 KB per token sounds small, but 22,800 tokens at 72 KB each is 1.6 GB. On a 24 GB L4, that is nearly 7% of total VRAM for a single session. The GPU table drives the point: more VRAM = larger KV budget, period. An H100 and A100 both have 80 GB, so they serve the same ~27 sessions in this workload despite the H100 having 64% more bandwidth. Bandwidth determines decode speed; VRAM determines KV footprint ceiling. The H200's 141 GB nearly doubles the H100's session count. B200 at 192 GB pushes to 66. The bottleneck is memory capacity, not compute.</div>
 </section>
 
 
@@ -1036,8 +1036,8 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
       <tr><td>fp16 KV, no LMCache</td><td class="r">8c</td><td class="r">~4c</td><td>worse</td></tr>
       <tr><td>0 GB LMCache</td><td class="r">14c</td><td class="r">~6c</td><td>matches baseline</td></tr>
       <tr><td>8 GB LMCache</td><td class="r">14c</td><td class="r">~6c</td><td style="color:var(--text-muted)">no benefit</td></tr>
-      <tr style="border-left:3px solid var(--yellow)"><td><strong>16 GB LMCache</strong></td><td class="r">18c</td><td class="r">~10c</td><td class="g">+4c knee, +4c SLA</td></tr>
-      <tr style="border-left:3px solid var(--green)"><td><strong>32 GB LMCache</strong></td><td class="r">28c</td><td class="r">~14c</td><td class="g">+14c knee, +8c SLA</td></tr>
+      <tr style="border-left:3px solid var(--yellow)"><td><strong>16 GB LMCache</strong></td><td class="r">18c</td><td class="r">~10c</td><td class="g">+4c shape, +4c SLA</td></tr>
+      <tr style="border-left:3px solid var(--green)"><td><strong>32 GB LMCache</strong></td><td class="r">28c</td><td class="r">~14c</td><td class="g">+14c shape, +8c SLA</td></tr>
       <tr style="opacity:0.5"><td>Worst case, session always evicted</td><td class="r">1c</td><td class="r">0c</td><td>lower bound</td></tr>
     </tbody>
   </table>
@@ -1047,7 +1047,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
       32 GB LMCache roughly doubles the 2s SLA limit: <strong>~6 concurrent sessions → ~14</strong>. 8 GB provides no measurable benefit because it is smaller than the eviction churn.
     </div>
   </div>
-  <div class="presenter-notes">LMCache adds a CPU DRAM tier for evicted KV blocks. If the tier is too small, it becomes churn, not cache. If sized correctly, it turns full re-prefill into bounded reload latency and shifts the p99 knee right. The key message: offload capacity must exceed the eviction working set to provide any benefit.</div>
+  <div class="presenter-notes">LMCache gives us a CPU DRAM tier for evicted KV blocks. That sounds straightforward: instead of throwing KV away and paying full re-prefill, reload it over PCIe. But the key systems question is not 'does offload exist?' It is 'is the spill tier large enough to survive eviction churn until the session returns?' In this workload, 8 GB does nothing, 16 GB moves the knee a little, and 32 GB moves it materially.</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
@@ -1097,7 +1097,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
     <text x="450" y="165" fill="var(--yellow)" font-family="var(--mono)" font-size="18" text-anchor="middle" font-weight="700">Offload without reload is just churn.</text>
     <text x="450" y="190" fill="var(--text-muted)" font-family="var(--font)" font-size="14" text-anchor="middle">340-425 MB/s out, 2.7-6.2 MB/s back (baseline-level)</text>
   </svg>
-  <div class="presenter-notes">8 GB LMCache shows 340-425 MB/s TX offload GPU→CPU at 12-14c, but only 2.7-6.2 MB/s RX reload CPU→GPU. Blocks leave the GPU but are evicted from the 8 GB CPU tier before any session needs them again. The cache is busy but not useful. To get reuse, you need to size the offload tier to hold the eviction working set — 8 GB is not enough for this workload.</div>
+  <div class="presenter-notes">This is the diagnostic I like. TX means blocks are leaving the GPU. RX means blocks are coming back. With 8 GB, TX is high, so the system is definitely offloading. But RX stays at baseline, which means the offloaded blocks are not being reused. They are being churned out of the CPU tier before a later turn can reload them. Offload traffic alone is not proof of cache effectiveness.</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
@@ -1108,7 +1108,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
   <span class="section-tag">EXTENDING KV LIFETIME</span>
   <h2 style="font-size:34px;letter-spacing:-0.02em">Offload changes the failure mode</h2>
 
-  <p style="font-size:18px;color:var(--text-muted);margin-bottom:12px">Without enough spill capacity: bimodal (lucky = warm KV, unlucky = full re-prefill).<br/>With 32 GB: degradation is more uniform. p99 improves, but median rises at high concurrency from reload overhead.</p>
+  <p style="font-size:18px;color:var(--text-muted);margin-bottom:12px">Without enough spill capacity: bimodal (lucky = warm KV, unlucky = full re-prefill).<br/>With 32 GB: p99 improves, but median rises at high concurrency from reload and queueing overhead.</p>
 
   <table style="font-size:15px">
     <thead><tr><th>Config</th><th style="text-align:right">14c p50/p99</th><th style="text-align:right">32c p50/p99</th><th style="text-align:right">48c p50/p99</th></tr></thead>
@@ -1126,7 +1126,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
       At 14c: p99 drops from <strong style="color:var(--red)">38.9s</strong> to <strong style="color:var(--green)">7.5s</strong> with 32 GB LMCache. The tradeoff: p50 rises slightly (1.3s → 1.4s) from reload overhead.
     </div>
   </div>
-  <div class="presenter-notes">The failure mode shifts from bimodal (some sessions get 1s, others get 39s) to more uniform degradation. At 14c, p99 drops 5x with 32 GB LMCache. At higher concurrencies (32c, 48c), the p99 improvement is still significant but median rises because more sessions pay reload overhead. The system degrades gracefully instead of cliff-diving.</div>
+  <div class="presenter-notes">Without a large enough spill tier, the system is bimodal. Some users hit warm cache and look fine. Others miss and pay full re-prefill, so p99 explodes. With 32 GB, more sessions pay a bounded reload cost instead of catastrophic re-prefill. That improves p99, but at high concurrency the median rises because reload overhead and connector queueing become shared pain. This is not free capacity. It is a different point in the latency/cost/capacity tradeoff. PCIe bandwidth was not saturated; the bottleneck became connector/queueing/reload overhead at high concurrency.</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
@@ -1301,7 +1301,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
   <div class="callout" style="margin-top:20px">
     <strong>The question:</strong> when does total KV footprint exceed the GPU's KV budget?
   </div>
-  <div class="presenter-notes">Transition to the live data section. We sweep concurrency from 1 to 48 to find where the system breaks. The L4 is a $0.70/hr GPU, representative of cost-optimized deployments. These specific numbers are L4-specific, but the shape of the cliff generalizes across GPUs.</div>
+  <div class="presenter-notes">Transition to the live data section. We sweep concurrent sessions from 1 to 48 to find where KV footprint exceeds budget. The L4 is a $0.70/hr GPU, representative of cost-optimized deployments. These specific numbers are L4-specific, but the shape of the cliff generalizes across GPUs. Qwen3-4B FP8, vLLM 0.20.2, LMCache 0.4.5, g6.4xlarge L4, 10K shared prompt + 12-turn agentic workload. Results scale with token footprint and cache tier size.</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
@@ -1330,7 +1330,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
   <div class="callout" style="margin-top:24px">
     <strong>The KV cache still fits.</strong> 12 sessions x 12.8K unique tokens = ~154K tokens. Capacity is ~178K. There is headroom. Now add two more sessions.
   </div>
-  <div class="presenter-notes">This is the "calm before the storm" slide. Let the audience absorb that the system works. 12 concurrent agentic sessions on a single $0.70/hr L4. Then say: "Now add two more sessions." Pause. Next slide.</div>
+  <div class="presenter-notes">At 12 concurrent sessions, total KV footprint is 12 × 12.8K unique = ~154K tokens. Capacity is ~178K tokens. There is headroom. The system works. 12 concurrent agentic sessions on a single $0.70/hr L4. Two more sessions push the KV footprint past the budget.</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
@@ -1359,7 +1359,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
   <div class="callout red" style="margin-top:24px">
     <strong>Bimodal distribution.</strong> Lucky requests hit warm cache: 1-2s. Unlucky requests pay full re-prefill: 30-50s. The median hides a broken system.
   </div>
-  <div class="presenter-notes">The audience just saw everything looking fine at C=12. Now show C=14. The p50 barely moved, but the p99 exploded. Nobody experiences the average. Half experience 1.3 seconds, the other half experience 39 seconds.</div>
+  <div class="presenter-notes">At C=14 the total KV footprint is 14 × 12.8K = ~179K tokens, just past the ~178K capacity. p50 barely moves (1.29s) because lucky requests still hit warm cache. p99 jumps to 38.9s because unlucky requests trigger cascading evictions and full re-prefill of 12,800 tokens. The distribution is bimodal, not a smooth curve. Nobody experiences the average. The p50/p99 spread is the diagnostic: when it widens suddenly, you have exceeded the KV budget.</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
@@ -1424,11 +1424,11 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
   </svg>
 
   <p>p99 TTFT jumps from <strong>2.6 seconds to 38.9 seconds</strong> between C=12 and C=14. Not a single re-prefill. <strong>Cascading evictions</strong> under contention, with queuing delays compounding.</p>
-  <div class="presenter-notes">The full picture. Everything is flat until the KV cache fills, then p99 explodes while p50 barely moves. The GPU is not saturated; the memory is full.</div>
+  <div class="presenter-notes">The full concurrency sweep from 1 to 48 sessions. p50 TTFT rises gradually throughout because more sessions compete for scheduler time. p99 is flat until C=12, then jumps 15x at C=14 when KV footprint exceeds budget. This is not a compute cliff. GPU utilization is well below 100%. The constraint is memory: the KV cache is full, and eviction cascades cause catastrophic re-prefill for the unlucky sessions. The p99 jump from 2.6s to 38.9s is a single-step transition, not a gradual degradation. Queuing delays compound on top of the re-prefill cost.</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
-<!-- SLIDE 15: Predict the concurrency knee -->
+<!-- SLIDE 15: Predict the KV footprint knee -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s18" data-build-phases="2">
   <span class="slide-num">25 / 32</span>
@@ -1447,11 +1447,14 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
   </div>
 
   <div data-phase="2">
-    <div class="callout" style="margin-top:16px">
-      <strong>How to get available KV memory:</strong> vLLM logs <code># GPU blocks</code> at startup. Multiply by block size (16 tokens) × per-token KV bytes. Or: ~50-55% of raw VRAM ends up available for KV.
+    <div class="code-block" style="font-size:15px;max-width:900px;margin-top:16px">
+<span class="cm">// Admission control primitive</span><br/>
+<span class="fn">admitted_KV</span> = shared_prefix_KV + <span class="fn">sum</span>(active_unique_tokens × bytes_per_token) + reserve<br/>
+<span class="kw">Admit while</span> admitted_KV &lt; safe_KV_budget
     </div>
+    <p style="font-size:15px;color:var(--text-muted);margin-top:12px"><strong>Practical:</strong> vLLM logs <code># GPU blocks</code> at startup. Multiply by block size (16 tokens) × per-token KV bytes. Or: ~50-55% of raw VRAM ends up available for KV.</p>
   </div>
-  <div class="presenter-notes">Three steps, one slide. Step 1: per-token KV from config.json (GQA gives 8 heads instead of 32). Step 2: subtract weights + overhead from VRAM. Step 3: simple division. Gets within 20% of observed knee. The vLLM startup log is the practical way to get the exact number.</div>
+  <div class="presenter-notes">Three steps to estimate KV budget. Step 1: per-token KV size from config.json (GQA gives 8 KV heads instead of 32 attention heads). Step 2: subtract model weights + CUDA overhead + scheduler reserve from total VRAM. Step 3: divide remaining capacity by per-session unique token footprint. Gets within 20% of observed knee. The vLLM startup log prints exact GPU block count. The admission formula is the key takeaway: admit by projected KV footprint (shared_prefix_KV + sum of active unique tokens + reserve), not by request count.</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
@@ -1463,7 +1466,7 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
   <h2>One flag, 75% more headroom</h2>
   <p style="font-size:17px;color:var(--text-muted);margin-bottom:4px"><strong>Qwen3-4B</strong> on <strong>1x NVIDIA L4 (24 GB)</strong>, vLLM 0.20.2</p>
 
-  <svg viewBox="0 0 760 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Chart comparing p99 TTFT for fp16, fp8, and 4-bit KV quantization. KV budget limit shifts from 8 to 14 to 23 sessions" style="width:100%;max-width:760px;height:auto;display:block;margin:12px 0">
+  <svg viewBox="0 0 760 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Chart comparing p99 TTFT for fp16, fp8, and 4-bit KV quantization. KV footprint knee shifts from 8 to 14 to 23 sessions" style="width:100%;max-width:760px;height:auto;display:block;margin:12px 0">
     <rect x="60" y="10" width="690" height="200" fill="none"/>
     <line x1="60" y1="190" x2="750" y2="190" stroke="var(--border)" stroke-width="1"/>
     <line x1="60" y1="140" x2="750" y2="140" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
@@ -1505,14 +1508,14 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
   </svg>
 
   <div data-phase="1">
-    <p>Changing one config flag (<code>kv_cache_dtype</code>) shifts the KV budget knee from <strong>8 sessions to 14 to 23</strong>. Same GPU. Same model. Same workload.</p>
+    <p>Changing one config flag (<code>kv_cache_dtype</code>) shifts the KV footprint knee from <strong>8 sessions to 14 to 23</strong>. Same GPU. Same model. Same workload.</p>
   </div>
   <div data-phase="2">
     <div class="callout warn" style="margin-top:12px">
       &#9888;&#65039; For illustrative purposes only.<br/>4-bit may measurably impact output quality. Eval before using.
     </div>
   </div>
-  <div class="presenter-notes">One config change, three different concurrency ceilings. fp16 to fp8 doubles capacity and moves the knee from ~8 to ~14. fp8 to 4-bit extends it to ~23. This is a systems lever, not an ML lever.</div>
+  <div class="presenter-notes">One config change, three different KV footprint ceilings. fp16 to fp8 doubles capacity and moves the knee from ~8 to ~14 concurrent sessions in this workload. fp8 to 4-bit extends it to ~23. This is a systems lever, not an ML lever.</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
@@ -1567,10 +1570,10 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
 
   <div data-phase="1">
     <div class="callout warn" style="margin-top:20px">
-      <strong>Mixed workloads on shared GPUs:</strong> one long-context session can evict the KV cache for a dozen short-context sessions. You need workload-aware admission control, not a single global concurrency limit.
+      <strong>Mixed workloads on shared GPUs:</strong> one long-context session can evict the KV cache for a dozen short-context sessions. Admit by projected KV footprint, not request count.
     </div>
   </div>
-  <div class="presenter-notes">168 sessions vs 3 on the same GPU. The only variable is per-session unique context. A mixed deployment needs workload-class-aware admission control. One long-context session can thrash the cache for many short-context sessions.</div>
+  <div class="presenter-notes">168 sessions vs 3 on the same GPU. The only variable is per-session unique context. A mixed deployment needs KV-budget admission control, not a flat concurrency limit. One long-context session can thrash the cache for many short-context sessions.</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
@@ -1701,20 +1704,25 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
 <section class="slide" id="s23">
   <span class="slide-num">32 / 32</span>
   <span class="section-tag">Conclusion</span>
-  <h2 style="font-size:56px;letter-spacing:-0.03em">Utilization</h2>
+  <h2 style="font-size:44px;letter-spacing:-0.03em">Operations checklist</h2>
 
-  <p class="subtitle" style="margin-bottom:32px;font-size:24px">KV cache, disaggregation, routing, load leveling are all means to improve utilization.</p>
+  <ol style="font-size:20px;line-height:1.9;max-width:820px">
+    <li>Estimate KV budget before deployment.</li>
+    <li>Admit by projected KV footprint, not request count.</li>
+    <li>Keep a reserve for active decode and scheduler overhead.</li>
+    <li>Watch p95/p99 TTFT and p50/p99 spread.</li>
+    <li>Size spill tiers against eviction churn, not raw capacity.</li>
+    <li>Separate prefill/decode when workload mix creates head-of-line blocking.</li>
+  </ol>
 
-  <div class="callout" style="border-left-color:var(--green)">
-    Optimizing utilization drives better availability, performance, and cost.
-  </div>
+  <p style="font-size:13px;color:var(--text-muted);margin-top:24px;font-style:italic">Qwen3-4B FP8, vLLM 0.20.2, LMCache 0.4.5, g6.4xlarge L4, 10K shared prompt + 12-turn agentic workload. Results scale with token footprint and cache tier size.</p>
 
-  <div style="margin-top:36px;padding-top:24px;border-top:1px solid var(--border)">
+  <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border)">
     <p style="font-size:17px;color:var(--text-muted)">
       Full blog series: <strong style="color:var(--cyan)">ksmotiv8.github.io/kvbenchdocs/kvcache/</strong>
     </p>
   </div>
-  <div class="presenter-notes">Close the loop. Everything in this talk — KV caching, disaggregation, routing, load leveling — serves one goal: utilization. Better utilization means better availability, performance, and cost. Thank you.</div>
+  <div class="presenter-notes">Concurrency is a derived proxy for a fixed workload. The real primitive is projected KV footprint. Everything in this talk serves one goal: utilization. Better utilization means better availability, performance, and cost. The six points are the practical takeaways. Thank you.</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
