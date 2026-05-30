@@ -1135,8 +1135,8 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
 <section class="slide" id="s26">
   <span class="slide-num">18 / 33</span>
   <span class="section-tag">EXTENDING KV LIFETIME</span>
-  <h2 style="font-size:34px;letter-spacing:-0.02em">TTFT across offload tiers</h2>
-  <p style="font-size:17px;color:var(--text-muted);margin-bottom:16px">Qwen3-4B FP8, vLLM 0.20.2, LMCache 0.4.5. p50 and p99 TTFT vs concurrent sessions</p>
+  <h2 style="font-size:36px;letter-spacing:-0.02em">Bigger offload tier, later knee</h2>
+  <p style="font-size:18px;color:var(--text-muted);margin-bottom:16px">p99 TTFT vs concurrent sessions across LMCache CPU offload tiers</p>
   <img src="site/assets/charts/lmcache-ttft-summary.svg" alt="TTFT p50 and p99 vs concurrent sessions for 0, 8, 16, and 32 GB LMCache tiers" style="width:100%;max-width:960px;display:block;margin:0 auto"/>
   <div class="presenter-notes">The full TTFT picture across all four LMCache tiers. Left panel is p50, right is p99. The 2s target line shows where SLA compliance breaks. Key takeaway: 8 GB provides no benefit over baseline; 16 GB shifts the knee modestly; 32 GB roughly doubles the SLA ceiling.</div>
 </section>
