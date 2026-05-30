@@ -708,7 +708,7 @@ body.notes-on .slide.current .presenter-notes {
   </div>
   <div data-phase="2">
     <div class="callout warn">
-      <strong>The constraint:</strong> matching is prefix-only. If tokens diverge at any position, everything after that point must be recomputed. Exact token-for-token match, or nothing.
+      <strong>Constraint:</strong> matching is prefix-only. If tokens diverge at any position, everything after that point must be recomputed. Exact token-for-token match, or nothing.
     </div>
   </div>
   <div class="presenter-notes">Two dimensions of caching. Cross-session: the system prompt is identical for every user. Within-session: each turn builds on the previous conversation. The critical limitation is prefix-only matching. This is why workload design matters: put the stable content first (system prompt), variable content last.</div>
