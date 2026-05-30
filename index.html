@@ -709,38 +709,38 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
   <span class="section-tag">The key constraint</span>
   <h2>Prefix caching</h2>
 
-  <svg viewBox="0 0 780 140" role="img" aria-label="Diagram showing prefix caching: system prompt cached and shared, turns 1-11 cached per session, only turn 12 needs prefill" style="width:100%;max-width:780px;height:auto;margin:16px 0">
+  <svg viewBox="0 0 780 140" role="img" aria-label="Diagram showing prefix caching: system prompt cached and shared, prior turns cached per session, only new turn needs prefill" style="width:100%;max-width:780px;height:auto;margin:16px 0">
     <rect x="10" y="20" width="220" height="44" rx="6" fill="rgba(74,222,128,0.12)" stroke="var(--green)" stroke-width="1.5"/>
-    <text x="120" y="47" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" text-anchor="middle">SYSTEM PROMPT</text>
+    <text x="120" y="47" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="15" font-weight="600" text-anchor="middle">SYSTEM PROMPT</text>
 
     <rect x="240" y="20" width="160" height="44" rx="6" fill="rgba(34,211,238,0.12)" stroke="var(--cyan)" stroke-width="1.5"/>
-    <text x="320" y="47" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" text-anchor="middle">PRIOR TURNS</text>
+    <text x="320" y="47" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="15" font-weight="600" text-anchor="middle">PRIOR TURNS</text>
 
     <rect x="410" y="20" width="100" height="44" rx="6" fill="rgba(130,140,248,0.15)" stroke="var(--accent)" stroke-width="2"/>
-    <text x="460" y="47" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="700" text-anchor="middle">NEW TURN</text>
+    <text x="460" y="47" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="15" font-weight="700" text-anchor="middle">NEW TURN</text>
 
-    <text x="120" y="86" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">cached (shared across sessions)</text>
-    <text x="320" y="86" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">cached (this session)</text>
-    <text x="460" y="86" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">prefill this</text>
+    <text x="120" y="86" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="13" text-anchor="middle">cached (shared across sessions)</text>
+    <text x="320" y="86" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="13" text-anchor="middle">cached (this session)</text>
+    <text x="460" y="86" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="13" text-anchor="middle">prefill this</text>
 
     <line x1="530" y1="42" x2="590" y2="42" stroke="var(--text-muted)" stroke-width="1.5" marker-end="url(#arrowW2)"/>
     <rect x="600" y="20" width="160" height="44" rx="6" fill="rgba(255,255,255,0.04)" stroke="var(--text-muted)" stroke-width="1"/>
-    <text x="680" y="40" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">output tokens</text>
-    <text x="680" y="56" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">(decode phase)</text>
+    <text x="680" y="40" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="13" text-anchor="middle">output tokens</text>
+    <text x="680" y="56" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="14" text-anchor="middle">(decode phase)</text>
 
-    <text x="400" y="124" fill="var(--text-dim)" font-family="'Inter',sans-serif" font-size="14" text-anchor="middle">Only the new tokens need prefill. Everything before them is a cache hit.</text>
+    <text x="400" y="124" fill="var(--text-dim)" font-family="'Inter',sans-serif" font-size="17" text-anchor="middle">Only the new tokens need prefill. Everything before them is a cache hit.</text>
     <defs><marker id="arrowW2" markerWidth="6" markerHeight="5" refX="6" refY="2.5" orient="auto"><path d="M0,0 L6,2.5 L0,5" fill="var(--text-muted)"/></marker></defs>
   </svg>
 
   <div data-phase="1">
-    <ul>
+    <ul style="font-size:24px">
       <li><strong>Cross-session:</strong> the system prompt is identical for every user.</li>
       <li><strong>Within-session:</strong> prior turns are already cached from earlier in the conversation.</li>
       <li>If two requests share the same token prefix, the engine skips the redundant compute.</li>
     </ul>
   </div>
   <div data-phase="2">
-    <div class="callout warn">
+    <div class="callout warn" style="font-size:24px">
       <strong>Constraint:</strong> matching is prefix-only. If tokens diverge at any position, everything after that point must be recomputed. Exact token-for-token match, or nothing.
     </div>
   </div>
