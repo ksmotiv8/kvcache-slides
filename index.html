@@ -1029,7 +1029,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
   <p style="font-size:14px;color:var(--text-muted);margin-bottom:12px">Qwen3-4B FP8, vLLM 0.20.2, LMCache 0.4.5, g6.4xlarge L4, 10K shared prompt + 12-turn agentic workload</p>
 
   <table style="font-size:16px">
-    <thead><tr><th>Configuration</th><th style="text-align:right">p99 knee</th><th style="text-align:right">2s p99 SLA ceiling</th><th>vs fp8 baseline</th></tr></thead>
+    <thead><tr><th>Configuration</th><th style="text-align:right">shape knee</th><th style="text-align:right">2s SLA limit</th><th>vs fp8 baseline</th></tr></thead>
     <tbody>
       <tr style="opacity:0.5"><td>Best case, session always cached</td><td class="r">&gt;48c</td><td class="r">&gt;48c</td><td>upper bound</td></tr>
       <tr style="border-left:3px solid var(--cyan)"><td><strong>fp8 KV, no LMCache</strong></td><td class="r">14c</td><td class="r">~6c</td><td><strong>baseline</strong></td></tr>
@@ -1044,7 +1044,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
 
   <div data-phase="1">
     <div class="callout" style="margin-top:16px;font-size:18px">
-      32 GB LMCache roughly doubles the 2s p99 SLA ceiling: <strong>~6 concurrent sessions → ~14</strong>. 8 GB provides no measurable benefit because it is smaller than the eviction churn.
+      32 GB LMCache roughly doubles the 2s SLA limit: <strong>~6 concurrent sessions → ~14</strong>. 8 GB provides no measurable benefit because it is smaller than the eviction churn.
     </div>
   </div>
   <div class="presenter-notes">LMCache adds a CPU DRAM tier for evicted KV blocks. If the tier is too small, it becomes churn, not cache. If sized correctly, it turns full re-prefill into bounded reload latency and shifts the p99 knee right. The key message: offload capacity must exceed the eviction working set to provide any benefit.</div>
@@ -1084,8 +1084,8 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
     <!-- Evicted box -->
     <rect x="660" y="30" width="220" height="90" rx="10" fill="rgba(255,255,255,0.03)" stroke="var(--border)" stroke-width="1.5"/>
     <text x="770" y="60" fill="var(--text-muted)" font-family="var(--mono)" font-size="15" text-anchor="middle" font-weight="600">Evicted before reuse</text>
-    <text x="770" y="85" fill="var(--text-muted)" font-family="var(--font)" font-size="13" text-anchor="middle">RX reload: ~0 MB/s</text>
-    <text x="770" y="105" fill="var(--text-muted)" font-family="var(--font)" font-size="12" text-anchor="middle">(2.7-6.2 MB/s measured)</text>
+    <text x="770" y="85" fill="var(--text-muted)" font-family="var(--font)" font-size="13" text-anchor="middle">almost no useful reloads</text>
+    <text x="770" y="105" fill="var(--text-muted)" font-family="var(--mono)" font-size="12" text-anchor="middle">RX: 2.7-6.2 MB/s (baseline)</text>
 
     <!-- Arrow markers -->
     <defs>
@@ -1095,7 +1095,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
 
     <!-- Bottom callout -->
     <text x="450" y="165" fill="var(--yellow)" font-family="var(--mono)" font-size="18" text-anchor="middle" font-weight="700">Offload without reload is just churn.</text>
-    <text x="450" y="190" fill="var(--text-muted)" font-family="var(--font)" font-size="14" text-anchor="middle">340-425 MB/s out, ~0 MB/s back</text>
+    <text x="450" y="190" fill="var(--text-muted)" font-family="var(--font)" font-size="14" text-anchor="middle">340-425 MB/s out, 2.7-6.2 MB/s back (baseline-level)</text>
   </svg>
   <div class="presenter-notes">8 GB LMCache shows 340-425 MB/s TX offload GPU→CPU at 12-14c, but only 2.7-6.2 MB/s RX reload CPU→GPU. Blocks leave the GPU but are evicted from the 8 GB CPU tier before any session needs them again. The cache is busy but not useful. To get reuse, you need to size the offload tier to hold the eviction working set — 8 GB is not enough for this workload.</div>
 </section>
@@ -1138,7 +1138,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
   <h2 style="font-size:34px;letter-spacing:-0.02em">PCIe traffic: offload vs reload</h2>
   <p style="font-size:17px;color:var(--text-muted);margin-bottom:16px">TX (GPU&rarr;CPU offload) and RX (CPU&rarr;GPU reload) across LMCache tiers</p>
   <img src="site/assets/charts/lmcache-pcie-summary.svg" alt="PCIe TX offload and RX reload traffic across 0, 8, 16, and 32 GB LMCache tiers" style="width:100%;max-width:960px;display:block;margin:0 auto"/>
-  <div class="presenter-notes">Left panel: TX offload traffic. All tiers show similar offload rates at the same concurrency — blocks are pushed to CPU regardless of tier size. Right panel: RX reload traffic. 8 GB shows near-zero RX (churn). 16 GB and 32 GB show increasing RX, proving blocks survive long enough to be reloaded. The gap between TX and RX is wasted work.</div>
+  <div class="presenter-notes">TX shows blocks are being offloaded; RX shows whether they survive long enough to be reused. 8 GB shows near-zero RX (churn). 16 GB and 32 GB show increasing RX, proving blocks survive long enough to be reloaded. The gap between TX and RX is wasted work.</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
