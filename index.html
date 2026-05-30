@@ -1278,7 +1278,7 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
   </div>
   <div data-phase="2">
     <div class="callout warn" style="margin-top:12px">
-      <strong>4-bit caveat:</strong> KV quantization below fp8 can measurably impact output quality on reasoning and long-context tasks. fp8 is generally safe; 4-bit requires quality validation for your workload.
+      &#9888;&#65039; For illustrative purposes only. 4-bit may measurably impact output quality. Eval before using.
     </div>
   </div>
   <div class="presenter-notes">One config change, three different concurrency ceilings. fp16 to fp8 doubles capacity and moves the knee from ~8 to ~14. fp8 to 4-bit extends it to ~23. This is a systems lever, not an ML lever.</div>
