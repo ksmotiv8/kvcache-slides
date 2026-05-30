@@ -1095,12 +1095,12 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
   <table style="font-size:16px">
     <thead><tr><th>System</th><th>Metric</th><th>Result</th></tr></thead>
     <tbody>
-      <tr><td><strong style="color:var(--cyan)">NVIDIA Dynamo</strong></td><td>Throughput (Llama 70B, Hopper)</td><td class="r g">2x</td></tr>
-      <tr><td><strong style="color:var(--cyan)">Dynamo + Baseten</strong></td><td>TTFT (Qwen3 Coder 480B, production)</td><td class="r g">2x faster</td></tr>
-      <tr><td><strong style="color:var(--accent)">Splitwise</strong> (MSFT)</td><td>Throughput at same cost (A100/H100)</td><td class="r g">1.4x at 20% lower cost</td></tr>
-      <tr><td><strong style="color:var(--accent)">DistServe</strong> (OSDI '24)</td><td>Goodput vs vLLM (summarization)</td><td class="r g">4.48x</td></tr>
-      <tr><td><strong style="color:var(--yellow)">Mooncake</strong> (Kimi)</td><td>Request capacity (prod, 100B+ tok/day)</td><td class="r g">+107-498%</td></tr>
-      <tr><td><strong style="color:var(--yellow)">Moreh</strong> (MI300X)</td><td>p99 inter-token latency (DeepSeek-R1)</td><td class="r g">12-51x reduction</td></tr>
+      <tr><td><a href="https://github.com/ai-dynamo/dynamo" target="_blank" rel="noopener" style="color:var(--cyan);text-decoration:none"><strong>NVIDIA Dynamo</strong></a></td><td>Throughput (Llama 70B, Hopper)</td><td class="r g">2x</td></tr>
+      <tr><td><a href="https://www.baseten.co/blog/baseten-nvidia-dynamo/" target="_blank" rel="noopener" style="color:var(--cyan);text-decoration:none"><strong>Dynamo + Baseten</strong></a></td><td>TTFT (Qwen3 Coder 480B, production)</td><td class="r g">2x faster</td></tr>
+      <tr><td><a href="https://arxiv.org/abs/2311.18677" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none"><strong>Splitwise</strong> (MSFT)</a></td><td>Throughput at same cost (A100/H100)</td><td class="r g">1.4x at 20% lower cost</td></tr>
+      <tr><td><a href="https://arxiv.org/abs/2401.09670" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none"><strong>DistServe</strong> (OSDI '24)</a></td><td>Goodput vs vLLM (summarization)</td><td class="r g">4.48x</td></tr>
+      <tr><td><a href="https://arxiv.org/abs/2407.00079" target="_blank" rel="noopener" style="color:var(--yellow);text-decoration:none"><strong>Mooncake</strong> (Kimi)</a></td><td>Request capacity (prod, 100B+ tok/day)</td><td class="r g">+107-498%</td></tr>
+      <tr><td><a href="https://moreh.io/blog/moreh-mi300x-deepseek-r1" target="_blank" rel="noopener" style="color:var(--yellow);text-decoration:none"><strong>Moreh</strong> (MI300X)</a></td><td>p99 inter-token latency (DeepSeek-R1)</td><td class="r g">12-51x reduction</td></tr>
     </tbody>
   </table>
 
