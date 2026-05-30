@@ -1027,7 +1027,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
 
   <div data-phase="1">
     <ul style="font-size:20px">
-      <li>Router hashes the request's token blocks and queries a global <strong>KVIndexer</strong> (radix tree of cached prefixes across all workers)</li>
+      <li>Global <strong>KVIndexer</strong> (radix tree) at the router hashes request tokens to find cached prefixes</li>
       <li>Each worker's <strong>KVPublisher</strong> emits cache events (insertions, evictions) to update the index</li>
     </ul>
     <div class="callout" style="margin-top:16px;font-size:20px">
