@@ -160,6 +160,40 @@ body.notes-on .slide.current .presenter-notes {
   p, ul, ol { font-size: 17px; }
 }
 
+body.light-mode {
+  --bg: #ffffff;
+  --bg-alt: #f5f5f8;
+  --bg-card: rgba(0,0,0,0.04);
+  --border: rgba(0,0,0,0.12);
+  --text: #1a1a2e;
+  --text-dim: rgba(26,26,46,0.78);
+  --text-muted: rgba(26,26,46,0.55);
+  --cyan: #0e7490;
+  --accent: #4f46e5;
+  --green: #15803d;
+  --red: #dc2626;
+  --yellow: #a16207;
+}
+body.light-mode .slide:nth-child(even) { background: var(--bg-alt); }
+body.light-mode #nav button {
+  background: rgba(0,0,0,0.06); border-color: rgba(0,0,0,0.15);
+  color: var(--text-dim);
+}
+body.light-mode #nav button:hover { background: rgba(0,0,0,0.12); color: var(--text); }
+body.light-mode code { background: rgba(0,0,0,0.06); color: var(--accent); }
+body.light-mode .code-block { background: #f0f0f4; border-color: rgba(0,0,0,0.10); }
+body.light-mode .presenter-notes { background: rgba(255,255,255,0.96); border-top-color: var(--cyan); color: var(--text-dim); }
+body.light-mode .callout { background: rgba(0,0,0,0.03); }
+body.light-mode .big-number.red { color: var(--red); }
+body.light-mode img[src*="qr-"] { filter: none; }
+body.light-mode svg rect[fill*="rgba(130,140,248"] { fill: rgba(79,70,229,0.12); }
+body.light-mode svg rect[fill*="rgba(74,222,128"] { fill: rgba(21,128,61,0.12); }
+body.light-mode svg rect[fill*="rgba(34,211,238"] { fill: rgba(14,116,144,0.12); }
+body.light-mode svg rect[fill*="rgba(250,204,21"] { fill: rgba(161,98,7,0.10); }
+body.light-mode svg rect[fill*="rgba(248,113,113"] { fill: rgba(220,38,38,0.10); }
+body.light-mode svg rect[fill*="rgba(255,255,255,0.04)"],
+body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04); }
+
 @media print {
   body { background: #fff; color: #111; }
   .slide { min-height: auto; page-break-inside: avoid; padding: 40px; border-bottom: 1px solid #ccc; }
@@ -1455,6 +1489,9 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
     else if (e.key === 'p' || e.key === 'P') {
       document.body.classList.toggle('notes-on');
       notesInd.textContent = document.body.classList.contains('notes-on') ? 'P: notes on' : 'P: notes off';
+    }
+    else if (e.key === 'd' || e.key === 'D') {
+      document.body.classList.toggle('light-mode');
     }
   });
 
