@@ -704,70 +704,73 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE: Why prefix matching -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s10">
+<section class="slide" id="s10" data-build-phases="2">
   <span class="slide-num">10 / 26</span>
-  <h2>KV cache is position-dependent</h2>
+  <h2 style="margin-top:-10px">Why only prefix matching works</h2>
 
-  <p style="font-size:22px;margin-bottom:28px;color:var(--text-dim)">Each token's KV vectors encode <strong>everything before it</strong>. Change one token and every KV after it is invalid.</p>
+  <div class="two-col" style="gap:60px;align-items:start">
+    <div>
+      <!-- Causal attention mask: 4x4 lower-triangular grid -->
+      <svg viewBox="0 0 260 240" role="img" aria-label="Causal attention mask showing lower-triangular pattern: each token can only attend to itself and earlier tokens" style="width:100%;max-width:280px;height:auto">
+        <text x="130" y="18" fill="var(--text)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle" font-weight="600">Causal attention mask</text>
 
-  <svg viewBox="0 0 700 260" role="img" aria-label="Two token sequences showing cache hit when prefix matches and cache miss when tokens diverge" style="width:100%;max-width:720px;height:auto">
-    <!-- Cache HIT -->
-    <text x="10" y="22" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="14" font-weight="700">CACHE HIT</text>
-    <text x="10" y="42" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="12">Cached sequence:</text>
-    <rect x="10" y="50" width="60" height="32" rx="4" fill="rgba(74,222,128,0.15)" stroke="var(--green)" stroke-width="1.5"/>
-    <text x="40" y="71" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">The</text>
-    <rect x="76" y="50" width="60" height="32" rx="4" fill="rgba(74,222,128,0.15)" stroke="var(--green)" stroke-width="1.5"/>
-    <text x="106" y="71" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">cat</text>
-    <rect x="142" y="50" width="60" height="32" rx="4" fill="rgba(74,222,128,0.15)" stroke="var(--green)" stroke-width="1.5"/>
-    <text x="172" y="71" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">sat</text>
-    <rect x="208" y="50" width="60" height="32" rx="4" fill="rgba(74,222,128,0.15)" stroke="var(--green)" stroke-width="1.5"/>
-    <text x="238" y="71" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">on</text>
+        <!-- Column headers (keys) -->
+        <text x="78" y="42" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle">t0</text>
+        <text x="128" y="42" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle">t1</text>
+        <text x="178" y="42" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle">t2</text>
+        <text x="228" y="42" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle">t3</text>
 
-    <text x="10" y="106" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="12">New request:</text>
-    <rect x="10" y="114" width="60" height="32" rx="4" fill="rgba(74,222,128,0.15)" stroke="var(--green)" stroke-width="1.5"/>
-    <text x="40" y="135" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">The</text>
-    <rect x="76" y="114" width="60" height="32" rx="4" fill="rgba(74,222,128,0.15)" stroke="var(--green)" stroke-width="1.5"/>
-    <text x="106" y="135" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">cat</text>
-    <rect x="142" y="114" width="60" height="32" rx="4" fill="rgba(74,222,128,0.15)" stroke="var(--green)" stroke-width="1.5"/>
-    <text x="172" y="135" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">sat</text>
-    <rect x="208" y="114" width="60" height="32" rx="4" fill="rgba(74,222,128,0.15)" stroke="var(--green)" stroke-width="1.5"/>
-    <text x="238" y="135" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">on</text>
-    <rect x="274" y="114" width="60" height="32" rx="4" fill="rgba(130,140,248,0.15)" stroke="var(--accent)" stroke-width="2"/>
-    <text x="304" y="135" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" font-weight="700">the</text>
+        <!-- Row headers (queries) -->
+        <text x="36" y="74" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle">t0</text>
+        <text x="36" y="124" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle">t1</text>
+        <text x="36" y="174" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle">t2</text>
+        <text x="36" y="224" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle">t3</text>
 
-    <text x="360" y="135" fill="var(--green)" font-family="'Inter',sans-serif" font-size="14" font-weight="600">Reuse 4 KV vectors. Compute 1.</text>
+        <!-- Row 0: [yes] [no] [no] [no] -->
+        <rect x="56" y="50" width="44" height="44" rx="4" fill="rgba(74,222,128,0.25)" stroke="var(--green)" stroke-width="1.5"/>
+        <rect x="106" y="50" width="44" height="44" rx="4" fill="rgba(255,255,255,0.03)" stroke="var(--border)" stroke-width="1"/>
+        <rect x="156" y="50" width="44" height="44" rx="4" fill="rgba(255,255,255,0.03)" stroke="var(--border)" stroke-width="1"/>
+        <rect x="206" y="50" width="44" height="44" rx="4" fill="rgba(255,255,255,0.03)" stroke="var(--border)" stroke-width="1"/>
 
-    <!-- Divider -->
-    <line x1="0" y1="165" x2="700" y2="165" stroke="var(--border)" stroke-width="1"/>
+        <!-- Row 1: [yes] [yes] [no] [no] -->
+        <rect x="56" y="100" width="44" height="44" rx="4" fill="rgba(74,222,128,0.25)" stroke="var(--green)" stroke-width="1.5"/>
+        <rect x="106" y="100" width="44" height="44" rx="4" fill="rgba(74,222,128,0.25)" stroke="var(--green)" stroke-width="1.5"/>
+        <rect x="156" y="100" width="44" height="44" rx="4" fill="rgba(255,255,255,0.03)" stroke="var(--border)" stroke-width="1"/>
+        <rect x="206" y="100" width="44" height="44" rx="4" fill="rgba(255,255,255,0.03)" stroke="var(--border)" stroke-width="1"/>
 
-    <!-- Cache MISS -->
-    <text x="10" y="188" fill="var(--red)" font-family="'JetBrains Mono',monospace" font-size="14" font-weight="700">CACHE MISS</text>
-    <text x="10" y="208" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="12">Cached sequence:</text>
-    <rect x="10" y="216" width="60" height="32" rx="4" fill="rgba(74,222,128,0.15)" stroke="var(--green)" stroke-width="1.5"/>
-    <text x="40" y="237" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">The</text>
-    <rect x="76" y="216" width="60" height="32" rx="4" fill="rgba(74,222,128,0.15)" stroke="var(--green)" stroke-width="1.5"/>
-    <text x="106" y="237" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">cat</text>
-    <rect x="142" y="216" width="60" height="32" rx="4" fill="rgba(248,113,113,0.08)" stroke="var(--red)" stroke-width="1.5" stroke-dasharray="4 2"/>
-    <text x="172" y="237" fill="var(--red)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">sat</text>
-    <rect x="208" y="216" width="60" height="32" rx="4" fill="rgba(248,113,113,0.08)" stroke="var(--red)" stroke-width="1.5" stroke-dasharray="4 2"/>
-    <text x="238" y="237" fill="var(--red)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">on</text>
+        <!-- Row 2: [yes] [yes] [yes] [no] -->
+        <rect x="56" y="150" width="44" height="44" rx="4" fill="rgba(74,222,128,0.25)" stroke="var(--green)" stroke-width="1.5"/>
+        <rect x="106" y="150" width="44" height="44" rx="4" fill="rgba(74,222,128,0.25)" stroke="var(--green)" stroke-width="1.5"/>
+        <rect x="156" y="150" width="44" height="44" rx="4" fill="rgba(74,222,128,0.25)" stroke="var(--green)" stroke-width="1.5"/>
+        <rect x="206" y="150" width="44" height="44" rx="4" fill="rgba(255,255,255,0.03)" stroke="var(--border)" stroke-width="1"/>
 
-    <text x="10" y="270" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="12">New request:</text>
-    <rect x="10" y="278" width="60" height="32" rx="4" fill="rgba(74,222,128,0.15)" stroke="var(--green)" stroke-width="1.5"/>
-    <text x="40" y="299" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">The</text>
-    <rect x="76" y="278" width="60" height="32" rx="4" fill="rgba(74,222,128,0.15)" stroke="var(--green)" stroke-width="1.5"/>
-    <text x="106" y="299" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">cat</text>
-    <rect x="142" y="278" width="60" height="32" rx="4" fill="rgba(248,113,113,0.15)" stroke="var(--red)" stroke-width="2"/>
-    <text x="172" y="299" fill="var(--red)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" font-weight="700">ran</text>
-    <rect x="208" y="278" width="60" height="32" rx="4" fill="rgba(248,113,113,0.15)" stroke="var(--red)" stroke-width="2"/>
-    <text x="238" y="299" fill="var(--red)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" font-weight="700">to</text>
-    <rect x="274" y="278" width="60" height="32" rx="4" fill="rgba(248,113,113,0.15)" stroke="var(--red)" stroke-width="2"/>
-    <text x="304" y="299" fill="var(--red)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" font-weight="700">the</text>
+        <!-- Row 3: [yes] [yes] [yes] [yes] -->
+        <rect x="56" y="200" width="44" height="44" rx="4" fill="rgba(74,222,128,0.25)" stroke="var(--green)" stroke-width="1.5"/>
+        <rect x="106" y="200" width="44" height="44" rx="4" fill="rgba(74,222,128,0.25)" stroke="var(--green)" stroke-width="1.5"/>
+        <rect x="156" y="200" width="44" height="44" rx="4" fill="rgba(74,222,128,0.25)" stroke="var(--green)" stroke-width="1.5"/>
+        <rect x="206" y="200" width="44" height="44" rx="4" fill="rgba(74,222,128,0.25)" stroke="var(--green)" stroke-width="1.5"/>
+      </svg>
+    </div>
 
-    <text x="360" y="299" fill="var(--red)" font-family="'Inter',sans-serif" font-size="14" font-weight="600">Reuse 2. Recompute 3.</text>
-  </svg>
+    <div>
+      <p style="font-size:24px;line-height:1.7;margin-bottom:20px">Attention is <strong>causal</strong>. Each token only attends to tokens before it.</p>
+      <p style="font-size:24px;line-height:1.7;margin-bottom:20px">KV at position <em>i</em> is a function of tokens <strong>0..i</strong> through every layer.</p>
+      <p style="font-size:24px;line-height:1.7">Change one token &rarr; every KV <strong>after</strong> it is invalid.</p>
+    </div>
+  </div>
 
-  <div class="presenter-notes">Attention is causal — each token's KV vectors are a function of every token before it. If token 3 changes from "sat" to "ran", the KV for positions 3, 4, 5 are all different even if some later tokens happen to match. This is why it must be prefix matching: you can only reuse KV up to the first point of divergence.</div>
+  <div data-phase="1">
+    <div class="callout" style="margin-top:24px;font-size:22px">
+      <strong style="color:var(--cyan)">KV[i] = f(token_0, token_1, &hellip;, token_i)</strong><br/>
+      Reuse is only valid when the full prefix matches. No shortcuts.
+    </div>
+  </div>
+
+  <div data-phase="2">
+    <p style="font-size:22px;margin-top:16px;color:var(--text-dim)">This is why inference engines use <strong>prefix caching</strong> &mdash; match from the start, reuse up to the point of divergence, recompute the rest.</p>
+  </div>
+
+  <div class="presenter-notes">Transformers use causal (masked) self-attention. The attention mask is lower-triangular: token at position i can attend to positions 0..i but not i+1, i+2, etc. This means the hidden state at position i — and therefore the K and V projections cached for that position — encode the entire prefix 0..i. At each layer, K[i] and V[i] are projections of the hidden state, which was computed by attending over all prior hidden states from the layer below. Through the full layer stack, KV[i] becomes a function of every token from 0 to i. If you change token j where j < i, the hidden states at layer 1 for position j change, which changes attention outputs at position i in layer 1, which changes the hidden state fed to layer 2, and so on. The entire KV from position j onward is invalidated. This is why only prefix matching works — you can reuse KV up to the first point of divergence, but nothing after it.</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
