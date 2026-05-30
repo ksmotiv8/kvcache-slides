@@ -774,7 +774,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE: Prefix Caching -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s22" data-build-phases="1">
+<section class="slide" id="s25" data-build-phases="1">
   <span class="slide-num">11 / 27</span>
   <span class="section-tag">Prompt Anatomy</span>
   <h2>Prefix caching</h2>
@@ -934,7 +934,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
 
 <!-- SLIDE 12: vLLM vs SGLang tradeoffs -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s27">
+<section class="slide" id="s26">
   <span class="slide-num">13 / 27</span>
   <span class="section-tag">Prefix caching internals</span>
   <h2 style="font-size:36px;letter-spacing:-0.02em">vLLM vs SGLang: prefix approach tradeoffs</h2>
@@ -995,7 +995,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
 
 <!-- SLIDE 13: Memory tiers -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s24" data-build-phases="1">
+<section class="slide" id="s27" data-build-phases="1">
   <span class="slide-num">14 / 27</span>
   <span class="section-tag" style="margin-top:-20px">EXTENDING KV LIFETIME</span>
   <h2 style="margin-top:-4px">Tiered &amp; Remote Caching</h2>
@@ -1020,7 +1020,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE: Cache-Aware Routing -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s25" data-build-phases="2">
+<section class="slide" id="s24" data-build-phases="2">
   <span class="slide-num">15 / 27</span>
   <span class="section-tag">Optimizing Hit Rates</span>
   <h2 style="margin-bottom:16px"><a href="https://docs.nvidia.com/dynamo/latest/user-guides/kv-cache-aware-routing" target="_blank" rel="noopener" style="color:var(--text);text-decoration:none">Cache-aware routing in Dynamo</a></h2>
@@ -1110,7 +1110,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE: Load Leveling -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s26" data-build-phases="1">
+<section class="slide" id="s22" data-build-phases="1">
   <span class="slide-num">16 / 27</span>
   <span class="section-tag">Optimizing Hit Rates</span>
   <h2>Load Imbalance Creates Hot Spots</h2>
@@ -1139,93 +1139,13 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
   <div class="presenter-notes">The fundamental tension in KV-cache-aware routing. Mooncake's Conductor scheduler computes per-instance cost balancing cache locality (prefix match length via block hashing) and instance load (queue depth + estimated computation time). When a request must go to a suboptimal node for load reasons, that node proactively fetches KV from a shared distributed store ("hot-spot migration"). SGLang with Mooncake Store integration achieved 3.8x higher throughput and 46x lower TTFT on agentic workloads vs. no cache sharing. The common pattern: a weighted cost function with a tunable knob between cache affinity and load balance.</div>
 </section>
 
-<!-- ════════════════════════════════════════════════════════ -->
-<!-- SLIDE 12: Disaggregation -->
-<!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s12" data-build-phases="2">
-  <span class="slide-num">17 / 27</span>
-  <span class="section-tag">Disaggregation</span>
-  <h2 style="font-size:38px;letter-spacing:-0.02em">Decouple prefill from decode</h2>
-
-  <svg viewBox="0 0 900 160" role="img" aria-label="Architecture diagram showing prefill engine producing KV cache interface, which is read by the decode engine" style="width:100%;max-width:900px;height:auto;margin:20px 0">
-    <rect x="10" y="40" width="200" height="80" rx="10" fill="rgba(130,140,248,0.15)" stroke="var(--accent)" stroke-width="2"/>
-    <text x="110" y="72" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="14" font-weight="600" text-anchor="middle">PREFILL ENGINE</text>
-    <text x="110" y="96" fill="var(--text-dim)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">High-FLOPS hardware</text>
-
-    <line x1="220" y1="80" x2="350" y2="80" stroke="var(--cyan)" stroke-width="2" marker-end="url(#arrowCy)"/>
-    <text x="285" y="68" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" font-weight="600">KV write / transfer</text>
-
-    <rect x="360" y="24" width="180" height="112" rx="10" fill="rgba(34,211,238,0.12)" stroke="var(--cyan)" stroke-width="2"/>
-    <text x="450" y="52" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="13" font-weight="700" text-anchor="middle">KV CACHE</text>
-    <text x="450" y="68" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="13" font-weight="700" text-anchor="middle">INTERFACE</text>
-    <text x="450" y="92" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle">placement / routing</text>
-    <text x="450" y="108" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle">eviction / lifecycle</text>
-
-    <line x1="550" y1="80" x2="680" y2="80" stroke="var(--green)" stroke-width="2" marker-end="url(#arrowGr)"/>
-    <text x="615" y="68" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" font-weight="600">KV read</text>
-
-    <rect x="690" y="40" width="200" height="80" rx="10" fill="rgba(74,222,128,0.12)" stroke="var(--green)" stroke-width="2"/>
-    <text x="790" y="72" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="14" font-weight="600" text-anchor="middle">DECODE ENGINE</text>
-    <text x="790" y="96" fill="var(--text-dim)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">High-bandwidth memory</text>
-
-    <defs>
-      <marker id="arrowCy" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="var(--cyan)"/></marker>
-      <marker id="arrowGr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="var(--green)"/></marker>
-    </defs>
-  </svg>
-
-  <div data-phase="1">
-    <ul>
-      <li><strong>KV cache becomes the interface</strong> between prefill and decode</li>
-      <li><strong>Prefill produces KV; decode consumes it</strong></li>
-      <li>The system now needs <strong>placement, routing, eviction, and transfer</strong> across nodes</li>
-    </ul>
-    <p style="font-size:14px;color:var(--text-dim);margin-top:12px;font-style:italic">Similar to separating write and read paths in databases.</p>
-  </div>
-
-  <div class="presenter-notes">Disaggregation and KV caching are deeply linked. The KV cache IS the interface between prefill and decode. In a disaggregated architecture, it becomes a distributed object: prefill nodes produce it, decode nodes consume it, and the system must decide where to store it, when to evict it, how to transfer it, and which node should handle the next request. Industry direction: NVIDIA Dynamo, AWS Trainium prefill offload, Cerebras wafer-scale decode.</div>
-</section>
-
-<!-- ════════════════════════════════════════════════════════ -->
-<!-- SLIDE 11: Disaggregation: Benchmarks -->
-<!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s13" data-build-phases="2">
-  <span class="slide-num">18 / 27</span>
-  <h2 style="margin-top:-10px">Disaggregation: Benchmarks</h2>
-  <p style="font-size:17px;color:var(--text-muted);margin-bottom:8px">Prefill is compute-bound (90-95% GPU utilization). Decode is memory-bound (20-40%). Running both on the same GPU wastes whichever resource isn't the bottleneck.</p>
-
-  <table style="font-size:16px">
-    <thead><tr><th>System</th><th>Metric</th><th>Result</th></tr></thead>
-    <tbody>
-      <tr><td><a href="https://github.com/ai-dynamo/dynamo" target="_blank" rel="noopener" style="color:var(--cyan);text-decoration:none"><strong>NVIDIA Dynamo</strong></a></td><td>Throughput (Llama 70B, Hopper)</td><td class="r g">2x</td></tr>
-      <tr><td><a href="https://www.baseten.co/blog/baseten-nvidia-dynamo/" target="_blank" rel="noopener" style="color:var(--cyan);text-decoration:none"><strong>Dynamo + Baseten</strong></a></td><td>TTFT (Qwen3 Coder 480B, production)</td><td class="r g">2x faster</td></tr>
-      <tr><td><a href="https://arxiv.org/abs/2311.18677" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none"><strong>Splitwise</strong> (MSFT)</a></td><td>Throughput at same cost (A100/H100)</td><td class="r g">1.4x at 20% lower cost</td></tr>
-      <tr><td><a href="https://arxiv.org/abs/2401.09670" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none"><strong>DistServe</strong> (OSDI '24)</a></td><td>Goodput vs vLLM (summarization)</td><td class="r g">4.48x</td></tr>
-      <tr><td><a href="https://arxiv.org/abs/2407.00079" target="_blank" rel="noopener" style="color:var(--yellow);text-decoration:none"><strong>Mooncake</strong> (Kimi)</a></td><td>Request capacity (prod, 100B+ tok/day)</td><td class="r g">+107-498%</td></tr>
-      <tr><td><a href="https://moreh.io/blog/moreh-mi300x-deepseek-r1" target="_blank" rel="noopener" style="color:var(--yellow);text-decoration:none"><strong>Moreh</strong> (MI300X)</a></td><td>p99 inter-token latency (DeepSeek-R1)</td><td class="r g">12-51x reduction</td></tr>
-    </tbody>
-  </table>
-
-  <div data-phase="1">
-    <div class="callout" style="margin-top:16px">
-      Prefill and decode have fundamentally different hardware profiles. Decoupling allows you to scale them independently.
-    </div>
-  </div>
-
-  <div data-phase="2">
-    <div class="callout warn" style="margin-top:12px">
-      <strong style="color:var(--cyan)">Input:Output Ratio</strong> is the key metric for independent scaling.
-    </div>
-  </div>
-  <div class="presenter-notes">Every major inference system has converged on disaggregation: Dynamo, llm-d, SGLang, vLLM, Mooncake, DistServe. The Splitwise numbers are the cleanest: prefill achieves 90-95% GPU compute utilization at 200-400 ops/byte, while decode gets only 20-40% at 60-80 ops/byte. Running both on the same GPU wastes compute during decode and bandwidth during prefill. The 27ms KV transfer cost of disaggregation replaces 200-500ms of queuing delay from prefill-decode interference. Not all workloads benefit equally, but for long-context and reasoning workloads, the data is unambiguous.</div>
-</section>
 
 
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 13: The Experiment -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s14">
-  <span class="slide-num">19 / 27</span>
+  <span class="slide-num">17 / 27</span>
   <span class="section-tag">The experiment</span>
   <h2>Benchmark setup</h2>
 
@@ -1264,7 +1184,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
 <!-- SLIDE 14: Before the cliff -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s15">
-  <span class="slide-num">20 / 27</span>
+  <span class="slide-num">18 / 27</span>
   <span class="section-tag">The experiment</span>
   <h2>At 12 sessions, it still looks fine</h2>
 
@@ -1293,7 +1213,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
 <!-- SLIDE 15: p50 vs p99 contrast -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s16">
-  <span class="slide-num">21 / 27</span>
+  <span class="slide-num">19 / 27</span>
   <span class="section-tag">The experiment</span>
   <h2>Now add two more sessions</h2>
 
@@ -1322,7 +1242,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
 <!-- SLIDE 16: The Cliff Chart -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s17">
-  <span class="slide-num">22 / 27</span>
+  <span class="slide-num">20 / 27</span>
   <span class="section-tag">The experiment</span>
   <h2>The concurrency cliff</h2>
   <p style="font-size:17px;color:var(--text-muted);margin-bottom:4px"><strong>Qwen3-4B FP8</strong> on <strong>1x NVIDIA L4 (24 GB)</strong>, vLLM 0.20.2, APC enabled</p>
@@ -1387,7 +1307,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
 <!-- SLIDE 15: Predict the concurrency knee -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s18" data-build-phases="2">
-  <span class="slide-num">23 / 27</span>
+  <span class="slide-num">21 / 27</span>
   <span class="section-tag">The systems lesson</span>
   <h2>Predict the concurrency knee</h2>
 
@@ -1414,7 +1334,7 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
 <!-- SLIDE 19: Quantization Moves the Knee -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s19" data-build-phases="2">
-  <span class="slide-num">24 / 27</span>
+  <span class="slide-num">22 / 27</span>
   <span class="section-tag">The systems lesson</span>
   <h2>One flag, 75% more headroom</h2>
   <p style="font-size:17px;color:var(--text-muted);margin-bottom:4px"><strong>Qwen3-4B</strong> on <strong>1x NVIDIA L4 (24 GB)</strong>, vLLM 0.20.2</p>
@@ -1475,7 +1395,7 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
 <!-- SLIDE 20: Best/Worst/Realistic -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s20" data-build-phases="2">
-  <span class="slide-num">25 / 27</span>
+  <span class="slide-num">23 / 27</span>
   <span class="section-tag">The systems lesson</span>
   <h2>The cost of cache misses</h2>
   <p style="font-size:17px;color:var(--text-muted);margin-bottom:8px"><strong>Qwen3-4B FP8</strong> on <strong>1x NVIDIA L4 (24 GB)</strong>, vLLM 0.20.2, APC enabled</p>
@@ -1506,7 +1426,7 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
 <!-- SLIDE 21: Same GPU Different Workloads -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s21" data-build-phases="1">
-  <span class="slide-num">26 / 27</span>
+  <span class="slide-num">24 / 27</span>
   <span class="section-tag">The systems lesson</span>
   <h2>The knee is workload-specific</h2>
   <p style="font-size:17px;color:var(--text-muted);margin-bottom:8px"><strong>Qwen3-4B FP8</strong> on <strong>1x NVIDIA L4 (24 GB)</strong>, formula: <code>(kv_capacity - shared_prefix) / per_session_unique</code></p>
@@ -1531,6 +1451,87 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
 
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 24: Tiered KV Storage -->
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- SLIDE 12: Disaggregation -->
+<!-- ════════════════════════════════════════════════════════ -->
+<section class="slide" id="s12" data-build-phases="2">
+  <span class="slide-num">25 / 27</span>
+  <span class="section-tag">Disaggregation</span>
+  <h2 style="font-size:38px;letter-spacing:-0.02em">Decouple prefill from decode</h2>
+
+  <svg viewBox="0 0 900 160" role="img" aria-label="Architecture diagram showing prefill engine producing KV cache interface, which is read by the decode engine" style="width:100%;max-width:900px;height:auto;margin:20px 0">
+    <rect x="10" y="40" width="200" height="80" rx="10" fill="rgba(130,140,248,0.15)" stroke="var(--accent)" stroke-width="2"/>
+    <text x="110" y="72" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="14" font-weight="600" text-anchor="middle">PREFILL ENGINE</text>
+    <text x="110" y="96" fill="var(--text-dim)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">High-FLOPS hardware</text>
+
+    <line x1="220" y1="80" x2="350" y2="80" stroke="var(--cyan)" stroke-width="2" marker-end="url(#arrowCy)"/>
+    <text x="285" y="68" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" font-weight="600">KV write / transfer</text>
+
+    <rect x="360" y="24" width="180" height="112" rx="10" fill="rgba(34,211,238,0.12)" stroke="var(--cyan)" stroke-width="2"/>
+    <text x="450" y="52" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="13" font-weight="700" text-anchor="middle">KV CACHE</text>
+    <text x="450" y="68" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="13" font-weight="700" text-anchor="middle">INTERFACE</text>
+    <text x="450" y="92" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle">placement / routing</text>
+    <text x="450" y="108" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="11" text-anchor="middle">eviction / lifecycle</text>
+
+    <line x1="550" y1="80" x2="680" y2="80" stroke="var(--green)" stroke-width="2" marker-end="url(#arrowGr)"/>
+    <text x="615" y="68" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" font-weight="600">KV read</text>
+
+    <rect x="690" y="40" width="200" height="80" rx="10" fill="rgba(74,222,128,0.12)" stroke="var(--green)" stroke-width="2"/>
+    <text x="790" y="72" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="14" font-weight="600" text-anchor="middle">DECODE ENGINE</text>
+    <text x="790" y="96" fill="var(--text-dim)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">High-bandwidth memory</text>
+
+    <defs>
+      <marker id="arrowCy" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="var(--cyan)"/></marker>
+      <marker id="arrowGr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="var(--green)"/></marker>
+    </defs>
+  </svg>
+
+  <div data-phase="1">
+    <ul>
+      <li><strong>KV cache becomes the interface</strong> between prefill and decode</li>
+      <li><strong>Prefill produces KV; decode consumes it</strong></li>
+      <li>The system now needs <strong>placement, routing, eviction, and transfer</strong> across nodes</li>
+    </ul>
+    <p style="font-size:14px;color:var(--text-dim);margin-top:12px;font-style:italic">Similar to separating write and read paths in databases.</p>
+  </div>
+
+  <div class="presenter-notes">Disaggregation and KV caching are deeply linked. The KV cache IS the interface between prefill and decode. In a disaggregated architecture, it becomes a distributed object: prefill nodes produce it, decode nodes consume it, and the system must decide where to store it, when to evict it, how to transfer it, and which node should handle the next request. Industry direction: NVIDIA Dynamo, AWS Trainium prefill offload, Cerebras wafer-scale decode.</div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- SLIDE 11: Disaggregation: Benchmarks -->
+<!-- ════════════════════════════════════════════════════════ -->
+<section class="slide" id="s13" data-build-phases="2">
+  <span class="slide-num">26 / 27</span>
+  <h2 style="margin-top:-10px">Disaggregation: Benchmarks</h2>
+  <p style="font-size:17px;color:var(--text-muted);margin-bottom:8px">Prefill is compute-bound (90-95% GPU utilization). Decode is memory-bound (20-40%). Running both on the same GPU wastes whichever resource isn't the bottleneck.</p>
+
+  <table style="font-size:16px">
+    <thead><tr><th>System</th><th>Metric</th><th>Result</th></tr></thead>
+    <tbody>
+      <tr><td><a href="https://github.com/ai-dynamo/dynamo" target="_blank" rel="noopener" style="color:var(--cyan);text-decoration:none"><strong>NVIDIA Dynamo</strong></a></td><td>Throughput (Llama 70B, Hopper)</td><td class="r g">2x</td></tr>
+      <tr><td><a href="https://www.baseten.co/blog/baseten-nvidia-dynamo/" target="_blank" rel="noopener" style="color:var(--cyan);text-decoration:none"><strong>Dynamo + Baseten</strong></a></td><td>TTFT (Qwen3 Coder 480B, production)</td><td class="r g">2x faster</td></tr>
+      <tr><td><a href="https://arxiv.org/abs/2311.18677" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none"><strong>Splitwise</strong> (MSFT)</a></td><td>Throughput at same cost (A100/H100)</td><td class="r g">1.4x at 20% lower cost</td></tr>
+      <tr><td><a href="https://arxiv.org/abs/2401.09670" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none"><strong>DistServe</strong> (OSDI '24)</a></td><td>Goodput vs vLLM (summarization)</td><td class="r g">4.48x</td></tr>
+      <tr><td><a href="https://arxiv.org/abs/2407.00079" target="_blank" rel="noopener" style="color:var(--yellow);text-decoration:none"><strong>Mooncake</strong> (Kimi)</a></td><td>Request capacity (prod, 100B+ tok/day)</td><td class="r g">+107-498%</td></tr>
+      <tr><td><a href="https://moreh.io/blog/moreh-mi300x-deepseek-r1" target="_blank" rel="noopener" style="color:var(--yellow);text-decoration:none"><strong>Moreh</strong> (MI300X)</a></td><td>p99 inter-token latency (DeepSeek-R1)</td><td class="r g">12-51x reduction</td></tr>
+    </tbody>
+  </table>
+
+  <div data-phase="1">
+    <div class="callout" style="margin-top:16px">
+      Prefill and decode have fundamentally different hardware profiles. Decoupling allows you to scale them independently.
+    </div>
+  </div>
+
+  <div data-phase="2">
+    <div class="callout warn" style="margin-top:12px">
+      <strong style="color:var(--cyan)">Input:Output Ratio</strong> is the key metric for independent scaling.
+    </div>
+  </div>
+  <div class="presenter-notes">Every major inference system has converged on disaggregation: Dynamo, llm-d, SGLang, vLLM, Mooncake, DistServe. The Splitwise numbers are the cleanest: prefill achieves 90-95% GPU compute utilization at 200-400 ops/byte, while decode gets only 20-40% at 60-80 ops/byte. Running both on the same GPU wastes compute during decode and bandwidth during prefill. The 27ms KV transfer cost of disaggregation replaces 200-500ms of queuing delay from prefill-decode interference. Not all workloads benefit equally, but for long-context and reasoning workloads, the data is unambiguous.</div>
+</section>
 
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- ════════════════════════════════════════════════════════ -->
