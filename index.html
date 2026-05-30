@@ -1051,10 +1051,29 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
+<!-- SLIDE: p99 chart (visual payoff after the table) -->
+<!-- ════════════════════════════════════════════════════════ -->
+<section class="slide" id="s24" data-build-phases="2">
+  <span class="slide-num">16 / 33</span>
+  <span class="section-tag">EXTENDING KV LIFETIME</span>
+  <h2 style="font-size:38px;letter-spacing:-0.02em">Bigger tier, later knee</h2>
+
+  <img src="site/assets/charts/lmcache-ttft-summary.svg" alt="p99 TTFT vs concurrent sessions for 0, 8, 16, and 32 GB LMCache tiers" style="width:100%;max-width:960px;display:block;margin:8px auto 0"/>
+
+  <div data-phase="1">
+    <p style="font-size:22px;margin-top:16px"><strong style="color:var(--cyan)">0 GB</strong> and <strong style="color:var(--red)">8 GB</strong> cliff at 14 sessions.</p>
+  </div>
+  <div data-phase="2">
+    <p style="font-size:22px;margin-top:8px"><strong style="color:var(--green)">32 GB</strong> pushes the knee to 28.</p>
+  </div>
+  <div class="presenter-notes">Let the chart land first. Phase 1: point out the 0 GB and 8 GB lines overlapping and cliffing together at C=14. Phase 2: 32 GB pushes the knee to C=28. The visual makes the knee shift obvious in a way the table alone doesn't.</div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE B: Churn vs cache -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s24">
-  <span class="slide-num">16 / 33</span>
+<section class="slide" id="s30">
+  <span class="slide-num">17 / 33</span>
   <span class="section-tag">EXTENDING KV LIFETIME</span>
   <h2 style="font-size:36px;letter-spacing:-0.02em">8 GB CPU cache is too small to help</h2>
 
@@ -1103,8 +1122,8 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE C: Offload changes the failure mode -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s30" data-build-phases="1">
-  <span class="slide-num">17 / 33</span>
+<section class="slide" id="s26" data-build-phases="1">
+  <span class="slide-num">18 / 33</span>
   <span class="section-tag">EXTENDING KV LIFETIME</span>
   <h2 style="font-size:34px;letter-spacing:-0.02em">Offload changes the failure mode</h2>
 
@@ -1127,18 +1146,6 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
     </div>
   </div>
   <div class="presenter-notes">The failure mode shifts from bimodal (some sessions get 1s, others get 39s) to more uniform degradation. At 14c, p99 drops 5x with 32 GB LMCache. At higher concurrencies (32c, 48c), the p99 improvement is still significant but median rises because more sessions pay reload overhead. The system degrades gracefully instead of cliff-diving.</div>
-</section>
-
-<!-- ════════════════════════════════════════════════════════ -->
-<!-- SLIDE: TTFT Summary Chart -->
-<!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s26">
-  <span class="slide-num">18 / 33</span>
-  <span class="section-tag">EXTENDING KV LIFETIME</span>
-  <h2 style="font-size:36px;letter-spacing:-0.02em">Bigger offload tier, later knee</h2>
-  <p style="font-size:18px;color:var(--text-muted);margin-bottom:16px">p99 TTFT vs concurrent sessions across LMCache CPU offload tiers</p>
-  <img src="site/assets/charts/lmcache-ttft-summary.svg" alt="TTFT p50 and p99 vs concurrent sessions for 0, 8, 16, and 32 GB LMCache tiers" style="width:100%;max-width:960px;display:block;margin:0 auto"/>
-  <div class="presenter-notes">The full TTFT picture across all four LMCache tiers. Left panel is p50, right is p99. The 2s target line shows where SLA compliance breaks. Key takeaway: 8 GB provides no benefit over baseline; 16 GB shifts the knee modestly; 32 GB roughly doubles the SLA ceiling.</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
