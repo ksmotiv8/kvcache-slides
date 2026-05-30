@@ -1020,28 +1020,71 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE: Cache-Aware Routing -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s25" data-build-phases="2">
+<section class="slide" id="s25" data-build-phases="3">
   <span class="slide-num">15 / 27</span>
   <span class="section-tag">Optimizing Hit Rates</span>
-  <h2 style="margin-bottom:32px"><a href="https://docs.nvidia.com/dynamo/latest/user-guides/kv-cache-aware-routing" target="_blank" rel="noopener" style="color:var(--text);text-decoration:none">Cache-aware routing in Dynamo</a></h2>
+  <h2 style="margin-bottom:16px"><a href="https://docs.nvidia.com/dynamo/latest/user-guides/kv-cache-aware-routing" target="_blank" rel="noopener" style="color:var(--text);text-decoration:none">Cache-aware routing in Dynamo</a></h2>
 
   <div data-phase="1">
+    <svg viewBox="0 0 900 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:920px;height:auto;display:block;margin:0 auto" role="img" aria-label="Diagram comparing round-robin routing (cache miss) vs KV-aware routing (cache hit) across 8 replicas">
+      <!-- Dashed divider -->
+      <line x1="450" y1="8" x2="450" y2="192" stroke="var(--border)" stroke-width="1" stroke-dasharray="4,4"/>
+
+      <!-- LEFT: Without KV routing -->
+      <text x="205" y="22" fill="var(--red)" font-family="var(--mono)" font-size="14" font-weight="700" text-anchor="middle" letter-spacing="0.08em">WITHOUT KV ROUTING</text>
+      <text x="205" y="40" fill="var(--text-muted)" font-family="var(--font)" font-size="11" text-anchor="middle">Request #2 sent to random replica</text>
+      <rect x="22" y="52" width="366" height="100" rx="5" fill="none" stroke="var(--border)" stroke-width="1"/>
+      <text x="205" y="67" fill="var(--text-muted)" font-family="var(--mono)" font-size="10" text-anchor="middle" letter-spacing="0.08em">CLUSTER</text>
+      <!-- Row 1 -->
+      <rect x="32" y="75" width="82" height="28" rx="3" fill="none" stroke="var(--border)" stroke-width="1"/><text x="73" y="93" fill="var(--text-dim)" font-family="var(--mono)" font-size="11" text-anchor="middle">R01</text>
+      <rect x="120" y="75" width="82" height="28" rx="3" fill="rgba(248,113,113,0.15)" stroke="var(--red)" stroke-width="2"/><text x="161" y="93" fill="var(--text)" font-family="var(--mono)" font-size="11" font-weight="600" text-anchor="middle">R02</text>
+      <rect x="208" y="75" width="82" height="28" rx="3" fill="none" stroke="var(--border)" stroke-width="1"/><text x="249" y="93" fill="var(--text-dim)" font-family="var(--mono)" font-size="11" text-anchor="middle">R03</text>
+      <rect x="296" y="75" width="82" height="28" rx="3" fill="none" stroke="var(--border)" stroke-width="1"/><text x="337" y="93" fill="var(--text-dim)" font-family="var(--mono)" font-size="11" text-anchor="middle">R04</text>
+      <!-- Row 2 -->
+      <rect x="32" y="109" width="82" height="28" rx="3" fill="none" stroke="var(--border)" stroke-width="1"/><text x="73" y="127" fill="var(--text-dim)" font-family="var(--mono)" font-size="11" text-anchor="middle">R05</text>
+      <rect x="120" y="109" width="82" height="28" rx="3" fill="none" stroke="var(--border)" stroke-width="1"/><text x="161" y="127" fill="var(--text-dim)" font-family="var(--mono)" font-size="11" text-anchor="middle">R06</text>
+      <rect x="208" y="109" width="82" height="28" rx="3" fill="none" stroke="var(--border)" stroke-width="1"/><text x="249" y="127" fill="var(--text-dim)" font-family="var(--mono)" font-size="11" text-anchor="middle">R07</text>
+      <rect x="296" y="109" width="82" height="28" rx="3" fill="none" stroke="var(--cyan)" stroke-width="1" stroke-dasharray="4,2"/><text x="330" y="127" fill="var(--text-muted)" font-family="var(--mono)" font-size="11" text-anchor="middle">R08</text><text x="367" y="120" fill="var(--cyan)" font-family="var(--mono)" font-size="7" font-weight="700">KV</text>
+      <text x="205" y="178" fill="var(--red)" font-family="var(--mono)" font-size="13" font-weight="700" text-anchor="middle">CACHE MISS &#x2192; FULL RE-PREFILL</text>
+
+      <!-- RIGHT: With KV routing -->
+      <text x="695" y="22" fill="var(--green)" font-family="var(--mono)" font-size="14" font-weight="700" text-anchor="middle" letter-spacing="0.08em">WITH KV ROUTING</text>
+      <text x="695" y="40" fill="var(--text-muted)" font-family="var(--font)" font-size="11" text-anchor="middle">Request #2 sent to replica with cached KV</text>
+      <rect x="512" y="52" width="366" height="100" rx="5" fill="none" stroke="var(--border)" stroke-width="1"/>
+      <text x="695" y="67" fill="var(--text-muted)" font-family="var(--mono)" font-size="10" text-anchor="middle" letter-spacing="0.08em">CLUSTER</text>
+      <!-- Row 1 -->
+      <rect x="522" y="75" width="82" height="28" rx="3" fill="none" stroke="var(--border)" stroke-width="1"/><text x="563" y="93" fill="var(--text-dim)" font-family="var(--mono)" font-size="11" text-anchor="middle">R01</text>
+      <rect x="610" y="75" width="82" height="28" rx="3" fill="none" stroke="var(--border)" stroke-width="1"/><text x="651" y="93" fill="var(--text-dim)" font-family="var(--mono)" font-size="11" text-anchor="middle">R02</text>
+      <rect x="698" y="75" width="82" height="28" rx="3" fill="none" stroke="var(--border)" stroke-width="1"/><text x="739" y="93" fill="var(--text-dim)" font-family="var(--mono)" font-size="11" text-anchor="middle">R03</text>
+      <rect x="786" y="75" width="82" height="28" rx="3" fill="none" stroke="var(--border)" stroke-width="1"/><text x="827" y="93" fill="var(--text-dim)" font-family="var(--mono)" font-size="11" text-anchor="middle">R04</text>
+      <!-- Row 2 -->
+      <rect x="522" y="109" width="82" height="28" rx="3" fill="none" stroke="var(--border)" stroke-width="1"/><text x="563" y="127" fill="var(--text-dim)" font-family="var(--mono)" font-size="11" text-anchor="middle">R05</text>
+      <rect x="610" y="109" width="82" height="28" rx="3" fill="none" stroke="var(--border)" stroke-width="1"/><text x="651" y="127" fill="var(--text-dim)" font-family="var(--mono)" font-size="11" text-anchor="middle">R06</text>
+      <rect x="698" y="109" width="82" height="28" rx="3" fill="none" stroke="var(--border)" stroke-width="1"/><text x="739" y="127" fill="var(--text-dim)" font-family="var(--mono)" font-size="11" text-anchor="middle">R07</text>
+      <rect x="786" y="109" width="82" height="28" rx="3" fill="rgba(74,222,128,0.2)" stroke="var(--green)" stroke-width="2"/><text x="827" y="127" fill="var(--text)" font-family="var(--mono)" font-size="11" font-weight="600" text-anchor="middle">R08</text>
+      <text x="695" y="178" fill="var(--green)" font-family="var(--mono)" font-size="13" font-weight="700" text-anchor="middle">CACHE HIT &#x2192; SKIP PREFILL</text>
+
+      <!-- Credit -->
+      <text x="900" y="198" fill="var(--text-muted)" font-family="var(--font)" font-size="8" text-anchor="end" opacity="0.6">Adapted from baseten.co</text>
+    </svg>
+  </div>
+
+  <div data-phase="2">
     <ul style="font-size:28px;line-height:1.8;margin-bottom:28px">
-      <li>Global <strong>KVIndexer</strong> (radix tree) at the router hashes request tokens to find cached prefixes</li>
-      <li>Each worker's <strong>KVPublisher</strong> emits cache events (insertions, evictions) to update the index</li>
+      <li>Global <strong>KVIndexer</strong> (radix tree) at the router</li>
+      <li><strong>KVPublisher</strong> at each worker emits cache events to update index</li>
     </ul>
     <div class="callout" style="font-size:28px;padding:24px 32px">
       <code style="font-size:28px">cost = overlap_weight * prefill_blocks + decode_load</code>
     </div>
   </div>
 
-  <div data-phase="2">
-    <div class="callout" style="margin-top:24px;font-size:26px;padding:24px 32px;display:flex;align-items:center;gap:24px">
-      <div style="flex:1"><strong style="color:var(--cyan)">Result (<a href="https://www.baseten.co/blog/how-baseten-achieved-2x-faster-inference-with-nvidia-dynamo/" target="_blank" rel="noopener" style="color:var(--cyan)">Baseten</a>):</strong> 20x faster TTFT and 4x faster end-to-end latency vs. round-robin routing.</div>
-      <a href="https://www.baseten.co/blog/how-baseten-achieved-2x-faster-inference-with-nvidia-dynamo/" target="_blank" rel="noopener" style="flex-shrink:0"><img src="qr-baseten-dynamo.svg" alt="QR: Baseten Dynamo blog" style="width:100px;height:100px;filter:invert(1);display:block"/></a>
+  <div data-phase="3">
+    <div style="margin-top:24px;text-align:center">
+      <a href="https://www.baseten.co/blog/how-baseten-achieved-2x-faster-inference-with-nvidia-dynamo/" target="_blank" rel="noopener" style="display:inline-block"><img src="qr-baseten-dynamo.svg" alt="QR: Baseten Dynamo blog" style="width:120px;height:120px;filter:invert(1);display:block"/></a>
     </div>
   </div>
-  <div class="presenter-notes">Dynamo's router tokenizes each request, partitions tokens into fixed-size blocks, hashes them, and compares against a global prefix tree (the KVIndexer). The cost function balances cache overlap against current decode load. The key tunable is --router-kv-overlap-score-weight: high values favor cache hits (lower TTFT), setting it to 0 falls back to pure load balancing. Similar approaches: SGLang RadixAttention with prefix-aware routing, vLLM's Rust-based router with consistent hashing, Red Hat llm-d with KV-cache-aware routing. Docs: https://docs.nvidia.com/dynamo/latest/user-guides/kv-cache-aware-routing</div>
+  <div class="presenter-notes">Result (Baseten): 20x faster TTFT and 4x faster end-to-end latency vs. round-robin routing. Dynamo's router tokenizes each request, partitions tokens into fixed-size blocks, hashes them, and compares against a global prefix tree (the KVIndexer). The cost function balances cache overlap against current decode load. The key tunable is --router-kv-overlap-score-weight: high values favor cache hits (lower TTFT), setting it to 0 falls back to pure load balancing. Similar approaches: SGLang RadixAttention with prefix-aware routing, vLLM's Rust-based router with consistent hashing, Red Hat llm-d with KV-cache-aware routing. Diagram adapted from Baseten blog: https://www.baseten.co/blog/how-baseten-achieved-2x-faster-inference-with-nvidia-dynamo/</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
