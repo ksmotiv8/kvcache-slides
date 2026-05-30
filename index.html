@@ -1023,12 +1023,9 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
 <section class="slide" id="s25" data-build-phases="2">
   <span class="slide-num">15 / 27</span>
   <span class="section-tag">Optimizing Hit Rates</span>
-  <h2>Cache-aware routing</h2>
+  <h2><a href="https://docs.nvidia.com/dynamo/latest/user-guides/kv-cache-aware-routing" target="_blank" rel="noopener" style="color:var(--text);text-decoration:none">Cache-aware routing in Dynamo</a></h2>
 
   <div data-phase="1">
-    <p style="font-size:22px;margin-bottom:16px">Route each request to the worker that already holds its KV prefix. Otherwise you pay full re-prefill on a cold node.</p>
-
-    <h3 style="color:var(--cyan);font-size:24px"><a href="https://docs.nvidia.com/dynamo/latest/user-guides/kv-cache-aware-routing" target="_blank" rel="noopener" style="color:var(--cyan);text-decoration:none">NVIDIA Dynamo</a></h3>
     <ul style="font-size:20px">
       <li>Router hashes the request's token blocks and queries a global <strong>KVIndexer</strong> (radix tree of cached prefixes across all workers)</li>
       <li>Each worker's <strong>KVPublisher</strong> emits cache events (insertions, evictions) to keep the index current</li>
