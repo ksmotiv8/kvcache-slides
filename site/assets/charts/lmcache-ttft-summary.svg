@@ -17,13 +17,6 @@
   .an{fill:rgba(240,240,244,0.8)}
   .gr{stroke:rgba(240,240,244,0.06)}
   .ax{stroke:rgba(240,240,244,0.15)}
-  @media(prefers-color-scheme:light){
-    .title,.pt{fill:#1a1a2e}
-    .sub,.al,.at,.lg{fill:rgba(26,26,46,0.6)}
-    .an{fill:rgba(26,26,46,0.8)}
-    .gr{stroke:rgba(26,26,46,0.08)}
-    .ax{stroke:rgba(26,26,46,0.2)}
-  }
 </style>
 <rect width="1200" height="510" fill="transparent"/>
 <text x="600" y="22" class="t title" text-anchor="middle">LMCache CPU KV offload shifts the p99 knee only when sized large enough</text>

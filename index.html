@@ -889,7 +889,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
         <text x="115" y="100" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">2,048 tokens</text>
 
         <!-- Annotation below system prompt -->
-        <text x="115" y="186" fill="var(--green)" font-family="'Inter',sans-serif" font-size="9" text-anchor="middle" font-style="italic" opacity="0.8">shared prefix — stored once</text>
+        <text x="115" y="186" fill="var(--green)" font-family="'Inter',sans-serif" font-size="9" text-anchor="middle" font-style="italic" opacity="0.8">shared prefix, stored once</text>
 
         <!-- ═══ TIER 2b: other prefix (right side, slightly brighter) ═══ -->
         <rect x="240" y="62" width="90" height="48" rx="6" fill="rgba(74,222,128,0.08)" stroke="var(--green)" stroke-width="1.2" opacity="0.7"/>
@@ -1073,7 +1073,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
     <!-- 8 GB CPU Cache box -->
     <rect x="340" y="30" width="220" height="90" rx="10" fill="rgba(248,113,113,0.08)" stroke="var(--red)" stroke-width="2" stroke-dasharray="6,3"/>
     <text x="450" y="60" fill="var(--red)" font-family="var(--mono)" font-size="16" text-anchor="middle" font-weight="700">8 GB CPU Cache</text>
-    <text x="450" y="82" fill="var(--text-muted)" font-family="var(--font)" font-size="13" text-anchor="middle">too small — blocks evicted</text>
+    <text x="450" y="82" fill="var(--text-muted)" font-family="var(--font)" font-size="13" text-anchor="middle">too small, blocks evicted</text>
     <text x="450" y="100" fill="var(--text-muted)" font-family="var(--font)" font-size="13" text-anchor="middle">before sessions return</text>
 
     <!-- Arrow: CPU -> evicted -->
@@ -1135,7 +1135,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
   <span class="slide-num">18 / 33</span>
   <span class="section-tag">EXTENDING KV LIFETIME</span>
   <h2 style="font-size:34px;letter-spacing:-0.02em">TTFT across offload tiers</h2>
-  <p style="font-size:17px;color:var(--text-muted);margin-bottom:16px">Qwen3-4B FP8, vLLM 0.20.2, LMCache 0.4.5 &mdash; p50 and p99 TTFT vs concurrent sessions</p>
+  <p style="font-size:17px;color:var(--text-muted);margin-bottom:16px">Qwen3-4B FP8, vLLM 0.20.2, LMCache 0.4.5. p50 and p99 TTFT vs concurrent sessions</p>
   <img src="site/assets/charts/lmcache-ttft-summary.svg" alt="TTFT p50 and p99 vs concurrent sessions for 0, 8, 16, and 32 GB LMCache tiers" style="width:100%;max-width:960px;display:block;margin:0 auto"/>
   <div class="presenter-notes">The full TTFT picture across all four LMCache tiers. Left panel is p50, right is p99. The 2s target line shows where SLA compliance breaks. Key takeaway: 8 GB provides no benefit over baseline; 16 GB shifts the knee modestly; 32 GB roughly doubles the SLA ceiling.</div>
 </section>
