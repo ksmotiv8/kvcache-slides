@@ -1157,7 +1157,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
           <tr><td>GPU</td><td><strong>1x NVIDIA L4, 24 GB</strong></td></tr>
           <tr><td>Model</td><td>Qwen3-4B FP8</td></tr>
           <tr><td>Engine</td><td>vLLM 0.20.2, APC enabled</td></tr>
-          <tr><td>Concurrency</td><td>Sweep: 1 to 48 sessions</td></tr>
+          <tr><td>Sessions</td><td>Sweep: 1 to 48 concurrent</td></tr>
         </tbody>
       </table>
     </div>
@@ -1175,7 +1175,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
   </div>
 
   <div class="callout" style="margin-top:20px">
-    <strong>The question:</strong> how many concurrent agentic sessions can this GPU handle before things break?
+    <strong>The question:</strong> when does total KV footprint exceed the GPU's KV budget?
   </div>
   <div class="presenter-notes">Transition to the live data section. We sweep concurrency from 1 to 48 to find where the system breaks. The L4 is a $0.70/hr GPU, representative of cost-optimized deployments. These specific numbers are L4-specific, but the shape of the cliff generalizes across GPUs.</div>
 </section>
@@ -1244,7 +1244,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
 <section class="slide" id="s17">
   <span class="slide-num">20 / 27</span>
   <span class="section-tag">The experiment</span>
-  <h2>The concurrency cliff</h2>
+  <h2>The KV budget cliff</h2>
   <p style="font-size:17px;color:var(--text-muted);margin-bottom:4px"><strong>Qwen3-4B FP8</strong> on <strong>1x NVIDIA L4 (24 GB)</strong>, vLLM 0.20.2, APC enabled</p>
 
   <svg viewBox="0 0 760 310" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Chart showing p50 and p99 TTFT vs concurrent sessions. p99 jumps from 2.6s to 38.9s between 12 and 14 sessions when KV cache fills" style="width:100%;max-width:760px;height:auto;display:block;margin:8px 0">
@@ -1309,7 +1309,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
 <section class="slide" id="s18" data-build-phases="2">
   <span class="slide-num">21 / 27</span>
   <span class="section-tag">The systems lesson</span>
-  <h2>Predict the concurrency knee</h2>
+  <h2>Predict the KV budget</h2>
 
   <div data-phase="1">
     <div class="code-block" style="font-size:15px;max-width:900px">
@@ -1317,7 +1317,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
 <span class="fn">per_token_kv</span> = <span class="num">36</span> layers × <span class="num">8</span> kv_heads × <span class="num">128</span> head_dim × <span class="num">2</span>(K,V) × <span class="num">1</span>B (fp8) = <span class="fn">72 KB/token</span><br/><br/>
 <span class="cm">// Step 2: available KV capacity</span><br/>
 L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<span class="num">5 GB</span> overhead - ~<span class="num">2 GB</span> reserved ≈ <span class="fn">~13 GB for KV</span> ≈ <span class="fn">178K tokens</span><br/><br/>
-<span class="cm">// Step 3: concurrency estimate</span><br/>
+<span class="cm">// Step 3: capacity estimate</span><br/>
 <span class="fn">max_sessions</span> = (<span class="num">178K</span> - <span class="num">10K</span> shared) / <span class="num">12.8K</span> per session = <span class="fn">~13 sessions</span> <span class="cm">// observed: ~14 ✓</span>
     </div>
   </div>
@@ -1339,7 +1339,7 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
   <h2>One flag, 75% more headroom</h2>
   <p style="font-size:17px;color:var(--text-muted);margin-bottom:4px"><strong>Qwen3-4B</strong> on <strong>1x NVIDIA L4 (24 GB)</strong>, vLLM 0.20.2</p>
 
-  <svg viewBox="0 0 760 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Chart comparing p99 TTFT for fp16, fp8, and 4-bit KV quantization. Concurrency knee shifts from 8 to 14 to 23 sessions" style="width:100%;max-width:760px;height:auto;display:block;margin:12px 0">
+  <svg viewBox="0 0 760 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Chart comparing p99 TTFT for fp16, fp8, and 4-bit KV quantization. KV budget limit shifts from 8 to 14 to 23 sessions" style="width:100%;max-width:760px;height:auto;display:block;margin:12px 0">
     <rect x="60" y="10" width="690" height="200" fill="none"/>
     <line x1="60" y1="190" x2="750" y2="190" stroke="var(--border)" stroke-width="1"/>
     <line x1="60" y1="140" x2="750" y2="140" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
@@ -1363,14 +1363,14 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
 
     <polyline points="90,185 160,175 200,60 310,50 460,45 710,42" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
     <line x1="200" y1="10" x2="200" y2="190" stroke="var(--accent)" stroke-width="1" stroke-dasharray="3 3" opacity="0.5"/>
-    <text x="200" y="228" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle" font-weight="600">fp16 knee</text>
+    <text x="200" y="228" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle" font-weight="600">fp16 limit</text>
 
     <polyline points="90,188 200,178 310,55 460,48 710,44" fill="none" stroke="var(--cyan)" stroke-width="2.5"/>
     <line x1="310" y1="10" x2="310" y2="190" stroke="var(--cyan)" stroke-width="1" stroke-dasharray="3 3" opacity="0.5"/>
 
     <polyline points="90,190 200,185 310,178 460,55 710,48" fill="none" stroke="var(--green)" stroke-width="2.5" stroke-dasharray="8 4"/>
     <line x1="460" y1="10" x2="460" y2="190" stroke="var(--green)" stroke-width="1" stroke-dasharray="3 3" opacity="0.5"/>
-    <text x="460" y="228" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle" font-weight="600">4-bit knee</text>
+    <text x="460" y="228" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle" font-weight="600">4-bit limit</text>
 
     <line x1="560" y1="18" x2="580" y2="18" stroke="var(--accent)" stroke-width="2.5"/>
     <text x="586" y="22" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="11">fp16</text>
@@ -1381,7 +1381,7 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
   </svg>
 
   <div data-phase="1">
-    <p>Changing one config flag (<code>kv_cache_dtype</code>) shifts the concurrency knee from <strong>8 sessions to 14 to 23</strong>. Same GPU. Same model. Same workload.</p>
+    <p>Changing one config flag (<code>kv_cache_dtype</code>) shifts the KV budget knee from <strong>8 sessions to 14 to 23</strong>. Same GPU. Same model. Same workload.</p>
   </div>
   <div data-phase="2">
     <div class="callout warn" style="margin-top:12px">
@@ -1428,11 +1428,11 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
 <section class="slide" id="s21" data-build-phases="1">
   <span class="slide-num">24 / 27</span>
   <span class="section-tag">The systems lesson</span>
-  <h2>The knee is workload-specific</h2>
+  <h2>KV budget is workload-specific</h2>
   <p style="font-size:17px;color:var(--text-muted);margin-bottom:8px"><strong>Qwen3-4B FP8</strong> on <strong>1x NVIDIA L4 (24 GB)</strong>, formula: <code>(kv_capacity - shared_prefix) / per_session_unique</code></p>
 
   <table>
-    <thead><tr><th>Workload</th><th>Shared prefix</th><th>Per-session unique</th><th>fp8 knee</th></tr></thead>
+    <thead><tr><th>Workload</th><th>Shared prefix</th><th>Per-session unique</th><th>fp8 capacity</th></tr></thead>
     <tbody>
       <tr><td><strong>Single-turn QA</strong></td><td class="r">1K</td><td class="r">1K</td><td class="r g">~168 sessions</td></tr>
       <tr><td><strong>Agentic coding</strong></td><td class="r">10K</td><td class="r">12.8K</td><td class="r cy">~13 sessions</td></tr>
