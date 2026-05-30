@@ -1036,8 +1036,9 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
   </div>
 
   <div data-phase="2">
-    <div class="callout" style="margin-top:24px;font-size:26px;padding:24px 32px">
-      <strong style="color:var(--cyan)">Result (<a href="https://www.baseten.co/blog/how-baseten-achieved-2x-faster-inference-with-nvidia-dynamo/" target="_blank" rel="noopener" style="color:var(--cyan)">Baseten</a>):</strong> 20x faster TTFT and 4x faster end-to-end latency vs. round-robin routing.
+    <div class="callout" style="margin-top:24px;font-size:26px;padding:24px 32px;display:flex;align-items:center;gap:24px">
+      <div style="flex:1"><strong style="color:var(--cyan)">Result (<a href="https://www.baseten.co/blog/how-baseten-achieved-2x-faster-inference-with-nvidia-dynamo/" target="_blank" rel="noopener" style="color:var(--cyan)">Baseten</a>):</strong> 20x faster TTFT and 4x faster end-to-end latency vs. round-robin routing.</div>
+      <a href="https://www.baseten.co/blog/how-baseten-achieved-2x-faster-inference-with-nvidia-dynamo/" target="_blank" rel="noopener" style="flex-shrink:0"><img src="qr-baseten-dynamo.svg" alt="QR: Baseten Dynamo blog" style="width:100px;height:100px;filter:invert(1);display:block"/></a>
     </div>
   </div>
   <div class="presenter-notes">Dynamo's router tokenizes each request, partitions tokens into fixed-size blocks, hashes them, and compares against a global prefix tree (the KVIndexer). The cost function balances cache overlap against current decode load. The key tunable is --router-kv-overlap-score-weight: high values favor cache hits (lower TTFT), setting it to 0 falls back to pure load balancing. Similar approaches: SGLang RadixAttention with prefix-aware routing, vLLM's Rust-based router with consistent hashing, Red Hat llm-d with KV-cache-aware routing. Docs: https://docs.nvidia.com/dynamo/latest/user-guides/kv-cache-aware-routing</div>
