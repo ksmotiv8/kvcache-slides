@@ -1310,7 +1310,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
 <section class="slide" id="s26" data-build-phases="1">
   <span class="slide-num">21 / 30</span>
   <span class="section-tag">EXTENDING KV LIFETIME</span>
-  <h2 style="font-size:32px;letter-spacing:-0.02em">CPU KV offload helps only when sized to the working set</h2>
+  <h2 style="font-size:32px;letter-spacing:-0.02em">DRAM KV offload helps only when sized to the working set</h2>
 
   <p style="font-size:14px;color:var(--text-muted);margin-bottom:12px">Qwen3-4B FP8, vLLM 0.20.2, LMCache 0.4.5, g6.4xlarge L4, 10K shared prompt + 12-turn agentic workload</p>
 
@@ -1333,7 +1333,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
       32 GB LMCache roughly doubles the 2s SLA limit: <strong>~6 concurrent sessions → ~14</strong>. 8 GB provides no measurable benefit because it is smaller than the eviction churn.
     </div>
   </div>
-  <div class="presenter-notes">LMCache gives us a CPU DRAM tier for evicted KV blocks. That sounds straightforward: instead of throwing KV away and paying full re-prefill, reload it over PCIe. But the key systems question is not 'does offload exist?' It is 'is the spill tier large enough to survive eviction churn until the session returns?' In this workload, 8 GB does nothing, 16 GB moves the knee a little, and 32 GB moves it materially.</div>
+  <div class="presenter-notes">LMCache gives us a host DRAM tier for evicted KV blocks. That sounds straightforward: instead of throwing KV away and paying full re-prefill, reload it over PCIe. But the key systems question is not 'does offload exist?' It is 'is the spill tier large enough to survive eviction churn until the session returns?' In this workload, 8 GB does nothing, 16 GB moves the knee a little, and 32 GB moves it materially.</div>
 </section>
 
 
