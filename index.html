@@ -184,7 +184,7 @@ body.notes-on .slide.current .presenter-notes {
 <!-- SLIDE 1: Title -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s1">
-  <span class="slide-num">1 / 26</span>
+  <span class="slide-num">1 / 27</span>
   <h1>From Distributed Systems<br/>to GPU Inference</h1>
   <p class="subtitle">A systems engineer's journey into LLM inference.<br/>Routing, scheduling, placement, memory movement, tail latency.</p>
   <div class="presenter-notes">Open by framing the talk: this is a story about discovery. I came from distributed systems, was intimidated by the ML side of inference, and realized the hard problems at scale are the ones I already knew how to think about. The audience should leave with a concrete mental model for why inference at scale is really a distributed systems problem, and KV cache is the object at the center of it.</div>
@@ -196,7 +196,7 @@ body.notes-on .slide.current .presenter-notes {
 <!-- SLIDE 2: I was intimidated / Wait I know these -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s2" data-build-phases="2">
-  <span class="slide-num">2 / 26</span>
+  <span class="slide-num">2 / 27</span>
   <span class="section-tag">Perspective of a distributed systems engineer</span>
   <h2>Inference seems intimidating at first</h2>
 
@@ -220,8 +220,20 @@ body.notes-on .slide.current .presenter-notes {
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s3" data-build-phases="2">
-  <span class="slide-num">3 / 26</span>
+<!-- SLIDE 3: Utilization -->
+<!-- ════════════════════════════════════════════════════════ -->
+<section class="slide" id="s3">
+  <span class="slide-num">3 / 27</span>
+  <h2 style="font-size:48px;letter-spacing:-0.03em">Utilization</h2>
+
+  <p class="subtitle" style="margin-top:24px">The key metric that drives availability, performance, and economics.</p>
+
+  <div class="presenter-notes">Frame utilization as the central theme. GPU utilization isn't just about keeping the hardware busy — it directly determines how many users you can serve (availability), how fast each request completes (performance), and how much you pay per token (economics). Everything in this talk — KV cache management, disaggregation, prefix caching, tiered storage — is ultimately about improving utilization.</div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<section class="slide" id="s4" data-build-phases="2">
+  <span class="slide-num">4 / 27</span>
   <span class="section-tag">Inference pipeline</span>
   <h2>Two stages of inference</h2>
   <p style="font-size:17px;color:var(--text-muted);margin-bottom:4px"><strong>Qwen3-4B FP8</strong> on <strong>1x NVIDIA L4 (24 GB)</strong></p>
@@ -313,8 +325,8 @@ body.notes-on .slide.current .presenter-notes {
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 3: Agenda -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s4">
-  <span class="slide-num">4 / 26</span>
+<section class="slide" id="s5">
+  <span class="slide-num">5 / 27</span>
   <h2>Agenda</h2>
 
   <p style="font-size:22px;margin-bottom:28px">We are going to dig into the lifecycle of inference: the stages, the components, and the techniques used to make it faster and more efficient.</p>
@@ -337,8 +349,8 @@ body.notes-on .slide.current .presenter-notes {
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 4: Journey of a Prompt -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s5" data-build-phases="7">
-  <span class="slide-num">5 / 26</span>
+<section class="slide" id="s6" data-build-phases="7">
+  <span class="slide-num">6 / 27</span>
   <span class="section-tag">Steps in inference</span>
   <h2>Journey of a prompt</h2>
 
@@ -436,8 +448,8 @@ body.notes-on .slide.current .presenter-notes {
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 5: Dynamo Disaggregated Lifecycle -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s6" data-build-phases="3">
-  <span class="slide-num">6 / 26</span>
+<section class="slide" id="s7" data-build-phases="3">
+  <span class="slide-num">7 / 27</span>
   <span class="section-tag">Journey of a prompt</span>
   <h2>Request Lifecycle</h2>
 
@@ -525,8 +537,8 @@ body.notes-on .slide.current .presenter-notes {
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 5: The best prefill optimization -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s7">
-  <span class="slide-num">7 / 26</span>
+<section class="slide" id="s8">
+  <span class="slide-num">8 / 27</span>
   <span class="section-tag">Optimizing prefill stage</span>
   <h2 style="font-size:48px;letter-spacing:-0.03em">Minimize generating prefill.</h2>
 
@@ -538,8 +550,8 @@ body.notes-on .slide.current .presenter-notes {
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 6: What is KV Cache -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s8">
-  <span class="slide-num">8 / 26</span>
+<section class="slide" id="s9">
+  <span class="slide-num">9 / 27</span>
   <span class="section-tag">The fundamentals</span>
   <h2>What is KV cache?</h2>
   <p style="font-size:17px;color:var(--text-muted);margin-bottom:8px">Using <strong style="color:var(--cyan)">Qwen3-4B (FP8)</strong> as our running example: 36 layers, 8 KV heads, 128 head_dim</p>
@@ -643,8 +655,8 @@ body.notes-on .slide.current .presenter-notes {
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 7: KV Cache Scale -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s9" data-build-phases="1">
-  <span class="slide-num">9 / 26</span>
+<section class="slide" id="s10" data-build-phases="1">
+  <span class="slide-num">10 / 27</span>
   <span class="section-tag">Qwen3-4B (FP8)</span>
   <h2>Sizing KV for a single session</h2>
 
@@ -696,8 +708,8 @@ body.notes-on .slide.current .presenter-notes {
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 10: What makes KV caching hard -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s10">
-  <span class="slide-num">10 / 26</span>
+<section class="slide" id="s11">
+  <span class="slide-num">11 / 27</span>
   <h2>What makes KV caching hard</h2>
 
   <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:40px;margin-top:40px;max-width:900px">
@@ -718,8 +730,8 @@ body.notes-on .slide.current .presenter-notes {
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 12: Prefix Caching -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s11" data-build-phases="2">
-  <span class="slide-num">11 / 26</span>
+<section class="slide" id="s12" data-build-phases="2">
+  <span class="slide-num">12 / 27</span>
   <span class="section-tag">The key constraint</span>
   <h2>Prefix caching</h2>
 
@@ -763,8 +775,8 @@ body.notes-on .slide.current .presenter-notes {
 
 <!-- SLIDE 11: Memory tiers -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s12">
-  <span class="slide-num">12 / 26</span>
+<section class="slide" id="s13">
+  <span class="slide-num">13 / 27</span>
   <h2 style="position:absolute;top:60px;left:80px">But there's more memory than just GPU VRAM.</h2>
 
   <table style="font-size:22px;width:100%;max-width:750px;margin-top:24px">
@@ -782,8 +794,8 @@ body.notes-on .slide.current .presenter-notes {
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 11: Disaggregation -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s13" data-build-phases="2">
-  <span class="slide-num">13 / 26</span>
+<section class="slide" id="s14" data-build-phases="2">
+  <span class="slide-num">14 / 27</span>
   <span class="section-tag">The architecture</span>
   <h2>Disaggregation: separating prefill from decode</h2>
 
@@ -834,8 +846,8 @@ body.notes-on .slide.current .presenter-notes {
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 11: Disaggregation: the data -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s14" data-build-phases="2">
-  <span class="slide-num">14 / 26</span>
+<section class="slide" id="s15" data-build-phases="2">
+  <span class="slide-num">15 / 27</span>
   <span class="section-tag">The architecture</span>
   <h2>Disaggregation: the data</h2>
   <p style="font-size:17px;color:var(--text-muted);margin-bottom:8px">Prefill is compute-bound (90-95% GPU utilization). Decode is memory-bound (20-40%). Running both on the same GPU wastes whichever resource isn't the bottleneck.</p>
@@ -870,8 +882,8 @@ body.notes-on .slide.current .presenter-notes {
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 13: The Experiment -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s15">
-  <span class="slide-num">15 / 26</span>
+<section class="slide" id="s16">
+  <span class="slide-num">16 / 27</span>
   <span class="section-tag">The experiment</span>
   <h2>Benchmark setup</h2>
 
@@ -909,8 +921,8 @@ body.notes-on .slide.current .presenter-notes {
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 14: Before the cliff -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s16">
-  <span class="slide-num">16 / 26</span>
+<section class="slide" id="s17">
+  <span class="slide-num">17 / 27</span>
   <span class="section-tag">The experiment</span>
   <h2>At 12 concurrent sessions, everything looks fine</h2>
 
@@ -938,8 +950,8 @@ body.notes-on .slide.current .presenter-notes {
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 15: p50 vs p99 contrast -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s17">
-  <span class="slide-num">17 / 26</span>
+<section class="slide" id="s18">
+  <span class="slide-num">18 / 27</span>
   <span class="section-tag">The experiment</span>
   <h2>Now add two more sessions</h2>
 
@@ -967,8 +979,8 @@ body.notes-on .slide.current .presenter-notes {
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 16: The Cliff Chart -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s18">
-  <span class="slide-num">18 / 26</span>
+<section class="slide" id="s19">
+  <span class="slide-num">19 / 27</span>
   <span class="section-tag">The experiment</span>
   <h2>The concurrency cliff</h2>
   <p style="font-size:17px;color:var(--text-muted);margin-bottom:4px"><strong>Qwen3-4B FP8</strong> on <strong>1x NVIDIA L4 (24 GB)</strong>, vLLM 0.20.2, APC enabled</p>
@@ -1032,8 +1044,8 @@ body.notes-on .slide.current .presenter-notes {
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 15: Predict the concurrency knee -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s19" data-build-phases="2">
-  <span class="slide-num">19 / 26</span>
+<section class="slide" id="s20" data-build-phases="2">
+  <span class="slide-num">20 / 27</span>
   <span class="section-tag">The systems lesson</span>
   <h2>Predict the concurrency knee</h2>
 
@@ -1059,8 +1071,8 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 19: Quantization Moves the Knee -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s20" data-build-phases="2">
-  <span class="slide-num">20 / 26</span>
+<section class="slide" id="s21" data-build-phases="2">
+  <span class="slide-num">21 / 27</span>
   <span class="section-tag">The systems lesson</span>
   <h2>One config flag, 75% more headroom</h2>
   <p style="font-size:17px;color:var(--text-muted);margin-bottom:4px"><strong>Qwen3-4B</strong> on <strong>1x NVIDIA L4 (24 GB)</strong>, vLLM 0.20.2</p>
@@ -1120,8 +1132,8 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 20: Best/Worst/Realistic -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s21" data-build-phases="2">
-  <span class="slide-num">21 / 26</span>
+<section class="slide" id="s22" data-build-phases="2">
+  <span class="slide-num">22 / 27</span>
   <span class="section-tag">The systems lesson</span>
   <h2>The cost of cache misses</h2>
   <p style="font-size:17px;color:var(--text-muted);margin-bottom:8px"><strong>Qwen3-4B FP8</strong> on <strong>1x NVIDIA L4 (24 GB)</strong>, vLLM 0.20.2, APC enabled</p>
@@ -1151,8 +1163,8 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 21: Same GPU Different Workloads -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s22" data-build-phases="1">
-  <span class="slide-num">22 / 26</span>
+<section class="slide" id="s23" data-build-phases="1">
+  <span class="slide-num">23 / 27</span>
   <span class="section-tag">The systems lesson</span>
   <h2>The knee is workload-specific</h2>
   <p style="font-size:17px;color:var(--text-muted);margin-bottom:8px"><strong>Qwen3-4B FP8</strong> on <strong>1x NVIDIA L4 (24 GB)</strong>, formula: <code>(kv_capacity - shared_prefix) / per_session_unique</code></p>
@@ -1178,8 +1190,8 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 23: Cache-Aware Routing -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s23" data-build-phases="2">
-  <span class="slide-num">23 / 26</span>
+<section class="slide" id="s24" data-build-phases="2">
+  <span class="slide-num">24 / 27</span>
   <span class="section-tag">The systems stack</span>
   <h2>Cache-aware routing</h2>
 
@@ -1198,8 +1210,8 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 24: Tiered KV Storage -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s24" data-build-phases="2">
-  <span class="slide-num">24 / 26</span>
+<section class="slide" id="s25" data-build-phases="2">
+  <span class="slide-num">25 / 27</span>
   <span class="section-tag">The systems stack</span>
   <h2>Tiered KV storage</h2>
 
@@ -1218,8 +1230,8 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 25: Operate in Production -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s25" data-build-phases="2">
-  <span class="slide-num">25 / 26</span>
+<section class="slide" id="s26" data-build-phases="2">
+  <span class="slide-num">26 / 27</span>
   <span class="section-tag">The systems stack</span>
   <h2>Operating rules</h2>
 
@@ -1244,8 +1256,8 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 27: Closing -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s26">
-  <span class="slide-num">26 / 26</span>
+<section class="slide" id="s27">
+  <span class="slide-num">27 / 27</span>
   <span class="section-tag">The conclusion</span>
   <h2>From distributed systems<br/>to GPU inference</h2>
 
@@ -1268,7 +1280,7 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
 <!-- ════════════════════════════════════════════════════════ -->
 <div id="nav">
   <button id="prevBtn" aria-label="Previous slide">Prev</button>
-  <span id="counter">1 / 26</span>
+  <span id="counter">1 / 27</span>
   <button id="nextBtn" aria-label="Next slide">Next</button>
 </div>
 <div id="notes-indicator">P: notes off</div>
