@@ -983,13 +983,13 @@ body.notes-on .slide.current .presenter-notes {
 
   <div data-phase="1">
     <div class="callout" style="margin-top:16px">
-      <strong>The pattern:</strong> prefill and decode have fundamentally different hardware profiles. Separating them lets each phase run on optimal hardware, and lets each pool scale independently.
+      Prefill and decode have fundamentally different hardware profiles. Decoupling allows you to scale them independently.
     </div>
   </div>
 
   <div data-phase="2">
     <div class="callout warn" style="margin-top:12px">
-      <strong>Caveat:</strong> disaggregation adds KV transfer latency (~27ms over InfiniBand). Short prompts with high cache hit rates can see 20-30% degradation. The gains scale with input length and output-to-input ratio.
+      <strong>Key Metric</strong> for independent scaling is Input:Output Ratio.
     </div>
   </div>
   <div class="presenter-notes">Every major inference system has converged on disaggregation: Dynamo, llm-d, SGLang, vLLM, Mooncake, DistServe. The Splitwise numbers are the cleanest: prefill achieves 90-95% GPU compute utilization at 200-400 ops/byte, while decode gets only 20-40% at 60-80 ops/byte. Running both on the same GPU wastes compute during decode and bandwidth during prefill. The 27ms KV transfer cost of disaggregation replaces 200-500ms of queuing delay from prefill-decode interference. Not all workloads benefit equally, but for long-context and reasoning workloads, the data is unambiguous.</div>
