@@ -677,13 +677,13 @@ body.notes-on .slide.current .presenter-notes {
 
   <svg viewBox="0 0 780 140" role="img" aria-label="Diagram showing prefix caching: system prompt cached and shared, turns 1-11 cached per session, only turn 12 needs prefill" style="width:100%;max-width:780px;height:auto;margin:16px 0">
     <rect x="10" y="20" width="220" height="44" rx="6" fill="rgba(74,222,128,0.12)" stroke="var(--green)" stroke-width="1.5"/>
-    <text x="120" y="47" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" text-anchor="middle">SYSTEM PROMPT (10K)</text>
+    <text x="120" y="47" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" text-anchor="middle">SYSTEM PROMPT</text>
 
     <rect x="240" y="20" width="160" height="44" rx="6" fill="rgba(34,211,238,0.12)" stroke="var(--cyan)" stroke-width="1.5"/>
-    <text x="320" y="47" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" text-anchor="middle">TURN 1-11</text>
+    <text x="320" y="47" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" text-anchor="middle">PRIOR TURNS</text>
 
     <rect x="410" y="20" width="100" height="44" rx="6" fill="rgba(130,140,248,0.15)" stroke="var(--accent)" stroke-width="2"/>
-    <text x="460" y="47" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="700" text-anchor="middle">TURN 12</text>
+    <text x="460" y="47" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="700" text-anchor="middle">NEW TURN</text>
 
     <text x="120" y="86" fill="var(--green)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">cached (shared across sessions)</text>
     <text x="320" y="86" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">cached (this session)</text>
@@ -691,7 +691,7 @@ body.notes-on .slide.current .presenter-notes {
 
     <line x1="530" y1="42" x2="590" y2="42" stroke="var(--text-muted)" stroke-width="1.5" marker-end="url(#arrowW2)"/>
     <rect x="600" y="20" width="160" height="44" rx="6" fill="rgba(255,255,255,0.04)" stroke="var(--text-muted)" stroke-width="1"/>
-    <text x="680" y="40" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">output: 75 tokens</text>
+    <text x="680" y="40" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">output tokens</text>
     <text x="680" y="56" fill="var(--text-muted)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">(decode phase)</text>
 
     <text x="400" y="124" fill="var(--text-dim)" font-family="'Inter',sans-serif" font-size="14" text-anchor="middle">Only the new tokens need prefill. Everything before them is a cache hit.</text>
@@ -700,8 +700,8 @@ body.notes-on .slide.current .presenter-notes {
 
   <div data-phase="1">
     <ul>
-      <li><strong>Cross-session:</strong> the 10K system prompt is identical for every user. Compute it once, reuse across all sessions.</li>
-      <li><strong>Within-session:</strong> turns 1-11 are already cached from earlier in the conversation. Only the new turn needs prefill.</li>
+      <li><strong>Cross-session:</strong> the system prompt is identical for every user. Compute it once, reuse across all sessions.</li>
+      <li><strong>Within-session:</strong> prior turns are already cached from earlier in the conversation. Only the new turn needs prefill.</li>
       <li>Matching is by <strong>token block hashing</strong>. If two requests share the same token prefix, the engine skips the redundant compute.</li>
     </ul>
   </div>
