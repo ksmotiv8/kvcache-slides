@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>From Distributed Systems to GPU Inference</title>
+<title>KV Cache, Disaggregation, and Inference Utilization</title>
 <meta name="description" content="LLM inference is no longer just a GPU problem. At scale, it becomes a distributed systems problem."/>
 <meta name="theme-color" content="#0d0d10"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
@@ -219,7 +219,7 @@ body.light-mode svg rect[fill*="rgba(255,255,255,0.05)"] { fill: rgba(0,0,0,0.04
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s1">
   <span class="slide-num">1 / 27</span>
-  <h1>From Distributed Systems<br/>to GPU Inference</h1>
+  <h1>KV Cache, Disaggregation,<br/>and Inference Utilization</h1>
   <p class="subtitle">A systems engineer's journey into LLM inference.<br/>Routing, scheduling, placement, memory movement, tail latency.</p>
   <div class="presenter-notes">Open by framing the talk: this is a story about discovery. I came from distributed systems, was intimidated by the ML side of inference, and realized the hard problems at scale are the ones I already knew how to think about. The audience should leave with a concrete mental model for why inference at scale is really a distributed systems problem, and KV cache is the object at the center of it.</div>
 </section>
