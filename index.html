@@ -184,7 +184,7 @@ body.notes-on .slide.current .presenter-notes {
 <!-- SLIDE 1: Title -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s1">
-  <span class="slide-num">1 / 26</span>
+  <span class="slide-num">1 / 25</span>
   <h1>From Distributed Systems<br/>to GPU Inference</h1>
   <p class="subtitle">A systems engineer's journey into LLM inference.<br/>Routing, scheduling, placement, memory movement, tail latency.</p>
   <div class="presenter-notes">Open by framing the talk: this is a story about discovery. I came from distributed systems, was intimidated by the ML side of inference, and realized the hard problems at scale are the ones I already knew how to think about. The audience should leave with a concrete mental model for why inference at scale is really a distributed systems problem, and KV cache is the object at the center of it.</div>
@@ -196,7 +196,7 @@ body.notes-on .slide.current .presenter-notes {
 <!-- SLIDE 2: I was intimidated / Wait I know these -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s2" data-build-phases="2">
-  <span class="slide-num">2 / 26</span>
+  <span class="slide-num">2 / 25</span>
   <span class="section-tag">Perspective of a distributed systems engineer</span>
   <h2>Inference seems intimidating at first</h2>
 
@@ -223,7 +223,7 @@ body.notes-on .slide.current .presenter-notes {
 <!-- SLIDE 3: Utilization -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s3">
-  <span class="slide-num">3 / 26</span>
+  <span class="slide-num">3 / 25</span>
   <span class="section-tag">Agenda</span>
   <h2 style="font-size:48px;letter-spacing:-0.03em">Utilization</h2>
 
@@ -238,7 +238,7 @@ body.notes-on .slide.current .presenter-notes {
 
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s4" data-build-phases="2">
-  <span class="slide-num">4 / 26</span>
+  <span class="slide-num">4 / 25</span>
   <span class="section-tag">Inference pipeline</span>
   <h2>Two stages of inference</h2>
   <p style="font-size:17px;color:var(--text-muted);margin-bottom:4px"><strong>Qwen3-4B FP8</strong> on <strong>1x NVIDIA L4 (24 GB)</strong></p>
@@ -332,7 +332,7 @@ body.notes-on .slide.current .presenter-notes {
 <!-- SLIDE 4: Journey of a Prompt -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s5" data-build-phases="7">
-  <span class="slide-num">5 / 26</span>
+  <span class="slide-num">5 / 25</span>
   <span class="section-tag">Steps in inference</span>
   <h2>Journey of a prompt</h2>
 
@@ -431,7 +431,7 @@ body.notes-on .slide.current .presenter-notes {
 <!-- SLIDE 5: Dynamo Disaggregated Lifecycle -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s6" data-build-phases="3">
-  <span class="slide-num">6 / 26</span>
+  <span class="slide-num">6 / 25</span>
   <span class="section-tag">Journey of a prompt</span>
   <h2>Request Lifecycle</h2>
 
@@ -520,7 +520,7 @@ body.notes-on .slide.current .presenter-notes {
 <!-- SLIDE 5: The best prefill optimization -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s7">
-  <span class="slide-num">7 / 26</span>
+  <span class="slide-num">7 / 25</span>
   <span class="section-tag">Optimizing prefill stage</span>
   <h2 style="font-size:48px;letter-spacing:-0.03em">Avoid prefill.</h2>
 
@@ -533,7 +533,7 @@ body.notes-on .slide.current .presenter-notes {
 <!-- SLIDE 6: What is KV Cache -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s8">
-  <span class="slide-num">8 / 26</span>
+  <span class="slide-num">8 / 25</span>
   <h2>What is KV cache?</h2>
   <p style="font-size:17px;color:var(--text-muted);margin-bottom:8px">Using <strong style="color:var(--cyan)">Qwen3-4B (FP8)</strong> as our running example: 36 layers, 8 KV heads, 128 head_dim</p>
 
@@ -637,7 +637,7 @@ body.notes-on .slide.current .presenter-notes {
 <!-- SLIDE 7: KV Cache Scale -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s9" data-build-phases="1">
-  <span class="slide-num">9 / 26</span>
+  <span class="slide-num">9 / 25</span>
   <span class="section-tag">Qwen3-4B (FP8)</span>
   <h2>Sizing KV for a single session</h2>
 
@@ -690,7 +690,7 @@ body.notes-on .slide.current .presenter-notes {
 <!-- SLIDE 10: What makes KV caching hard -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s10">
-  <span class="slide-num">10 / 26</span>
+  <span class="slide-num">10 / 25</span>
   <h2>What makes KV caching hard</h2>
 
   <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:40px;margin-top:40px;max-width:900px">
@@ -712,7 +712,7 @@ body.notes-on .slide.current .presenter-notes {
 <!-- SLIDE 12: Prefix Caching -->
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s11" data-build-phases="2">
-  <span class="slide-num">11 / 26</span>
+  <span class="slide-num">11 / 25</span>
   <span class="section-tag">The key constraint</span>
   <h2>Prefix caching</h2>
 
@@ -756,8 +756,26 @@ body.notes-on .slide.current .presenter-notes {
 
 <!-- SLIDE 11: Memory tiers -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s12">
-  <span class="slide-num">12 / 26</span>
+<section class="slide" id="s12" data-build-phases="2">
+  <span class="slide-num">12 / 25</span>
+  <span class="section-tag">The systems stack</span>
+  <h2>Remote cache extends KV lifetime</h2>
+
+  <div data-phase="1">
+    <h3 style="color:var(--yellow)">Remote caching: decouple KV lifetime from GPU lifetime</h3>
+    <p>Push KV state to a networked cache (Redis, Valkey, or a managed service). KV data survives GPU restarts, enables cross-node sharing, and scales capacity independently from compute. Higher latency than local DRAM, but far cheaper than re-prefilling 12,800 tokens.</p>
+  </div>
+
+  <div data-phase="2">
+    <h3 style="color:var(--accent)">The full hierarchy</h3>
+    <p><strong style="color:var(--cyan)">GPU VRAM</strong> → <strong style="color:var(--green)">Host DRAM</strong> → <strong style="color:var(--yellow)">Remote cache</strong> → <strong style="color:var(--red)">Recompute</strong>. Each tier trades latency for capacity. Each boundary is a systems engineering decision: eviction policy, transfer protocol, consistency model.</p>
+  </div>
+  <div class="presenter-notes">Remote caching is L3 in the memory hierarchy. A 12,800-token session's KV cache at fp8 is ~900 MB, well within what a networked cache handles at sub-millisecond latency. This decouples KV lifetime from GPU lifetime. Same pattern as session state in web applications, moving from in-process memory to memcached.</div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<section class="slide" id="s13">
+  <span class="slide-num">13 / 25</span>
   <h2 style="position:absolute;top:60px;left:80px">Beyond VRAM</h2>
 
   <table style="font-size:22px;width:100%;max-width:750px;margin-top:24px">
@@ -775,8 +793,8 @@ body.notes-on .slide.current .presenter-notes {
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 11: Disaggregation -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s13" data-build-phases="2">
-  <span class="slide-num">13 / 26</span>
+<section class="slide" id="s14" data-build-phases="2">
+  <span class="slide-num">14 / 25</span>
   <span class="section-tag">The architecture</span>
   <h2>Disaggregated inference</h2>
 
@@ -827,8 +845,8 @@ body.notes-on .slide.current .presenter-notes {
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 11: Disaggregation: the data -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s14" data-build-phases="2">
-  <span class="slide-num">14 / 26</span>
+<section class="slide" id="s15" data-build-phases="2">
+  <span class="slide-num">15 / 25</span>
   <span class="section-tag">The architecture</span>
   <h2>Disaggregation: the data</h2>
   <p style="font-size:17px;color:var(--text-muted);margin-bottom:8px">Prefill is compute-bound (90-95% GPU utilization). Decode is memory-bound (20-40%). Running both on the same GPU wastes whichever resource isn't the bottleneck.</p>
@@ -863,8 +881,8 @@ body.notes-on .slide.current .presenter-notes {
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 13: The Experiment -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s15">
-  <span class="slide-num">15 / 26</span>
+<section class="slide" id="s16">
+  <span class="slide-num">16 / 25</span>
   <span class="section-tag">The experiment</span>
   <h2>Benchmark setup</h2>
 
@@ -902,8 +920,8 @@ body.notes-on .slide.current .presenter-notes {
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 14: Before the cliff -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s16">
-  <span class="slide-num">16 / 26</span>
+<section class="slide" id="s17">
+  <span class="slide-num">17 / 25</span>
   <span class="section-tag">The experiment</span>
   <h2>At 12 sessions, it still looks fine</h2>
 
@@ -931,8 +949,8 @@ body.notes-on .slide.current .presenter-notes {
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 15: p50 vs p99 contrast -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s17">
-  <span class="slide-num">17 / 26</span>
+<section class="slide" id="s18">
+  <span class="slide-num">18 / 25</span>
   <span class="section-tag">The experiment</span>
   <h2>Now add two more sessions</h2>
 
@@ -960,8 +978,8 @@ body.notes-on .slide.current .presenter-notes {
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 16: The Cliff Chart -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s18">
-  <span class="slide-num">18 / 26</span>
+<section class="slide" id="s19">
+  <span class="slide-num">19 / 25</span>
   <span class="section-tag">The experiment</span>
   <h2>The concurrency cliff</h2>
   <p style="font-size:17px;color:var(--text-muted);margin-bottom:4px"><strong>Qwen3-4B FP8</strong> on <strong>1x NVIDIA L4 (24 GB)</strong>, vLLM 0.20.2, APC enabled</p>
@@ -1025,8 +1043,8 @@ body.notes-on .slide.current .presenter-notes {
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 15: Predict the concurrency knee -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s19" data-build-phases="2">
-  <span class="slide-num">19 / 26</span>
+<section class="slide" id="s20" data-build-phases="2">
+  <span class="slide-num">20 / 25</span>
   <span class="section-tag">The systems lesson</span>
   <h2>Predict the concurrency knee</h2>
 
@@ -1052,8 +1070,8 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 19: Quantization Moves the Knee -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s20" data-build-phases="2">
-  <span class="slide-num">20 / 26</span>
+<section class="slide" id="s21" data-build-phases="2">
+  <span class="slide-num">21 / 25</span>
   <span class="section-tag">The systems lesson</span>
   <h2>One flag, 75% more headroom</h2>
   <p style="font-size:17px;color:var(--text-muted);margin-bottom:4px"><strong>Qwen3-4B</strong> on <strong>1x NVIDIA L4 (24 GB)</strong>, vLLM 0.20.2</p>
@@ -1113,8 +1131,8 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 20: Best/Worst/Realistic -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s21" data-build-phases="2">
-  <span class="slide-num">21 / 26</span>
+<section class="slide" id="s22" data-build-phases="2">
+  <span class="slide-num">22 / 25</span>
   <span class="section-tag">The systems lesson</span>
   <h2>The cost of cache misses</h2>
   <p style="font-size:17px;color:var(--text-muted);margin-bottom:8px"><strong>Qwen3-4B FP8</strong> on <strong>1x NVIDIA L4 (24 GB)</strong>, vLLM 0.20.2, APC enabled</p>
@@ -1144,8 +1162,8 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 21: Same GPU Different Workloads -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s22" data-build-phases="1">
-  <span class="slide-num">22 / 26</span>
+<section class="slide" id="s23" data-build-phases="1">
+  <span class="slide-num">23 / 25</span>
   <span class="section-tag">The systems lesson</span>
   <h2>The knee is workload-specific</h2>
   <p style="font-size:17px;color:var(--text-muted);margin-bottom:8px"><strong>Qwen3-4B FP8</strong> on <strong>1x NVIDIA L4 (24 GB)</strong>, formula: <code>(kv_capacity - shared_prefix) / per_session_unique</code></p>
@@ -1171,8 +1189,8 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 23: Cache-Aware Routing -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s23" data-build-phases="2">
-  <span class="slide-num">23 / 26</span>
+<section class="slide" id="s24" data-build-phases="2">
+  <span class="slide-num">24 / 25</span>
   <span class="section-tag">The systems stack</span>
   <h2>Route to warm KV</h2>
 
@@ -1190,62 +1208,20 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
 
 <!-- ════════════════════════════════════════════════════════ -->
 <!-- SLIDE 24: Tiered KV Storage -->
-<!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s24" data-build-phases="2">
-  <span class="slide-num">24 / 26</span>
-  <span class="section-tag">The systems stack</span>
-  <h2>Remote cache extends KV lifetime</h2>
-
-  <div data-phase="1">
-    <h3 style="color:var(--yellow)">Remote caching: decouple KV lifetime from GPU lifetime</h3>
-    <p>Push KV state to a networked cache (Redis, Valkey, or a managed service). KV data survives GPU restarts, enables cross-node sharing, and scales capacity independently from compute. Higher latency than local DRAM, but far cheaper than re-prefilling 12,800 tokens.</p>
-  </div>
-
-  <div data-phase="2">
-    <h3 style="color:var(--accent)">The full hierarchy</h3>
-    <p><strong style="color:var(--cyan)">GPU VRAM</strong> → <strong style="color:var(--green)">Host DRAM</strong> → <strong style="color:var(--yellow)">Remote cache</strong> → <strong style="color:var(--red)">Recompute</strong>. Each tier trades latency for capacity. Each boundary is a systems engineering decision: eviction policy, transfer protocol, consistency model.</p>
-  </div>
-  <div class="presenter-notes">Remote caching is L3 in the memory hierarchy. A 12,800-token session's KV cache at fp8 is ~900 KB, well within what a networked cache handles at sub-millisecond latency. This decouples KV lifetime from GPU lifetime. Same pattern as session state in web applications, moving from in-process memory to memcached.</div>
-</section>
 
 <!-- ════════════════════════════════════════════════════════ -->
-<!-- SLIDE 25: Operate in Production -->
 <!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s25" data-build-phases="2">
-  <span class="slide-num">25 / 26</span>
-  <span class="section-tag">The systems stack</span>
-  <h2>Operating rules</h2>
-
-  <div data-phase="1">
-    <ol style="font-size:19px">
-      <li><strong>Estimate your knee before deployment.</strong> Three numbers: available KV memory, per-session unique context, KV precision. Get within 20%.</li>
-      <li><strong>Verify with a concurrency sweep.</strong> Run C=1 to 2x your expected peak. Find the cliff. Set your limit below it.</li>
-      <li><strong>Monitor p95/p99, not averages.</strong> Alert on the gap between p50 and p99. When it widens sharply, you have crossed the knee.</li>
-    </ol>
-  </div>
-
-  <div data-phase="2">
-    <ol start="4" style="font-size:19px">
-      <li><strong>Separate online from offline.</strong> Offline agents can absorb full prefill cost. Reserve cache resources for online, latency-sensitive workloads.</li>
-      <li><strong>Benchmark with real data.</strong> Synthetic inputs (like <code>hi hi hi</code> repeated 10K times) overstate compression and cache effectiveness. Use real documents with real model weights.</li>
-      <li><strong>Use the cheapest lever first.</strong> KV quantization (fp16 to fp8) is a config change that buys 75% more headroom. Validate output quality on your workload first, then try it before buying more GPUs.</li>
-    </ol>
-  </div>
-  <div class="presenter-notes">Operational checklist. Each is a systems engineering task, not an ML task. The monitoring point is critical: most inference dashboards show average TTFT, which hides the cliff.</div>
-</section>
-
+<!-- SLIDE 25: Closing -->
 <!-- ════════════════════════════════════════════════════════ -->
-<!-- SLIDE 27: Closing -->
-<!-- ════════════════════════════════════════════════════════ -->
-<section class="slide" id="s26">
-  <span class="slide-num">26 / 26</span>
+<section class="slide" id="s25">
+  <span class="slide-num">25 / 25</span>
   <span class="section-tag">The conclusion</span>
-  <h2>From distributed systems<br/>to GPU inference</h2>
+  <h2 style="font-size:56px;letter-spacing:-0.03em">Utilization</h2>
 
-  <p class="subtitle" style="margin-bottom:32px">Routing, scheduling, placement, memory movement, eviction policies, tail latency, capacity planning. These are our problems. They just happen to run on GPUs.</p>
+  <p class="subtitle" style="margin-bottom:32px;font-size:24px">KV cache, disaggregation, routing, load leveling are all means to improve utilization.</p>
 
   <div class="callout" style="border-left-color:var(--green)">
-    <strong>If you came from distributed systems and feel intimidated by inference:</strong> start with the system, not the model. The hard problems at scale are the ones you already know how to solve. And they are very fun.
+    Optimizing utilization drives better availability, performance, and cost.
   </div>
 
   <div style="margin-top:36px;padding-top:24px;border-top:1px solid var(--border)">
@@ -1253,7 +1229,7 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
       Full blog series: <strong style="color:var(--cyan)">ksmotiv8.github.io/kvbenchdocs/kvcache/</strong>
     </p>
   </div>
-  <div class="presenter-notes">Close the loop. Started intimidated, discovered familiar problems wearing GPU clothes, found them complex and fun. Start with the system. Thank you.</div>
+  <div class="presenter-notes">Close the loop. Everything in this talk — KV caching, disaggregation, routing, load leveling — serves one goal: utilization. Better utilization means better availability, performance, and cost. Thank you.</div>
 </section>
 
 <!-- ════════════════════════════════════════════════════════ -->
@@ -1261,7 +1237,7 @@ L4: <span class="num">24 GB</span> - ~<span class="num">4 GB</span> weights - ~<
 <!-- ════════════════════════════════════════════════════════ -->
 <div id="nav">
   <button id="prevBtn" aria-label="Previous slide">Prev</button>
-  <span id="counter">1 / 26</span>
+  <span id="counter">1 / 25</span>
   <button id="nextBtn" aria-label="Next slide">Next</button>
 </div>
 <div id="notes-indicator">P: notes off</div>
