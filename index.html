@@ -898,11 +898,10 @@ body.notes-on .slide.current .presenter-notes {
 <!-- ════════════════════════════════════════════════════════ -->
 <section class="slide" id="s25" data-build-phases="2">
   <span class="slide-num">13 / 25</span>
-  <span class="section-tag">GPU Memory is Limited</span>
-  <h2>Extending KV Lifetime</h2>
+  <span class="section-tag" style="margin-top:-10px">GPU MEMORY IS LIMITED</span>
+  <h2 style="margin-top:4px">Extending KV Lifetime with Tiered and Remote Caching</h2>
 
   <div data-phase="1">
-    <h3 style="color:var(--yellow)">Tiered &amp; remote caching: decouple KV lifetime from GPU lifetime</h3>
     <p style="font-size:20px">Push KV state to a networked cache (Redis, Valkey, or a managed service). KV data survives GPU restarts, enables cross-node sharing, and scales capacity independently from compute.</p>
   </div>
 
