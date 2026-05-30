@@ -248,7 +248,7 @@ body.notes-on .slide.current .presenter-notes {
       <!-- PREFILL phase -->
       <rect x="40" y="20" width="360" height="100" rx="10" fill="rgba(130,140,248,0.12)" stroke="var(--accent)" stroke-width="2"/>
       <text x="220" y="48" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="22" text-anchor="middle" font-weight="700">PREFILL</text>
-      <text x="220" y="72" fill="var(--text)" font-family="'Inter',sans-serif" font-size="14" text-anchor="middle">Process ALL input tokens in parallel</text>
+      <text x="220" y="72" fill="var(--text)" font-family="'Inter',sans-serif" font-size="14" text-anchor="middle">Process the full prompt in parallel</text>
       <text x="220" y="92" fill="var(--text-muted)" font-family="'Inter',sans-serif" font-size="13" text-anchor="middle">Fills KV cache. GPU ALUs saturated.</text>
       <text x="220" y="112" fill="var(--accent)" font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle" font-weight="600" opacity="0.7">COMPUTE-BOUND</text>
 
@@ -277,8 +277,8 @@ body.notes-on .slide.current .presenter-notes {
       <rect x="40" y="258" width="790" height="24" rx="4" fill="rgba(34,211,238,0.06)" stroke="var(--cyan)" stroke-width="1"/>
       <rect x="42" y="260" width="356" height="20" rx="3" fill="rgba(34,211,238,0.15)"/>
       <rect x="398" y="260" width="430" height="20" rx="3" fill="rgba(34,211,238,0.25)"/>
-      <text x="220" y="275" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">KV cache filling...</text>
-      <text x="613" y="275" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">KV cache growing with each output token</text>
+      <text x="220" y="275" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">KV cache filled during prefill</text>
+      <text x="613" y="275" fill="var(--cyan)" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">KV cache read + appended during decode</text>
 
       <!-- Bottom TTFT label -->
       <text x="410" y="310" fill="var(--yellow)" font-family="'Inter',sans-serif" font-size="12" text-anchor="middle">Time to First Token</text>
